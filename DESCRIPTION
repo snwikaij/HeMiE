@@ -1,0 +1,25 @@
+Package: HMiE
+Title: Heterodox Methods in Ecology
+Version: 0.0.1
+Authors@R: person(given = "Willem", family = "Kaijser",
+  email = "wimkaijser@outlook.com", role = c("aut", "cre"),
+  comment = c(ORCID = "0000-0002-9635-5388"))
+Description: Focuses on heterodox (Bayesian) Methods in ecology.
+Config/roxygen2/version: 8.1.0
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+Suggests: 
+    knitr,
+    devtools,
+    rmarkdown,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+VignetteBuilder: knitr
+Depends: 
+    R (>= 2.10)
+LazyData: true
+Imports: ggplot2 (>= 4.0.1), ggforce (>= 0.4.2),
+         igraph (>= 2.1.4), ggraph (>= 2.2.1), 
+         tidyr (>= 1.2.0), grid (>= 4.3.2),
+         tmvtnorm (>= 1.7), MASS (>= 7.3-60)
+License: GPL (>= 3)
