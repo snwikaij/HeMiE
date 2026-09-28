@@ -1,4 +1,3 @@
-
 # Introduction
 
 Ecological information is scattered throughout literature. The

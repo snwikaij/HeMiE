@@ -18,18 +18,21 @@ knitr::opts_chunk$set(
 #.rs.restartR()
 #pkgdown::build_site()
 
-#within the terminal run this to updat
+#within the terminal run this to update
 #git add -A
 #git commit -m "Update HeMiE package and pkgdown site"
 #git push
+
+#check git
+#git status
 
 ```
 
 # Introduction
 
-Ecological information is scattered throughout literature and is often only used for the specific purpose for which it was originally collected. One reason may be that statistical and mathematical applications often focus on obtaining exact solutions to well defined problems (M-closed worlds). Exact solutions are preferable where they are possible and where they matter, particularly for causal inference. However, causal inference is only justified when the premises underlying the causal argument are also satisfied. It is therefore not the model itself that makes an argument causal.
+Ecological information is scattered throughout literature. The difficulty is that many statistical applications often focus on obtaining exact solutions to well defined problems (M-closed worlds). Exact solutions are preferable where they are possible and where they matter, particularly for causal inference. However, causal inference is only justified when the premises underlying the causal argument are also satisfied. It is therefore not the model itself that makes an argument causal.
 
-In ecology, these premises are frequently constrained by data quality, study design, and "context dependency" (everything is context dependent). Differences among species, ecosystems, spatial scales, experimental conditions, and measurement procedures can limit how far individual models and their associated claims can be generalized. At the same time, these limitations do not necessarily make the available information uninformative (M-open worlds).
+In ecology, these premises are frequently constrained by data quality, study design, and "context dependency" (everything is context dependent). Differences among species, ecosystems, spatial scales, experimental conditions (gradient length understood as positivity in causal inference), and measurement procedures can limit how far individual models and their associated claims can be generalized. At the same time, these limitations do not necessarily make the available information uninformative (M-open worlds).
 
 **HeMiE - Heterodox (Bayesian) Methods in Ecology** focuses on pragmatic approaches for gathering, re-using, synthesizing, predicting from, and generalizing ecological information. Rather than requiring all available information to conform to a single statistical framework, the package provides methods for combining and evaluating heterogeneous sources of information. One central development is the **Posterior Predictive Meta-analytic Network (PPMN)** framework, which integrates information from multiple studies and statistical models into predictive networks.
 
