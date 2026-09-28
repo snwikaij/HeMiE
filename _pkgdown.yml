@@ -3,6 +3,36 @@ url: https://snwikaij.github.io/HeMiE/
 template:
   bootstrap: 5
 
+navbar:
+  structure:
+    left: []
+    right: [github]
+
+home:
+  sidebar:
+    structure: [topics, reference_nav]
+
+    components:
+      topics:
+        title: "Topics & Methods"
+        text: |
+          [Posterior Predictive Meta-analytic Networks](articles/ppmn.html)
+
+      reference_nav:
+        title: "Functions & Data"
+        text: |
+          [Function reference](reference/index.html)
+
+footer:
+  structure:
+    left: [developed_by, extra_links]
+    right: built_with
+
+  components:
+    extra_links: |
+      · [Source code](https://github.com/snwikaij/HeMiE/)
+      · [Report a bug](https://github.com/snwikaij/HeMiE/issues)
+
 reference:
 - title: "Posterior Predictive Meta-analytic Networks"
   desc: >
@@ -13,9 +43,9 @@ reference:
   - update_ppmn
   - predict_ppmn
   - marginal_ppmn
-  - root_est_ppmn
   - pred_fit_ppmn
   - disp_ppmn
+  - root_est_ppmn
 
 - title: "Example data"
   desc: >

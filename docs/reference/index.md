@@ -15,12 +15,12 @@ Posterior Predictive Meta-analytic Networks.
 - [`marginal_ppmn()`](https://snwikaij.github.io/HeMiE/reference/marginal_ppmn.md)
   : Plots the marginal expectations of each edge function with
   credibility intervals
-- [`root_est_ppmn()`](https://snwikaij.github.io/HeMiE/reference/root_est_ppmn.md)
-  : Root estimation function
 - [`pred_fit_ppmn()`](https://snwikaij.github.io/HeMiE/reference/pred_fit_ppmn.md)
   : Predictive fit function to assess performance
 - [`disp_ppmn()`](https://snwikaij.github.io/HeMiE/reference/disp_ppmn.md)
   : Displacement test for PPMN
+- [`root_est_ppmn()`](https://snwikaij.github.io/HeMiE/reference/root_est_ppmn.md)
+  : Root estimation function
 
 ## Example data
 

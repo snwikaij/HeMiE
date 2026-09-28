@@ -55,4 +55,4 @@ devtools::install_github("snwikaij/HeMiE")
 library(HeMiE)
 ```
 
-Questions, problems, and suggestions for improvements are welcome.
+Questions, problems and suggestions for improvements are welcome.
