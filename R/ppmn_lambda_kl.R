@@ -5,6 +5,8 @@
 #' @param prior Prior.
 #' @param upper Upper boundary for lambda.
 #'
+#' @keywords internal
+#'
 #' @importFrom stats uniroot
 #'
 .ppmn_lambda_kl <- function(loss, kl_target, prior=NULL, upper=max_lambda){

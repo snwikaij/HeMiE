@@ -3,6 +3,8 @@
 #' @param param_est Parameter estimate
 #' @param e_fun Edge function
 #'
+#' @keywords internal
+#'
 .ppmn_tab_fun <- function(param_est, e_fun){
 
   #dependent variables from edge names

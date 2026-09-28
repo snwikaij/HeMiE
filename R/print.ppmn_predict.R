@@ -4,6 +4,8 @@
 #'
 #' @importFrom utils head
 #'
+#' @keywords internal
+#'
 #' @export
 print.ppmn_prediction <- function(x, ...){
 

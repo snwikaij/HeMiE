@@ -4,6 +4,8 @@
 #' @param data The data used to update the PPMN.
 #' @param mad_constant Constant.
 #'
+#' @keywords internal
+#'
 #' @importFrom stats mad median na.omit quantile aggregate
 #'
 .ppmn_resid_diagnostic <- function(object, data, mad_constant=1){
@@ -80,7 +82,7 @@
     df_long,
     ggplot2::aes(x=Variable,y=Value))+
     ggplot2::ylim(qy)+
-    ggplot2::geom_hline(yintercept=0,col="tomato3",lty=2)+
+    ggplot2::geom_hline(yintercept=0, col="tomato3",lty=2)+
     ggplot2::ylab("Standardized residuals")+
     ggplot2::geom_boxplot(outlier.shape=NA)+
     ggplot2::geom_jitter(alpha=.2,pch=19,width=.2)+
@@ -126,44 +128,18 @@
   x_hat_long$rank_obs   <- obs_rank_long$obs_rank
   x_hat_long$rank_x_hat <- x_hat_rank_long$x_hat_rank
 
-  mean_obs <- aggregate(
-    obs~j,
-    data=x_hat_long,
-    FUN=mean,
-    na.rm=T)
-
   resid_pred_vs_fit <- ggplot2::ggplot(
     x_hat_long,
     ggplot2::aes(x=x_hat,y=obs))+
     ggplot2::geom_point()+
-    ggplot2::geom_hline(
-      data=mean_obs,
-      ggplot2::aes(yintercept=obs),
-      col="tomato3",
-      lty=2)+
     ggplot2::xlab("Predicted")+
     ggplot2::ylab("Observed")+
     ggplot2::theme_classic()+
-    ggplot2::facet_wrap(.~j,scales="free")
-
-  resid_rank_vs_fit <- ggplot2::ggplot(
-    x_hat_long,
-    ggplot2::aes(x=rank_x_hat,y=rank_obs))+
-    ggplot2::geom_point()+
-    ggplot2::geom_line(lwd=.4)+
-    ggplot2::ylab("Ranked observed")+
-    ggplot2::xlab("Ranked predicted")+
-    ggplot2::theme_classic()+
-    ggplot2::geom_abline(
-      intercept=0,
-      slope=1,
-      colour="tomato3",
-      lwd=.6)+
+    ggplot2::geom_abline(intercept=0, slope=1, colour="tomato3", lwd=.6)+
     ggplot2::facet_wrap(.~j,scales="free")
 
   object$Residuals$list                     <- df_long
   object$Residuals$resid_boxplot            <- resid_boxplot
-  object$Residuals$resid_pred_resid         <- resid_pred_vs_fit
-  object$Residuals$resid_rankpred_rankresid <- resid_rank_vs_fit
+  object$Residuals$pred_observed            <- resid_pred_vs_fit
 
   return(object)}

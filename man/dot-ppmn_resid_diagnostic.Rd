@@ -16,3 +16,4 @@
 \description{
 Helper function to residual diagnostics
 }
+\keyword{internal}

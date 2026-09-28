@@ -5,6 +5,8 @@
 #' @param type Type of distribution for x_raw.
 #' @param MAD Median absolute deviation.
 #'
+#' @keywords internal
+#'
 .ppmn_transform_loss <- function(x_raw, x_hat, type, MAD=NULL){
 
   #constant

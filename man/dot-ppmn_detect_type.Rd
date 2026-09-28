@@ -12,3 +12,4 @@
 \description{
 Helper function to detect dependent variable types
 }
+\keyword{internal}

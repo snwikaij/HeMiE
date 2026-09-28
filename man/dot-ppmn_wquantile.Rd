@@ -11,8 +11,9 @@
 
 \item{w}{GBU weights.}
 
-\item{probs}{Probabilities}
+\item{probs}{Probabilities.}
 }
 \description{
 Helper function for to calculated weighted quantiles.
 }
+\keyword{internal}

@@ -27,6 +27,8 @@
 #'
 #' @importFrom stats pnorm dnorm qnorm
 #'
+#' @keywords internal
+#'
 .ppmn_ebmeta <- function(estimate, stderr, prior_mu=0, prior_mu_se=1000, prior_weights=NULL,
                    a=-Inf, b=Inf, tau_2="DSL", interval=0.9, RE=T, warnings=F){
 

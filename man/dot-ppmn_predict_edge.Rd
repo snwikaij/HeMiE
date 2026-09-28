@@ -18,3 +18,4 @@
 \description{
 Helper function that defines and predicts with different functions
 }
+\keyword{internal}

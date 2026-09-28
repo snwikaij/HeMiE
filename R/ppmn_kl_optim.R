@@ -5,6 +5,8 @@
 #' @param kl_target KL divergence target
 #' @param prior Prior
 #'
+#' @keywords internal
+#'
 .ppmn_kl_optim <- function(lambda, loss, kl_target, prior=NULL){
 
   #constant

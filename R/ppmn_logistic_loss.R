@@ -3,6 +3,8 @@
 #' @param x_raw Raw observations.
 #' @param x_hat Predictions on these observations.
 #'
+#' @keywords internal
+#'
 .ppmn_logistic_loss <- function(x_raw, x_hat){
 
   #constant

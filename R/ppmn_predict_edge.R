@@ -5,6 +5,8 @@
 #' @param trans Transformation type applied over all independent variables.
 #' @param x matrix of independent variables.
 #'
+#' @keywords internal
+#'
 #' @importFrom stats plogis dnorm
 #'
 #' @export

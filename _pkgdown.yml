@@ -1,0 +1,28 @@
+url: https://snwikaij.github.io/HeMiE/
+
+template:
+  bootstrap: 5
+
+reference:
+- title: "Posterior Predictive Meta-analytic Networks"
+  desc: >
+    Functions for constructing, updating, predicting from, and evaluating
+    Posterior Predictive Meta-analytic Networks.
+  contents:
+  - build_ppmn
+  - update_ppmn
+  - predict_ppmn
+  - marginal_ppmn
+  - root_est_ppmn
+  - pred_fit_ppmn
+  - disp_ppmn
+
+- title: "Example data"
+  desc: >
+    Example datasets for constructing, updating, and evaluating PPMNs.
+  contents:
+  - example4
+  - example5
+  - example6
+  - train_data
+  - val_data

@@ -12,3 +12,4 @@
 \description{
 Helper function for root estimation
 }
+\keyword{internal}

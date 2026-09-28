@@ -4,6 +4,8 @@
 #' @param lambda Lambda.
 #' @param prior Prior.
 #'
+#' @keywords internal
+#'
 .ppmn_stable_weights <- function(loss, lambda, prior=NULL){
 
   eps <- .Machine$double.eps

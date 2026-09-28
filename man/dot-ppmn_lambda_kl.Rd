@@ -18,3 +18,4 @@
 \description{
 Helper function for Kullenback-Leiber optimizer for lambda
 }
+\keyword{internal}

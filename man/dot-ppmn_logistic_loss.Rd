@@ -14,3 +14,4 @@
 \description{
 Helper function for binary/prop log loss
 }
+\keyword{internal}

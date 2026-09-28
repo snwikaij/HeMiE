@@ -20,3 +20,4 @@
 \description{
 Helper function to calculate loss and residuals
 }
+\keyword{internal}

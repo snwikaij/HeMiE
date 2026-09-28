@@ -2,7 +2,9 @@
 #'
 #' @param x Values (particles/simulations).
 #' @param w GBU weights.
-#' @param probs Probabilities
+#' @param probs Probabilities.
+#'
+#' @keywords internal
 #'
 .ppmn_wquantile <- function(x, w, probs){
 

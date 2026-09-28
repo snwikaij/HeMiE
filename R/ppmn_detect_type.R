@@ -4,6 +4,8 @@
 #'
 #' @importFrom stats na.omit
 #'
+#' @keywords internal
+#'
 .ppmn_detect_type <- function(y_raw){
 
   #constant

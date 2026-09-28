@@ -6,6 +6,8 @@
 #' @param nsim Number of simulations.
 #' @param mad_constant Constant.
 #'
+#' @keywords internal
+#'
 #' @importFrom stats mad median
 #'
 .ppmn_loss_resid <- function(obs_mat, preds, obs_nodes, nsim, mad_constant=1){

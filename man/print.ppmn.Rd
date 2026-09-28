@@ -12,3 +12,4 @@
 \description{
 Helper function to print summary table
 }
+\keyword{internal}

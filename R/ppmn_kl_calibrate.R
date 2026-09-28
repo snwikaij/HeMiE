@@ -5,6 +5,8 @@
 #' @param n_boot Number of bootstraps.
 #' @param n_grid Size of the grid.
 #'
+#' @keywords internal
+#'
 #' @importFrom stats density rnorm quantile
 #'
 .ppmn_kl_calibrate <- function(r_data, r_prior, n_boot=2000, n_grid){

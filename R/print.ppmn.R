@@ -2,6 +2,8 @@
 #'
 #' @param x An object to summarize.
 #'
+#' @keywords internal
+#'
 #' @export
 print.ppmn <- function(x, ...){
 
@@ -145,9 +147,18 @@ print.ppmn <- function(x, ...){
 
   cat("\n")
 
+  par_table <- x$`Parameter table`
+
+  num_cols <- c("mu","se","ll","ul","Q","I2","a","b")
+  num_cols <- intersect(num_cols, names(par_table))
+
+  par_table[num_cols] <- lapply(
+    par_table[num_cols],
+    function(z){round(as.numeric(z),3)})
+
   print(
-    x$`Parameter table`,
-    row.names = FALSE
+    par_table,
+    row.names=FALSE
   )
 
   invisible(x)

@@ -171,6 +171,10 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
 
         names(alpha[[node]]) <- ids
 
+      }else{stop("fun_w should be 'GBU', 'Relative_loss' or 'Exceedance'.")}
+
+      object$FunctionWeights[[node]] <- alpha[[node]]/sum(alpha[[node]])
+
       for(k in seq_along(ids)){
 
         w <- q[,k]
@@ -193,7 +197,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
 
     logw_covar <- logw_covar-max(logw_covar)
     w_covar    <- exp(logw_covar)
-    w_covar    <- w_covar/sum(w_covar)}}
+    w_covar    <- w_covar/sum(w_covar)}
 
 ########################
 #global combined update#
@@ -437,7 +441,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   #update residual diagnostics#
   #############################
 
-
+  object <- .ppmn_resid_diagnostic(object,new_data)
 
   ########################
   #rebuild parameter table#

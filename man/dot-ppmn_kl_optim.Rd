@@ -18,3 +18,4 @@
 \description{
 Helper function to Kullenback-Leibler divergence optimizer
 }
+\keyword{internal}

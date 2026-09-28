@@ -18,3 +18,4 @@
 \description{
 Grid approximation for Kullenback-Leibler divergence
 }
+\keyword{internal}

@@ -16,3 +16,4 @@
 \description{
 Helper function to derive GBU weights
 }
+\keyword{internal}

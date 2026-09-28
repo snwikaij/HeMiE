@@ -54,3 +54,4 @@ simple method of moment estimator but did not progress further. The HE is still 
 However, HE will create wider intervals over the estimate under smaller sample sizes. Yet, by default DSL is still
 preferred.
 }
+\keyword{internal}

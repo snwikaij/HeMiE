@@ -2,6 +2,8 @@
 #'
 #' @param x An object to summarize.
 #'
+#' @keywords internal
+#'
 #' @export
 print.ppmn_root_estimation <- function(x, ...){
 
