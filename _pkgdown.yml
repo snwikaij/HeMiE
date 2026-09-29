@@ -5,33 +5,24 @@ template:
 
 navbar:
   structure:
-    left: []
-    right: [github]
-
-home:
-  sidebar:
-    structure: [topics, reference_nav]
-
-    components:
-      topics:
-        title: "Topics & Methods"
-        text: |
-          [Posterior Predictive Meta-analytic Networks](articles/ppmn.html)
-
-      reference_nav:
-        title: "Functions & Data"
-        text: |
-          [Function reference](reference/index.html)
-
-footer:
-  structure:
-    left: [developed_by, extra_links]
-    right: built_with
+    left: [intro, topics, functions]
+    right: [search, github]
 
   components:
-    extra_links: |
-      · [Source code](https://github.com/snwikaij/HeMiE/)
-      · [Report a bug](https://github.com/snwikaij/HeMiE/issues)
+    topics:
+      text: "Topics & Methods"
+      menu:
+      - text: "Posterior Predictive Meta-analytic Networks"
+        href: articles/ppmn.html
+      - text: "Heterodox Bayes and Other Things"
+        href: articles/heterodox_bayes.html
+
+    functions:
+      text: "Functions & Data"
+      href: reference/index.html
+
+home:
+  sidebar: FALSE
 
 reference:
 - title: "Posterior Predictive Meta-analytic Networks"

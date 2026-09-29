@@ -1,5 +1,30 @@
+/* Justify main text */
 main p {
-  text-align: justify;
+  text-align: justify !important;
   text-justify: inter-word;
   hyphens: auto;
+}
+
+/* Use full width on the homepage when the sidebar is disabled */
+.template-home main#main {
+  width: 100%;
+  max-width: 100%;
+  flex: 0 0 100%;
+}
+
+/* Navbar */
+.navbar-nav .nav-link {
+  font-size: 1.08rem;
+  font-weight: 500;
+}
+
+/* Dropdown */
+.navbar .dropdown-menu {
+  min-width: 22rem;
+  padding: 0.6rem 0;
+}
+
+.navbar .dropdown-item {
+  font-size: 1.02rem;
+  padding: 0.55rem 1rem;
 }
