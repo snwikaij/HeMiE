@@ -23,7 +23,7 @@ This section will focus largely on the theoretical parts Heterodox Bayesian meth
 A simple generalization of Bayes theorem as $Posterior \ probability \propto Likelihood \cdot Prior$ which can be more formally expressed as $P(\theta | x, I) \propto P(x|\theta) \cdot P(\theta | I)$. As discussed before the heterodoxy of many methods (not all) methods describe here do $Information? \ \propto Funky\ thing \cdot Prior$. Because the likelihood is not an exact, the posterior is that neither. A standard notation could be like $P(\theta|x, I, \lambda) \propto L(x, \theta) \cdot P(\theta|x)$. Here $L$ would indicate a loss, pseudo-likelihood, weight or other data generating model to extract information from the data. A full expression would then be of the form
 
 $$
-P(\theta|x, I, \lambda) = \frac{L(x, \theta)\cdot P(\theta | I)}{\int L(x, \theta)\cdot P(u)\cdot d(u)}
+P(\theta|x, I, \lambda) = \frac{L(x, \theta)\cdot P(\theta | I)}{\int L(x, \theta)\cdot P(\theta|theta)\cdot d(\theta)}
 $$
 In this equation the $x$ representing the data and $\theta$ a quantity of interest and $I$ prior information. The $L$ denotes some data dependent function. In this view, the posterior need not be interpreted as a conditional probability under a joint model for data and parameters. It may instead be understood as a normalized re-weighting of prior information by a data-dependent functions of the model parameter.
 
@@ -426,11 +426,15 @@ As might be clear this is less computational heavy than MCMC methods. For more t
 Standard Bayesian models update the likelihood and prior to the posterior via 
 $$P(\theta|x) = \frac{ P(x|\theta) \cdot P(\theta)}{P(x)}$$ 
 taking the log of the terms results in 
+
 $$log(P(\theta|x)) = log(P(x|\theta)) + log(P(\theta)) - log(P(x))$$ 
+
 Here the likelihood is written as $-log(P(x|\theta))$, the negative log-likelihood. So this is similar to 
+
 $$-log(P(x|\theta))=L(x; \theta)\\
 log(P(x|\theta))=-L(x; \theta)$$ 
 where $L$ is a loss function of the data $x$ connected to the model parameter $\theta$. Fully, this is corresponding to 
+
 $$log(P(\theta|x)) = -L(x; \theta) + log(P(\theta)) - log(p(x))$$
 The exponent of this becomes
 $$

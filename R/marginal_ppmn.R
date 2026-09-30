@@ -26,7 +26,8 @@
 #' marginal plot is returned for every edge-function and parent combination.
 #'
 #' @importFrom stats lowess approx median quantile
-#' @importFrom ggplot2 ggplot geom_line geom_ribbon xlab element_text geom_point aes aes_string ggplot_build
+#' @importFrom ggplot2 ggplot geom_line geom_ribbon xlab element_text geom_point aes ggplot_build
+#' @importFrom rlang .data
 #'
 #' @export
 marginal_ppmn <- function(object, child, data,
@@ -330,9 +331,8 @@ df <- data.frame(
       theme(axis.title=element_text(size=size_title),
             axis.text=element_text(size=size_text))+
       if(!vary %in% colnames(data) || !child %in% colnames(data)){NULL}else{
-        geom_point(data=data,
-                   aes_string(x=vary,y=child),
-                   inherit.aes=F,pch=19,alpha=pt_alpha,size=pt_size)}
+        geom_point(data = data, aes(x = .data[[vary]], y = .data[[child]]),
+          inherit.aes = F, pch = 19, alpha = pt_alpha,size = pt_size)}
       ggplot_build(p)
 
       plots[[paste0(id,"_",vary)]] <- p}}
@@ -398,19 +398,17 @@ df <- data.frame(
     }else{
       ylab_use <- child}
 
-    p <- ggplot(df,aes(x,mu)) +
-        geom_line(lwd=lwd_exp,col=lwd_col) +
+    p <- ggplot(df,aes(x, mu)) +
+        geom_line(lwd=lwd_exp, col=lwd_col) +
         ylim_func +
-        geom_ribbon(aes(ymin=ll,ymax=ul), fill=int_col, alpha=int_alpha) +
+        geom_ribbon(aes(ymin=ll, ymax=ul), fill=int_col, alpha=int_alpha) +
         xlab(vary) + ylab(ylab_use)+
         theme_classic()+
         theme(axis.title=element_text(size=size_title),
               axis.text=element_text(size=size_text))+
         if(!vary %in% colnames(data)||!child %in% colnames(data)){NULL}else{
-          geom_point(data=data, aes_string(x=vary,y=child),
-            inherit.aes=F, pch=19, alpha=pt_alpha,
-            size=pt_size)}
-
+          geom_point(data = data, aes(x = .data[[vary]], y = .data[[child]]),
+                     inherit.aes = F, pch = 19, alpha = pt_alpha,size = pt_size)}
       ggplot_build(p)
 
       plots[[paste0("weighted_",vary)]] <- p}}

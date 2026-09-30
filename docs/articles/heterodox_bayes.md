@@ -36,7 +36,7 @@ would then be of the form
 
 ``` math
 
-P(\theta|x, I, \lambda) = \frac{L(x, \theta)\cdot P(\theta | I)}{\int L(x, \theta)\cdot P(u)\cdot d(u)}
+P(\theta|x, I, \lambda) = \frac{L(x, \theta)\cdot P(\theta | I)}{\int L(x, \theta)\cdot P(\theta|theta)\cdot d(\theta)}
 ```
 In this equation the $`x`$ representing the data and $`\theta`$ a
 quantity of interest and $`I`$ prior information. The $`L`$ denotes some
@@ -559,14 +559,18 @@ posterior via
 P(\theta|x) = \frac{ P(x|\theta) \cdot P(\theta)}{P(x)}
 ```
 taking the log of the terms results in
+
 ``` math
 log(P(\theta|x)) = log(P(x|\theta)) + log(P(\theta)) - log(P(x))
 ```
+
 Here the likelihood is written as $`-log(P(x|\theta))`$, the negative
-log-likelihood. So this is similar to \$\$-log(P(x\|\theta))=L(x;
-\theta)\\ log(P(x\|\theta))=-L(x; \theta)\$\$ where $`L`$ is a loss
-function of the data $`x`$ connected to the model parameter $`\theta`$.
-Fully, this is corresponding to
+log-likelihood. So this is similar to
+
+\$\$-log(P(x\|\theta))=L(x; \theta)\\ log(P(x\|\theta))=-L(x;
+\theta)\$\$ where $`L`$ is a loss function of the data $`x`$ connected
+to the model parameter $`\theta`$. Fully, this is corresponding to
+
 ``` math
 log(P(\theta|x)) = -L(x; \theta) + log(P(\theta)) - log(p(x))
 ```

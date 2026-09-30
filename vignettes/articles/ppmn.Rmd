@@ -36,7 +36,7 @@ A PPMN describes an ecological system as a generalized directed Bayesian network
 
 The figure below illustrates a simple PPMN containing four variables and three parameterized edge-functions. For each edge-function, information from prior distributions and study-derived estimates is synthesized into a posterior parameter distribution.
 
-```{r, fig1_ppmn,  fig.width=8, fig.height=4, echo=F, warning=FALSE}
+```{r, fig1_ppmn, fig.width=8, fig.height=4, echo=F, warning=FALSE}
 
 library(ggplot2)
 library(grid)
@@ -225,7 +225,7 @@ After building the foundational PPMN, the single edge can be display in a DAG,
 
 ```{r, examp_1_ppmn_e, warning=F}
 
-foundational_ppmn$Plot_as_DAG
+foundational_ppmn$PlotDAG
 
 ```
 
@@ -233,7 +233,7 @@ or as a Directed Bipartite Network, where the boxes represent the edge-functions
 
 ```{r, examp_1_ppmn_f, warning=F}
 
-foundational_ppmn$Plot_as_DBN
+foundational_ppmn$PlotDBN
 
 ```
 
@@ -276,7 +276,7 @@ foundational_ppmn <- build_ppmn(formula = formula, data = example5,
                                 fun_width = 0.08)
 
 #Display the Directed Bipartite Network
-foundational_ppmn$Plot_as_DBN
+foundational_ppmn$PlotDBN
 
 ```
 
@@ -380,7 +380,7 @@ formula=list(c(fun="sigmoidal", edge="Chl~TP", trans="log",
 foundational_ppmn <- build_ppmn(formula = formula, data = example6, txt_size = 3, vertex_height = 0.4, vertex_width = 0.48, arrow_offset = 4)
 
 #Display graph as directed bipartite network
-foundational_ppmn$Plot_as_DBN
+foundational_ppmn$PlotDBN
 ```
 
 The full foundational PPMN has now been build and all previous function can be applied. However, we are interested in updating the PPMN so that it can learn the constrains of the data if only the roots give provide information. For this the `update_ppmn` function can be use under default with the additionally data from which it can learn the multivariate constrains.
@@ -399,7 +399,7 @@ head(train_data)
 updated_ppmn <- update_ppmn(object = foundational_ppmn, new_data = train_data)
 
 #Display the residuals
-updated_ppmn$Residuals$residual_plot
+updated_ppmn$Residuals$resid_boxplot
 
 ```
 

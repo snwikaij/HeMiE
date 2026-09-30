@@ -23,7 +23,8 @@ To updated the prior these losses each particles is then weighted inversely rela
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-topics-methods" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Topics &amp; Methods</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-topics-methods"><li><a class="dropdown-item" href="../articles/ppmn.html">Posterior Predictive Meta-analytic Networks</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-topics-methods"><li><a class="dropdown-item" href="../articles/ppmn.html">Posterior Predictive Meta-analytic Networks (PPMN)</a></li>
+    <li><a class="dropdown-item" href="../articles/play_ppmn.html">Playing around with the PPMN</a></li>
     <li><a class="dropdown-item" href="../articles/heterodox_bayes.html">Heterodox Bayes and Other Things</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../reference/index.html">Functions &amp; Data</a></li>
@@ -60,8 +61,6 @@ To updated the prior these losses each particles is then weighted inversely rela
 <span>  method <span class="op">=</span> <span class="st">"kernel"</span>,</span>
 <span>  up_strength <span class="op">=</span> <span class="fl">0.95</span>,</span>
 <span>  max_lambda <span class="op">=</span> <span class="fl">1000</span>,</span>
-<span>  scale <span class="op">=</span> <span class="st">"global"</span>,</span>
-<span>  fun_w <span class="op">=</span> <span class="st">"Exceedance"</span>,</span>
 <span>  covar <span class="op">=</span> <span class="cn">T</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">123</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -101,15 +100,6 @@ when using the method 'manual'.</p></dd>
 
 <dt id="arg-max-lambda">max_lambda<a class="anchor" aria-label="anchor" href="#arg-max-lambda"></a></dt>
 <dd><p>Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).</p></dd>
-
-
-<dt id="arg-scale">scale<a class="anchor" aria-label="anchor" href="#arg-scale"></a></dt>
-<dd><p>Whether each edge should be updated locally ("local") or together globally (default scale = "global").</p></dd>
-
-
-<dt id="arg-fun-w">fun_w<a class="anchor" aria-label="anchor" href="#arg-fun-w"></a></dt>
-<dd><p>Determines the method to weigh between multiple functions (multi-edge function) predicting a child.
-The method to be chosen is "Exceedance", "Relative_loss" or "GBU" (default fun_w = "Relative_loss").</p></dd>
 
 
 <dt id="arg-covar">covar<a class="anchor" aria-label="anchor" href="#arg-covar"></a></dt>

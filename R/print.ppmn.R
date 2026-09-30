@@ -65,71 +65,13 @@ print.ppmn <- function(x, ...){
       cat("Method :", x$Info$method, "\n")
     }
 
-    #scale
-    if(!is.null(x$Info$scale)){
-      cat("Scale  :", x$Info$scale, "\n\n")
-    }
-
-
-    ################
-    # LOCAL UPDATE #
-    ################
-
-    if(
-      !is.null(x$Info$scale) &&
-      x$Info$scale == "local"
-    ){
-
-      lambda_local <- unlist(x$Info$lambda)
-      ESS_local    <- unlist(x$Info$ESS)
-
-      #make sure order is identical
-      node_names <- intersect(
-        names(lambda_local),
-        names(ESS_local)
-      )
-
-      update_table <- data.frame(
-        Vertex = node_names,
-        Lambda = as.numeric(lambda_local[node_names]),
-        ESS    = as.numeric(ESS_local[node_names]),
-        row.names = NULL
-      )
-
-      update_table$Lambda <- round(
-        update_table$Lambda,
-        3
-      )
-
-      update_table$ESS <- round(
-        update_table$ESS,
-        1
-      )
-
-      print(
-        update_table,
-        row.names = FALSE
-      )
-    }
-
-
-    #################
-    # GLOBAL UPDATE #
-    #################
-
-    if(
-      !is.null(x$Info$scale) &&
-      x$Info$scale == "global"
-    ){
-
-      update_table <- data.frame(
-        Lambda = round(
-          as.numeric(x$Info$lambda)[1],
-          3
-        ),
+    update_table <- data.frame(
+      Lambda = round(
+        as.numeric(x$Info$lambda)[1],
+        3),
         ESS = round(
-          as.numeric(x$Info$ESS)[1],
-          1
+        as.numeric(x$Info$ESS)[1],
+        1
         )
       )
 
@@ -137,7 +79,6 @@ print.ppmn <- function(x, ...){
         update_table,
         row.names = FALSE
       )
-    }
   }
 
 
@@ -147,7 +88,7 @@ print.ppmn <- function(x, ...){
 
   cat("\n")
 
-  par_table <- x$`Parameter table`
+  par_table <- x$ParameterTable
 
   num_cols <- c("mu","se","ll","ul","Q","I2","a","b")
   num_cols <- intersect(num_cols, names(par_table))

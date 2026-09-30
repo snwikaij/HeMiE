@@ -12,8 +12,10 @@ navbar:
     topics:
       text: "Topics & Methods"
       menu:
-      - text: "Posterior Predictive Meta-analytic Networks"
+      - text: "Posterior Predictive Meta-analytic Networks (PPMN)"
         href: articles/ppmn.html
+      - text: "Playing around with the PPMN"
+        href: articles/play_ppmn.html
       - text: "Heterodox Bayes and Other Things"
         href: articles/heterodox_bayes.html
 

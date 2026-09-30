@@ -12,8 +12,6 @@ update_ppmn(
   method = "kernel",
   up_strength = 0.95,
   max_lambda = 1000,
-  scale = "global",
-  fun_w = "Exceedance",
   covar = T,
   seed = 123
 )
@@ -36,11 +34,6 @@ Here the default of the update strength is 95\%.}
 when using the method 'manual'.}
 
 \item{max_lambda}{Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).}
-
-\item{scale}{Whether each edge should be updated locally ("local") or together globally (default scale = "global").}
-
-\item{fun_w}{Determines the method to weigh between multiple functions (multi-edge function) predicting a child.
-The method to be chosen is "Exceedance", "Relative_loss" or "GBU" (default fun_w = "Relative_loss").}
 
 \item{covar}{Covariance matrix that is calculated between model parameters (default covar = T).}
 

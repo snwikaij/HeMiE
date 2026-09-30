@@ -28,3 +28,11 @@ main p {
   font-size: 1.02rem;
   padding: 0.55rem 1rem;
 }
+
+.template-article #pkgdown-sidebar {
+  display: none;
+}
+
+.template-article .col-md-9 {
+  width: 100%;
+}

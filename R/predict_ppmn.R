@@ -81,6 +81,10 @@ predict_ppmn <- function(object, new_data, nsim = 1000, seed = 123){
   pred_fun <- array(NA_real_, dim = c(nrow(new_data), n_child, nsim, max_f),
                     dimnames = list(NULL, child_nodes, NULL, seq_len(max_f)))
 
+  #this stores the selected functions f per simulations s
+  FunctionSelection <- matrix(NA_character_, nrow = nsim, ncol = n_child,
+                              dimnames = list(seq_len(nsim), child_nodes))
+
   #store expected values per edge function [i,j,f]
   exp_fun  <- array(NA_real_, dim = c(nrow(new_data), n_child, max_f),
                     dimnames = list(NULL, child_nodes, seq_len(max_f)))
@@ -142,6 +146,12 @@ predict_ppmn <- function(object, new_data, nsim = 1000, seed = 123){
     }else{
       w_fun <- as.numeric(w_fun/sum(w_fun))}
 
+    #create a vector of selecte functions based on the function weight
+    selected_fun <- sample(fun_select, size = nsim, replace = TRUE, prob = w_fun)
+
+    #stor the vector per node
+    FunctionSelection[,node] <- selected_fun
+
     ############################
     #expected function response#
     ############################
@@ -197,8 +207,10 @@ predict_ppmn <- function(object, new_data, nsim = 1000, seed = 123){
       mat_pred      <- pred_fun[,j,s,seq_along(fun_select),drop=F]
       dim(mat_pred) <- c(nrow(new_data), length(fun_select))
 
-      predictions[[s]][[node]] <- avg_fun(mat_pred, w_fun)
-      Variance[[node]][[s]]    <- predictions[[s]][[node]]}
+      m_s <- match(FunctionSelection[s, node], fun_select)
+
+      predictions[[s]][[node]] <- mat_pred[, m_s]
+      Variance[[node]][[s]] <- predictions[[s]][[node]]}
   }
 
   ###########################
@@ -222,6 +234,7 @@ predict_ppmn <- function(object, new_data, nsim = 1000, seed = 123){
     ParametersPerFunction = Parsbyfun,
     FunctionPredictions = pred_fun,
     ExpectedFunctions = exp_fun,
+    FunctionSelection = FunctionSelection,
     FunctionWeights = object$FunctionWeights,
     EdgeFunctions = edge_info,
     GivenNodes = given_nodes)

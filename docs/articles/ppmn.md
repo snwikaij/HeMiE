@@ -233,7 +233,7 @@ a DAG,
 
 ``` r
 
-foundational_ppmn$Plot_as_DAG
+foundational_ppmn$PlotDAG
 ```
 
 ![](ppmn_files/figure-html/examp_1_ppmn_e-1.png)
@@ -243,7 +243,7 @@ edge-functions and the variables the circles.
 
 ``` r
 
-foundational_ppmn$Plot_as_DBN
+foundational_ppmn$PlotDBN
 ```
 
 ![](ppmn_files/figure-html/examp_1_ppmn_f-1.png)
@@ -309,7 +309,7 @@ foundational_ppmn <- build_ppmn(formula = formula, data = example5,
                                 fun_width = 0.08)
 
 #Display the Directed Bipartite Network
-foundational_ppmn$Plot_as_DBN
+foundational_ppmn$PlotDBN
 ```
 
 ![](ppmn_files/figure-html/examp_2_ppmn_a-1.png)
@@ -453,7 +453,7 @@ formula=list(c(fun="sigmoidal", edge="Chl~TP", trans="log",
 foundational_ppmn <- build_ppmn(formula = formula, data = example6, txt_size = 3, vertex_height = 0.4, vertex_width = 0.48, arrow_offset = 4)
 
 #Display graph as directed bipartite network
-foundational_ppmn$Plot_as_DBN
+foundational_ppmn$PlotDBN
 ```
 
 ![](ppmn_files/figure-html/updating%20example%20large%20network-1.png)
@@ -488,9 +488,10 @@ head(train_data)
 updated_ppmn <- update_ppmn(object = foundational_ppmn, new_data = train_data)
 
 #Display the residuals
-updated_ppmn$Residuals$residual_plot
-#> NULL
+updated_ppmn$Residuals$resid_boxplot
 ```
+
+![](ppmn_files/figure-html/upload%20training%20data-1.png)
 
 ### Fixed information gain training
 
@@ -678,9 +679,9 @@ cowplot::plot_grid(mac_15$plots$TP,
 
 #The summary of the results
 mac_15$summary
-#>      root        mu       med        se       ll        ul
-#> TP     TP  6.280012  6.162017 0.9068353 4.874719  7.532786
-#> Temp Temp 14.220195 13.383299 6.4385188 4.402619 24.008074
+#>      root        mu       med       se       ll        ul
+#> TP     TP  6.354196  6.219968 1.030479 4.676964  7.823559
+#> Temp Temp 14.599989 13.113312 6.874758 4.079066 24.025263
 ```
 
 For 1 macrophyte species the expected valuss for TP and temperature are
@@ -701,8 +702,8 @@ cowplot::plot_grid(mac_1$plots$TP,
 #The summary of the results
 mac_1$summary
 #>      root       mu       med         se        ll        ul
-#> TP     TP 397.0008 357.09791 171.690860 183.44124 690.95017
-#> Temp Temp  22.0942  21.90096   5.866412  11.97679  30.97913
+#> TP     TP 399.4341 372.98012 164.702172 172.62688 578.77615
+#> Temp Temp  22.5230  22.43508   6.149827  13.92244  32.24843
 ```
 
 Clearly the observed variance of the expected value is much smaller for
@@ -821,16 +822,16 @@ summary(sigmoidal_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 194.87599    3.32927  58.534  < 2e-16 ***
-#> b1   5.89942    0.04947 119.243  < 2e-16 ***
-#> b2   0.42155    0.04573   9.218 2.95e-16 ***
+#> b0 199.75517    3.47923  57.414   <2e-16 ***
+#> b1   6.09134    0.05188 117.413   <2e-16 ***
+#> b2   0.45276    0.04629   9.781   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 26.09 on 147 degrees of freedom
+#> Residual standard error: 25.79 on 147 degrees of freedom
 #> 
-#> Number of iterations to convergence: 5 
-#> Achieved convergence tolerance: 2.043e-06
+#> Number of iterations to convergence: 7 
+#> Achieved convergence tolerance: 3.861e-06
 ```
 
 ### Gompertz equation

@@ -381,9 +381,9 @@ build_ppmn   <- function(formula, data, txt_size=3, vertex_size=15,
   Sigma           <- diag(theta_var)
   dimnames(Sigma) <- list(theta_names, theta_names)
 
-  object <- list(Plot_as_DAG=dag_fig,
-                 Plot_as_DBN=dbn_fig,
-                 `Parameter table`=full_table,
+  object <- list(PlotDAG=dag_fig,
+                 PlotDBN=dbn_fig,
+                 ParameterTable=full_table,
                  Formula=formula,
                  EdgeFunctions=edge_info,
                  FunctionWeights=function_weights,

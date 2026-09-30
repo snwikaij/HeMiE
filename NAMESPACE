@@ -46,6 +46,7 @@ importFrom(grid,
   unit
 )
 importFrom(igraph,V)
+importFrom(rlang,.data)
 importFrom(stats,
   aggregate,
   approx,

@@ -11,9 +11,6 @@
 #' @param up_strength The fraction of information that is allowed to concentrate in the generalized posterior
 #'  when using the method 'manual'.
 #' @param max_lambda Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).
-#' @param scale Whether each edge should be updated locally ("local") or together globally (default scale = "global").
-#' @param fun_w Determines the method to weigh between multiple functions (multi-edge function) predicting a child.
-#' The method to be chosen is "Exceedance", "Relative_loss" or "GBU" (default fun_w = "Relative_loss").
 #' @param covar Covariance matrix that is calculated between model parameters (default covar = T).
 #' @param seed Seed value 123.
 #'
@@ -28,7 +25,6 @@
 #' @export
 update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
                         method="kernel", up_strength=0.95, max_lambda=1000,
-                        scale="global", fun_w = "Exceedance",
                         covar=T, seed=123){
 
   if(nsim<1){stop("number of simulations cannot be smaller than 1.")}
@@ -67,251 +63,111 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   if(length(obs_nodes)==0){stop("No observed child vertices in new_data match the model.")}
 
   lossandresid   <- .ppmn_loss_resid(obs_mat, preds, obs_nodes, nsim)
-  scale          <- match.arg(scale,c("local","global"))
 
   edge_info      <- object$EdgeFunctions
 
-#########################
-#local summary per child#
-#########################
+######
+#loss#
+######
 
-  Fl   <- dim(lossandresid$loss1_fun)[4]
-  n_J  <- length(obs_nodes)
+  loss <- apply(lossandresid$loss1, 3, function(z){
+    z <- z[is.finite(z)]
+    if(length(z)==0){NA}else{median(z)}})
 
-  loss_fun <- array(NA,dim=c(nsim, n_J ,Fl), dimnames=list(NULL, obs_nodes,NULL))
+  resid_1 <- apply(lossandresid$resid1, 3, function(z){
+    z <- z[is.finite(z)]
+    if(length(z)==0){NA}else{median(z)}})
 
-  for(j in seq_along(obs_nodes)){
+  resid_0 <- apply(lossandresid$resid0, 3, function(z){
+    z <- z[is.finite(z)]
+    if(length(z)==0){NA}else{median(z)}})
 
-    for(f in seq_len(Fl)){
+  if(method=="kernel"){
 
-      L      <- lossandresid$loss1_fun[,j , ,f , drop=F]
-      dim(L) <- c(nrow(obs_mat), nsim)
+    kl_target     <- .ppmn_kl_calibrate(resid_1, resid_0, n_boot=2000, n_grid=3000)
+    lambda        <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
 
-      loss_fun[ ,j ,f] <- apply(L,2,function(x){x <- x[is.finite(x)]
-      if(length(x)==0){NA}else{median(x)}})}}
+  }else if(method=="manual"){
 
+    kl_target     <- log(1/(1-up_strength))
+    lambda <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
+
+  }else{stop("Method should be 'kernel' or 'manual'.")}
+
+  weights <- .ppmn_stable_weights(loss, lambda)
+  ESS     <- 1/sum(weights^2)
   function_particle_weights <- list()
-  alpha                     <- list()
-  weights                   <- list()
-  lambda                    <- list()
-  ESS                       <- c()
 
-  #per edge summary
-  if(scale=="local"){
+############################################
+#nodes that contribute to observed vertices#
+############################################
 
-    for(j in seq_along(obs_nodes)){
+  #select graph
+  g <- object$Structure$exec_dag$graph
 
-      node     <- obs_nodes[j]
-      fun_rows <- edge_info[edge_info$child==node,,drop=F]
-      ids      <- fun_rows$id
-      fs       <- fun_rows$f
+  relevant_nodes <- unique(unlist(lapply(obs_nodes, function(node){
+        igraph::as_ids(igraph::subcomponent(g,node,mode = "in"))})))
 
-      pi_f <- object$FunctionWeights[[node]][ids]
-      if(length(pi_f)==0 || any(!is.finite(pi_f)) || sum(pi_f)<=0){pi_f <- rep(1/length(ids),length(ids))}
-      pi_f <- as.numeric(pi_f/sum(pi_f))
+    #retain childs that ahave edge functions
+    relevant_nodes <- intersect(relevant_nodes, unique(edge_info$child))
 
-      L         <- loss_fun[,j,fs,drop=F]
-      dim(L)    <- c(nsim, length(fs))
+    #and that have function selections from predict_ppmn()
+    relevant_nodes <- intersect(relevant_nodes, colnames(preds$FunctionSelection))
 
-      loss_vec  <- as.numeric(L)
-      prior_vec <- rep(pi_f,each=nsim)/nsim
+###############################
+#update alpha per child vertex#
+###############################
 
-      if(method=="kernel"){
+  for(node in relevant_nodes){
 
-        r1      <- lossandresid$resid1_fun[,j,,fs,drop=F]
-        r0      <- lossandresid$resid0_fun[,j,,fs,drop=F]
-        dim(r1) <- c(nrow(obs_mat),nsim*length(fs))
-        dim(r0) <- c(nrow(obs_mat),nsim*length(fs))
+    ids <- edge_info$id[edge_info$child == node]
 
-        kl_target <- .ppmn_kl_calibrate(r1,r0,n_boot=2000,n_grid=3000)
-        lambda_j  <- .ppmn_lambda_kl(loss_vec, kl_target, prior_vec, max_lambda)
+    #function selected in each simulation
+    selected <- preds$FunctionSelection[, node]
 
-      }else if(method=="manual"){
+##################################
+#alpha_m(new) = sum_s w(s) z_m(s)#
+##################################
 
-        kl_target <- log(1/(1-up_strength))
-        lambda_j  <- .ppmn_lambda_kl(loss_vec, kl_target, prior_vec, max_lambda)
+  alpha_new <- vapply(ids, function(id){
+    active <- !is.na(selected) & selected == id
+    sum(weights[active], na.rm = TRUE)}, numeric(1))
 
-      }else{stop("Method should be 'kernel' or 'manual'.")}
+    names(alpha_new) <- ids
 
-      q <- .ppmn_stable_weights(loss_vec,lambda_j,prior_vec)
-      q <- matrix(q,nrow=nsim,ncol=length(fs))
+    #numerical normalization
+    if(sum(alpha_new) > 0){
 
-      if(fun_w=="GBU"){
+    alpha_new <- alpha_new/sum(alpha_new)
 
-        alpha[[node]]        <- colSums(q)
-        names(alpha[[node]]) <- ids
+    }else{
+    #if nothing usable was sampled, #retain previous function weights
+    alpha_new <- object$FunctionWeights[[node]][ids]
 
-      }else if(fun_w=="Relative_loss"){
+    if(length(alpha_new) == 0||any(!is.finite(alpha_new))||sum(alpha_new) <= 0){
 
-        if(ncol(L)==1){
-          alpha[[node]] <- 1
-        }else{
-        rs <- rowSums(L,na.rm=T)
-        rs[!is.finite(rs) | rs==0] <- NA
+    alpha_new <- rep(1/length(ids), length(ids))}
 
-        L_rel <- L/rs
-        alpha[[node]]        <- 1-colMeans(L_rel,na.rm=T)}
+    alpha_new <- alpha_new/sum(alpha_new)
 
-        names(alpha[[node]]) <- ids
+    names(alpha_new) <- ids}
 
-      }else if(fun_w=="Exceedance"){
+    object$FunctionWeights[[node]] <- alpha_new
 
-        alpha[[node]] <- rep(0,ncol(L))
+############################
+#for all selected functions#
+############################
 
-        for(s in seq_len(nrow(L))){
+   for(id in ids){
+    active <- !is.na(selected) & selected == id
+    w_id   <- weights*as.numeric(active)
 
-          z  <- L[s,]
-          ok <- is.finite(z)
+   if(sum(w_id) > 0){
+    function_particle_weights[[id]] <-w_id/sum(w_id)
 
-          if(any(ok)){
-
-            best <- which(ok & z==min(z[ok]))
-            alpha[[node]][best] <- alpha[[node]][best]+1/length(best)}
-        }
-
-        names(alpha[[node]]) <- ids
-
-      }else{stop("fun_w should be 'GBU', 'Relative_loss' or 'Exceedance'.")}
-
-      object$FunctionWeights[[node]] <- alpha[[node]]/sum(alpha[[node]])
-
-      for(k in seq_along(ids)){
-
-        w <- q[,k]
-        if(sum(w)>0){w <- w/sum(w)}else{w <- rep(1/nsim,nsim)}
-        function_particle_weights[[ids[k]]] <- w}
-
-      weights[[node]] <- rowSums(q)
-      lambda[[node]]  <- lambda_j
-      ESS[node]       <- 1/sum(q^2)}
-
-    ###################################
-    #covar if scale is local bit wonky#
-    ###################################
-
-    logw_covar <- rep(0,nsim)
-
-    for(node in obs_nodes){
-      w <- weights[[node]]
-      logw_covar <- logw_covar+log(pmax(w,eps))}
-
-    logw_covar <- logw_covar-max(logw_covar)
-    w_covar    <- exp(logw_covar)
-    w_covar    <- w_covar/sum(w_covar)}
-
-########################
-#global combined update#
-########################
-
-  #is easy by summarizing the median per s for total loss and resid mat
-  if(scale=="global"){
-
-    object$EdgeFunctions$f
-
-    loss_global <- apply(lossandresid$loss1, 3, function(z){
-      z <- z[is.finite(z)]
-      if(length(z)==0){NA}else{median(z)}})
-
-    resid_global1 <- apply(lossandresid$resid1, 3, function(z){
-      z <- z[is.finite(z)]
-      if(length(z)==0){NA}else{median(z)}})
-
-    resid_global0 <- apply(lossandresid$resid0, 3, function(z){
-      z <- z[is.finite(z)]
-      if(length(z)==0){NA}else{median(z)}})
-
-    if(method=="kernel"){
-
-      kl_target     <- .ppmn_kl_calibrate(resid_global1, resid_global0, n_boot=2000, n_grid=3000)
-      global_lambda <- .ppmn_lambda_kl(loss_global, kl_target, prior = NULL, max_lambda)
-
-    }else if(method=="manual"){
-
-      kl_target     <- log(1/(1-up_strength))
-      global_lambda <- .ppmn_lambda_kl(loss_global, kl_target, prior = NULL, max_lambda)
-
-    }else{stop("Method should be 'kernel' or 'manual'.")}
-
-    weights <- .ppmn_stable_weights(loss_global, global_lambda)
-    lambda  <- global_lambda
-    ESS     <- 1/sum(weights^2)
-    w_covar <- weights}
-
-#########################################
-#funct weights alpha using global lambda#
-#########################################
-
-  for(j in seq_along(obs_nodes)){
-
-    #select node id and func
-    node     <- obs_nodes[j]
-    fun_rows <- edge_info[edge_info$child==node,,drop=F]
-    ids      <- fun_rows$id
-    fs       <- fun_rows$f
-
-    #previous function weights are the function prior
-    pi_f <- object$FunctionWeights[[node]][ids]
-    if(length(pi_f)==0||any(!is.finite(pi_f))||sum(pi_f)<=0){
-      pi_f <- rep(1/length(ids),length(ids))}
-      pi_f <- as.numeric(pi_f/sum(pi_f))
-
-    #s,f loss matrix sxf
-    L      <- loss_fun[,j,fs,drop=F]
-    dim(L) <- c(nsim,length(fs))
-
-    #gbu weighting usefull for similair functions horrible for
-    #mixtures of functions as it uses the global lambda
-    loss_vec  <- as.numeric(L)
-    prior_vec <- rep(pi_f,each=nsim)/nsim
-
-    q <- .ppmn_stable_weights(loss_vec,global_lambda,prior_vec)
-    q <- matrix(q,nrow=nsim,ncol=length(fs))
-
-    if(fun_w=="GBU"){
-
-      alpha[[node]]        <- colSums(q)
-      names(alpha[[node]]) <- ids
-
-    }else if(fun_w=="Relative_loss"){
-
-      if(ncol(L)==1){
-        alpha[[node]] <- 1
-      }else{
-        rs <- rowSums(L,na.rm=T)
-        rs[!is.finite(rs) | rs==0] <- NA
-
-        L_rel <- L/rs
-        alpha[[node]]        <- 1-colMeans(L_rel,na.rm=T)}
-
-      names(alpha[[node]]) <- ids
-
-    }else if(fun_w=="Exceedance"){
-
-      alpha[[node]] <- rep(0,ncol(L))
-
-      for(s in seq_len(nrow(L))){
-
-        z  <- L[s,]
-        ok <- is.finite(z)
-
-        if(any(ok)){
-
-          best                <- which(ok & z==min(z[ok]))
-          alpha[[node]][best] <- alpha[[node]][best]+1/length(best)}}
-
-      names(alpha[[node]]) <- ids
-
-    }else{stop("fun_w should be 'GBU', 'Relative_loss' or 'Exceedance'.")}
-
-    object$FunctionWeights[[node]] <- alpha[[node]]/sum(alpha[[node]])
-
-    #Particle weights for each multi-edge function not within each
-    for(k in seq_along(ids)){
-
-      w <- q[,k]
-      w <- w/sum(w)
-
-      function_particle_weights[[ids[k]]] <- w}}
+   }else{
+    #function not selected in any particle
+    function_particle_weights[[id]] <- NULL}}}
 
 ###################################
 #sumarize params per edge function#
@@ -332,12 +188,29 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
     draws <- as.matrix(draws)
     colnames(draws) <- names(object$Parameters[[id]])
 
-    if(scale=="local"){
+      #global update:
+      #use only particles in which this function was active
       w <- function_particle_weights[[id]]
-      if(is.null(w)){w <- rep(1/nsim,nsim)}
-    }else{
-      w <- weights}
 
+      #if this function was never selected, there is no
+      #information with which to update its parameters
+      if(is.null(w) || length(w)==0 || sum(w,na.rm=TRUE)<=0){
+
+        old <- object$Parameters[[id]]
+
+        function_summaries[[id]] <- list(
+          mu = vapply(old,function(x) as.numeric(x["mu"]),numeric(1)),
+          se = vapply(old,function(x) as.numeric(x["se"]),numeric(1)),
+          ll = vapply(old,function(x) as.numeric(x["ll"]),numeric(1)),
+          ul = vapply(old,function(x) as.numeric(x["ul"]),numeric(1))
+        )
+
+        function_draws[[id]] <- draws
+
+        next
+      }
+
+    w[!is.finite(w)] <- 0
     w <- w/sum(w)
 
     mu     <- colSums(draws*w)
@@ -348,30 +221,46 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
     function_summaries[[id]] <- list(mu=mu,se=se,ll=llul[1,],ul=llul[2,])
     function_draws[[id]]     <- draws}
 
-  ###################
-  #derive covariance#
-  ###################
+###################
+#derive covariance#
+###################
 
-  sigma_weighted <- NULL
+ sigma_weighted <- NULL
 
-  if(covar==T){
+ if(covar==T){
 
-    if(covar==T && scale=="local"){warning("Covariance is derived from weighted edge lambda's, not one matrix lambda.")}
+    params <- do.call(cbind,function_draws)
+    params <- as.matrix(params)
 
-    params                     <- do.call(cbind,function_draws)
-    params                     <- as.matrix(params)
-    params[!is.finite(params)] <- 0
+    #which function and child belongs to each parameter
+    npars       <- sapply(function_draws, ncol)
+    fun_par     <- rep(names(function_draws), npars)
+    child_par   <- edge_info$child[match(fun_par, edge_info$id)]
 
-    mu_par      <- colSums(params*w_covar)
-    diff_mu_par <- sweep(params,2,mu_par,"-")
-    diff_mu_par[!is.finite(diff_mu_par)] <- 0
+    #parameter active or inactive within each simulation
+    active_par <- matrix(F,nrow=nsim,ncol=ncol(params))
 
-    sigma_weighted <- t(diff_mu_par)%*%sweep(diff_mu_par,1,w_covar,"*")
-    sigma_weighted <- sigma_weighted+diag(eps,ncol(sigma_weighted))}
+    for(k in seq_len(ncol(params))){
 
-  ##########################
-  #move summaries to object#
-  ##########################
+      selected <- preds$FunctionSelection[,child_par[k]]
+
+      active_par[,k] <- !is.na(selected) & selected==fun_par[k]}
+
+      #use conditional updated parameter means
+      mu_par <- unlist(lapply(names(function_summaries),function(id){function_summaries[[id]]$mu}))
+      mu_par <- as.numeric(mu_par)
+
+      #deviation only contributes when function was selected
+      diff_mu_par                            <- sweep(params, 2, mu_par,"-")
+      diff_mu_par[!active_par]               <- 0
+      diff_mu_par[!is.finite(diff_mu_par)]   <- 0
+
+      sigma_weighted <- t(diff_mu_par)%*%sweep(diff_mu_par,1,weights,"*")
+      sigma_weighted <- sigma_weighted+diag(eps,ncol(sigma_weighted))}
+
+##########################
+#move summaries to object#
+##########################
 
   old_params <- object$Parameters
 
@@ -400,9 +289,9 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
                       function_weights=object$FunctionWeights,
                       lambda=unlist(lambda), ESS=ESS)
 
-  ##########################
-  #rebuild covariance Sigma#
-  ##########################
+##########################
+#rebuild covariance Sigma#
+##########################
 
   theta_names <- unlist(Map(function(id,pars) paste0(id,"_",names(pars)),
                             names(object$Parameters),object$Parameters))
@@ -437,15 +326,15 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   }else{
     object$Sigma <- Sigma_new}
 
-  #############################
-  #update residual diagnostics#
-  #############################
+#############################
+#update residual diagnostics#
+#############################
 
-  object <- .ppmn_resid_diagnostic(object,new_data)
+  object <- .ppmn_resid_diagnostic(object, new_data)
 
-  ########################
-  #rebuild parameter table#
-  ########################
+########################
+#rebuild parameter table#
+########################
 
   par_tab <- lapply(seq_len(nrow(edge_info)),function(i){
 
@@ -474,4 +363,4 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   object$`Parameter table` <- do.call(rbind.data.frame,par_tab)
   rownames(object$`Parameter table`) <- NULL
 
-  return(object)}
+return(object)}
