@@ -72,7 +72,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
 
   loss <- apply(lossandresid$loss1, 3, function(z){
     z <- z[is.finite(z)]
-    if(length(z)==0){NA}else{median(z)}})
+    if(length(z)==0){NA}else{mean(z)}})
 
   resid_1 <- apply(lossandresid$resid1, 3, function(z){
     z <- z[is.finite(z)]
@@ -90,12 +90,12 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   }else if(method=="manual"){
 
     kl_target     <- log(1/(1-up_strength))
-    lambda <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
+    lambda        <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
 
   }else{stop("Method should be 'kernel' or 'manual'.")}
 
-  weights <- .ppmn_stable_weights(loss, lambda)
-  ESS     <- 1/sum(weights^2)
+  weights                   <- .ppmn_stable_weights(loss, lambda)
+  ESS                       <- 1/sum(weights^2)
   function_particle_weights <- list()
 
 ############################################

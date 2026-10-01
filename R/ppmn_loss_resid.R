@@ -33,9 +33,9 @@
   resid0 <- array(NA,dim=c(i,n_vert,nsim),dimnames=list(NULL,obs_nodes,NULL))
 
   #function arrays [i,j,s,f]
-  loss1_fun  <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
-  resid1_fun <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
-  resid0_fun <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
+  #loss1_fun  <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
+  #resid1_fun <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
+  #resid0_fun <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
 
   for(j in seq_along(obs_nodes)){
 
@@ -77,26 +77,25 @@
     #########################
 
     #if node/vertex is a child select out the predictions of the edge functions
-    loc_child   <- match(node, child)
-    fun_rows    <- preds$EdgeFunctions[preds$EdgeFunctions$child==node,,drop=F]
+    #loc_child   <- match(node, child)
+    #fun_rows    <- preds$EdgeFunctions[preds$EdgeFunctions$child==node,,drop=F]
 
-    for(k in seq_len(nrow(fun_rows))){
+    #for(k in seq_len(nrow(fun_rows))){
 
-      f         <- fun_rows$f[k]
+    #  f         <- fun_rows$f[k]
 
-      xfun      <- preds$FunctionPredictions[,loc_child,,f, drop=F]
-      dim(xfun) <- c(i, nsim)
-      x0_fun    <- apply(xfun, 1, median,na.rm=T)
+    #  xfun      <- preds$FunctionPredictions[,loc_child,,f, drop=F]
+    #  dim(xfun) <- c(i, nsim)
+    #  x0_fun    <- apply(xfun, 1, median,na.rm=T)
 
-      for(s in seq_len(nsim)){
+    #  for(s in seq_len(nsim)){
 
-        a1 <- .ppmn_transform_loss(x_raw, xfun[,s], type, MAD)
-        a0 <- .ppmn_transform_loss(x0_fun, xfun[,s], type, MAD)
+    #    a1 <- .ppmn_transform_loss(x_raw, xfun[,s], type, MAD)
+    #    a0 <- .ppmn_transform_loss(x0_fun, xfun[,s], type, MAD)
 
-        loss1_fun[,j,s,f]  <- a1$loss
-        resid1_fun[,j,s,f] <- a1$residuals
-        resid0_fun[,j,s,f] <- a0$residuals}}
+    #    loss1_fun[,j,s,f]  <- a1$loss
+    #    resid1_fun[,j,s,f] <- a1$residuals
+    #    resid0_fun[,j,s,f] <- a0$residuals}}
   }
 
-  list(loss1=loss1,resid1=resid1,resid0=resid0,
-       loss1_fun=loss1_fun,resid1_fun=resid1_fun,resid0_fun=resid0_fun)}
+  list(loss1=loss1,resid1=resid1,resid0=resid0)}

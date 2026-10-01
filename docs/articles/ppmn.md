@@ -254,11 +254,16 @@ and use Chl to predict phytoplankton taxa richness of *Taxa~Chl*. To
 bring a last formal expression of this network both edge-functions are
 described below.
 
-\$\$ f\_{Chl\|TN, TP}(.) = f\_{Chl\|TN, TP}(x\_{TN}, x\_{TP},
-\theta\_{Chl\|TN,TP,1}, \theta\_{Chl\|TN,TP,2}) = exp\\\beta_0 + \beta_1
-\cdot Log(x\_{TN}) + \beta_1 \cdot Log(x\_{TP})\\ \\
-f\_{Taxa\|Chl}(.)=f\_{Taxa\|Chl}(x\_{Chl},
-\theta\_{Taxa\|Chl})=exp(\beta_0 + \beta_1 \cdot Log(x\_{Chl})) \$\$
+``` math
+
+f_{Chl|TN, TP}(.) = f_{Chl|TN, TP}(x_{TN}, x_{TP}, \theta_{Chl|TN,TP,1},  \theta_{Chl|TN,TP,2}) = exp\{\beta_0 + \beta_1 \cdot Log(x_{TN}) + 
+```
+and
+
+``` math
+
+f_{Taxa|Chl}(.)=f_{Taxa|Chl}(x_{Chl}, \theta_{Taxa|Chl})=exp(\beta_0 + \beta_1 \cdot Log(x_{Chl}))
+```
 
 Both edge function are then combined to form a network expressed as
 below
@@ -492,7 +497,7 @@ foundational_ppmn <- build_ppmn(formula = formula, data = example6, txt_size = 3
 foundational_ppmn$PlotDBN
 ```
 
-![](ppmn_files/figure-html/updating%20example%20large%20network-1.png)
+![](ppmn_files/figure-html/updating_example_large_network-1.png)
 
 The full foundational PPMN has now been build and all previous function
 can be applied. However, we are interested in updating the PPMN so that
@@ -527,7 +532,7 @@ updated_ppmn <- update_ppmn(object = foundational_ppmn, new_data = train_data)
 updated_ppmn$Residuals$resid_boxplot
 ```
 
-![](ppmn_files/figure-html/upload%20training%20data-1.png)
+![](ppmn_files/figure-html/upload_training_data-1.png)
 
 ### Fixed information gain training
 
@@ -560,7 +565,7 @@ ncol=1, labels=c("KL fraction 5%",
 label_y = 1.02, label_x = 1.25)
 ```
 
-![](ppmn_files/figure-html/updating%20via%20KL-divergence-1.png)
+![](ppmn_files/figure-html/updating_via_KL_divergence-1.png)
 
 Below the box plots the number behind `Kl=` indicates the information
 learned from the data. The median and mu (mean) indicate the center of
@@ -587,7 +592,7 @@ cowplot::plot_grid(marginal_fig_HCO3[[1]],
                    ncol=1, labels = "AUTO")
 ```
 
-![](ppmn_files/figure-html/marginal%20update%20plots-1.png)
+![](ppmn_files/figure-html/marginal_update_plots-1.png)
 
 Investigating these figures it is relatively clear why the residuals of
 HCO3 are shifted. The PPMN over predicts the new data. For DOC this is
@@ -631,7 +636,7 @@ cowplot::plot_grid(pred_fit_val$plots$Balance,
                    labels="AUTO", ncol=1)
 ```
 
-![](ppmn_files/figure-html/apply%20updated%20pppn%20to%20validation%20data-1.png)
+![](ppmn_files/figure-html/apply_updated_ppmn_to_validation_data-1.png)
 
 Also here we see that HCO3 and DOC deviate. Based on this I accept the
 deviation of HCO3. I have another dataset that only contains HCO3~pH
@@ -673,7 +678,7 @@ ggplot(prior, aes(Temp))+
 ncol=2)
 ```
 
-![](ppmn_files/figure-html/root%20estimation%20monte%20carlo%20priors-1.png)
+![](ppmn_files/figure-html/root_estimation_monte_carlo_priors-1.png)
 
 The root estimation needs to be initiated by setting the targeted vertex
 that is observed (child). In this example this is `Macrophytes`.
@@ -709,15 +714,15 @@ cowplot::plot_grid(mac_15$plots$TP,
                    ncol=2, labels="AUTO")
 ```
 
-![](ppmn_files/figure-html/figure%2015%20macrophytes-1.png)
+![](ppmn_files/figure-html/figure_15_macrophytes-1.png)
 
 ``` r
 
 #The summary of the results
 mac_15$summary
-#>      root        mu       med       se       ll        ul
-#> TP     TP  6.354196  6.219968 1.030479 4.676964  7.823559
-#> Temp Temp 14.599989 13.113312 6.874758 4.079066 24.025263
+#>      root       mu      med       se        ll       ul
+#> TP     TP 12.04471 12.17564 1.295676 10.151062 14.14832
+#> Temp Temp 15.13774 14.37402 6.597532  4.427184 24.23722
 ```
 
 For 1 macrophyte species the expected valuss for TP and temperature are
@@ -731,15 +736,15 @@ cowplot::plot_grid(mac_1$plots$TP,
                    ncol=2, labels="AUTO")
 ```
 
-![](ppmn_files/figure-html/figure%201%20macrophyte-1.png)
+![](ppmn_files/figure-html/figure_1_macrophyte-1.png)
 
 ``` r
 
 #The summary of the results
 mac_1$summary
-#>      root       mu       med         se        ll        ul
-#> TP     TP 399.4341 372.98012 164.702172 172.62688 578.77615
-#> Temp Temp  22.5230  22.43508   6.149827  13.92244  32.24843
+#>      root         mu      med         se         ll        ul
+#> TP     TP 423.438610 383.6015 175.290479 196.281297 702.12391
+#> Temp Temp   9.122559   7.4944   4.634947   4.217925  15.60231
 ```
 
 Clearly the observed variance of the expected value is much smaller for
@@ -841,7 +846,7 @@ ggplot(df, aes(x, y))+
   theme_classic()
 ```
 
-![](ppmn_files/figure-html/sigmoidal%20model%20fit-1.png)
+![](ppmn_files/figure-html/sigmoidal_model_fit-1.png)
 
 ``` r
 
@@ -911,7 +916,7 @@ ggplot(df, aes(x, y))+
   theme_classic()
 ```
 
-![](ppmn_files/figure-html/gompertz%20model%20fit-1.png)
+![](ppmn_files/figure-html/gompertz_model_fit-1.png)
 
 ``` r
 
@@ -975,7 +980,7 @@ ggplot(df, aes(x, y))+
   theme_classic()
 ```
 
-![](ppmn_files/figure-html/asymptotic-linear-1.png)
+![](ppmn_files/figure-html/asymptotic_linear-1.png)
 
 ``` r
 
@@ -1043,7 +1048,7 @@ ggplot(df, aes(x, y))+
   theme_classic()
 ```
 
-![](ppmn_files/figure-html/gaussian%20model%20fit-1.png)
+![](ppmn_files/figure-html/gaussian_model_fit-1.png)
 
 ``` r
 
@@ -1118,4 +1123,4 @@ ggplot(df, aes(x, y))+
   theme_classic()
 ```
 
-![](ppmn_files/figure-html/bayes%20clasifier%20plot-1.png)
+![](ppmn_files/figure-html/bayes_clasifier_plot-1.png)

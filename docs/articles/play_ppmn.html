@@ -184,7 +184,7 @@ this updating process.</p>
 <span></span>
 <span><span class="co">#set TP concentration</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
-<span><span class="va">TP_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">100</span><span class="op">^</span><span class="fl">2</span><span class="op">/</span><span class="fl">100</span><span class="op">^</span><span class="fl">2</span>, <span class="fl">100</span><span class="op">/</span><span class="fl">100</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">TP_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">200</span><span class="op">^</span><span class="fl">2</span><span class="op">/</span><span class="fl">150</span><span class="op">^</span><span class="fl">2</span>, <span class="fl">200</span><span class="op">/</span><span class="fl">150</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#create storage location</span></span>
 <span><span class="va">test_dfs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span></span>
@@ -213,7 +213,7 @@ this updating process.</p>
 <span>  CO2onlyuser <span class="op">=</span> <span class="va">CO2onlyuser</span><span class="op">)</span><span class="op">}</span></span>
 <span></span>
 <span><span class="co">#sequentially update the ppmn on the different data sets</span></span>
-<span><span class="va">mod_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="op">(</span><span class="va">number_sequential</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">mod_list</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="op">(</span><span class="va">number_sequential</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">mod_list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">mod1</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">u</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mod_list</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
 <span><span class="va">m</span> <span class="op">&lt;-</span> <span class="va">u</span><span class="op">-</span><span class="fl">1</span></span>
@@ -368,6 +368,16 @@ important gap in our understanding.</p>
 <div class="section level3">
 <h3 id="sequential-updating-and-non-informative-prior">Sequential updating and non-informative prior<a class="anchor" aria-label="anchor" href="#sequential-updating-and-non-informative-prior"></a>
 </h3>
+<p>Using non-informative priors, the PPMN should in principle still
+update appropriately, although convergence may be slower because the
+initial parameter space is much broader. This also appears to be the
+case here. The fit for the relationship HCO3~pH remains suboptimal, but
+clear shifts toward a more reasonable fit are visible for the other edge
+functions. A similar issue arises when fitting nonlinear models by
+maximum likelihood, where successful numerical optimization can depend
+strongly on the specification of suitable starting values, particularly
+when the objective function contains multiple local optima or poorly
+identified regions.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#create a network</span></span>

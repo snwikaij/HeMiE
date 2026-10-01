@@ -121,7 +121,7 @@ rgamma_sim <- function(mu, sd){rgamma(length(mu), shape = mu^2/sd^2,rate  = mu/s
 
 #set TP concentration
 set.seed(123)
-TP_sim <- rgamma(100, 100^2/100^2, 100/100^2)
+TP_sim <- rgamma(100, 200^2/150^2, 200/150^2)
 
 #create storage location
 test_dfs <- list()
@@ -150,7 +150,7 @@ test_dfs[[d]] <- data.frame(
   CO2onlyuser = CO2onlyuser)}
 
 #sequentially update the ppmn on the different data sets
-mod_list <- vector("list", (number_sequential+1))
+mod_list      <- vector("list", (number_sequential+1))
 mod_list[[1]] <- mod1
 for(u in 2:length(mod_list)){
 m <- u-1
@@ -311,6 +311,17 @@ mod_list[[2]]$Residuals$resid_boxplot
 ![](play_ppmn_files/figure-html/seq_update_test_2-2.png)
 
 ### Sequential updating and non-informative prior
+
+Using non-informative priors, the PPMN should in principle still update
+appropriately, although convergence may be slower because the initial
+parameter space is much broader. This also appears to be the case here.
+The fit for the relationship HCO3~pH remains suboptimal, but clear
+shifts toward a more reasonable fit are visible for the other edge
+functions. A similar issue arises when fitting nonlinear models by
+maximum likelihood, where successful numerical optimization can depend
+strongly on the specification of suitable starting values, particularly
+when the objective function contains multiple local optima or poorly
+identified regions.
 
 ``` r
 
