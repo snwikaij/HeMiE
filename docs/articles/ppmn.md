@@ -314,6 +314,41 @@ foundational_ppmn$PlotDBN
 
 ![](ppmn_files/figure-html/examp_2_ppmn_a-1.png)
 
+We can also inspect the structure of the synthesized network by printing
+a summary of the model in tabular form. The summary reports the number
+of vertices, the number of synthesized parameters in the network, and
+the number of parameter estimates provided in the meta-data. This is
+followed by a table describing each individual edge function, including
+the corresponding edge, function type, dependent and independent
+variables, and the additional information required to define the model.
+
+``` r
+
+#print the summary.
+print(foundational_ppmn)
+#> 
+#> Posterior Predictive Meta-Analytic Network
+#> -------------------------------------------
+#> 
+#> Vertices               : 4 
+#> Synthesized parameters : 5 
+#> Parameter estimates    : 15 
+#> Updates                : 0 
+#> 
+#>       edge edge function dependent independent parameters     mu    se     ll
+#>  Chl~TN+TP           log       Chl        <NA>         b0 -0.661 0.211 -1.009
+#>  Chl~TN+TP           log       Chl          TN         b1  0.414 0.089  0.268
+#>  Chl~TN+TP           log       Chl          TP         b2  1.015 0.190  0.702
+#>   Taxa~Chl           log      Taxa        <NA>         b0  1.013 0.162  0.747
+#>   Taxa~Chl           log      Taxa         Chl         b1  0.488 0.061  0.388
+#>      ul     sd tau2 I2    a   b n
+#>  -0.314 0.2113    0  0 -Inf Inf 3
+#>   0.560 0.0888    0  0    0 Inf 3
+#>   1.328 0.1901    0  0    0 Inf 3
+#>   1.278 0.1616    0  0 -Inf Inf 3
+#>   0.588 0.0606    0  0    0 Inf 3
+```
+
 ## Marginal PPMN function
 
 The network structure shows only one view of the information we
@@ -341,7 +376,7 @@ cowplot::plot_grid(marginal_fig_Chl[[1]], #First object is TN
                    ncol=1, labels = "AUTO")
 ```
 
-![](ppmn_files/figure-html/examp_2_ppmn_b-1.png)
+![](ppmn_files/figure-html/examp_2_ppmn_c-1.png)
 
 ## Predictive fit function
 
@@ -399,7 +434,7 @@ cowplot::plot_grid(pred_performance$plots$Balance, #Predictive balance
                    ncol=1, labels = "AUTO")
 ```
 
-![](ppmn_files/figure-html/examp_2_ppmn_c-1.png)
+![](ppmn_files/figure-html/examp_2_ppmn_d-1.png)
 
 ## Updating the PPMN
 

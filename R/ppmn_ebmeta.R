@@ -64,14 +64,14 @@
       beta  <- (b-post_mu)/post_sigma
       Z     <- pnorm(beta)-pnorm(alpha)
 
-      if(Z <= .Machine$double.eps) {
+      if(Z <= .Machine$double.eps){
         stop("Truncated posterior has negligible density within a and b.")
-      } else {
+      }else{
         phi_a <- dnorm(alpha)
         phi_b <- dnorm(beta)
 
         mu_trunc  <- post_mu+post_sigma*(phi_a-phi_b)/Z
-        var_trunc <- post_sigma^2 * (1 +
+        var_trunc <- post_sigma^2*(1 +
                                        if(is.finite(alpha)) alpha * phi_a / Z else 0 -
                                        if(is.finite(beta))  beta * phi_b / Z else 0 -
                                        ((phi_a - phi_b)/Z)^2)
@@ -96,19 +96,19 @@
   se         <- sqrt(sum(prior_weights*(post_se^2+post_mu^2))-pooled^2)
 
   #RE Model
-  if (RE == T){
+  if(RE == T){
     #weights and pooled mu
     w      <- 1/stderr^2
     pooled <- sum(estimate*w)/sum(w)
 
-    if (tau_2 == "HE") {
+    if(tau_2 == "HE"){
       # Heuristic method for tau^2
       tau2 <- max(0, (1/length(estimate))*sum((estimate-pooled)^2)-(sum(w*stderr)/sum(w)))
-    } else if (tau_2 == "DSL") {
+    }else if(tau_2 == "DSL"){
       #DSL method for tau^2
       Q    <- sum(w*(estimate-pooled)^2)
       tau2 <- max(0, (Q-(length(estimate)-1))/(sum(w)-sum(w^2)/sum(w)))
-    } else {
+    }else{
       stop("Not a correct method, either DSL or HE.")
     }
 

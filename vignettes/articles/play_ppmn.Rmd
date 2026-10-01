@@ -20,9 +20,11 @@ This section is intended to experiment with and explore the PPMN method/framewor
 
 I have only recently started exploring this aspect of the PPMN method, as my initial focus was on developing and implementing the method itself. Nevertheless, there are already some situations in which failure is expected. For example, a highly unrealistic priors (e.g., the foundational PPMN) can cause the method to break down.
 
+## Simple sequential update
+
 Below is an example of a setting in which the method does work. Sequential updating is a particularly important use case I have in mind for the PPMN framework. Suppose that we obtain batches of 100 samples from an ecosystem (e.g, for example, from a lake catchment area) once per year over a period of five years. Each batch is then fed sequentially into the PPMN, allowing us to examine how the model updates as new data become available. The figure following the code illustrates this updating process.
 
-```{r, seq_update_test_1, fig.width=9, fig.height=6, warning=FALSE}
+```{r, seq_update_test_1, fig.width=8, fig.height=8, warning=FALSE}
 library(HeMiE)
 library(ggplot2)
 library(cowplot)
@@ -112,7 +114,7 @@ rgamma_sim <- function(mu, sd){rgamma(length(mu), shape = mu^2/sd^2,rate  = mu/s
 
 #set TP concentration
 set.seed(123)
-TP_sim <- rgamma(100, 75^2/100^2, 75/100^2)
+TP_sim <- rgamma(100, 100^2/100^2, 100/100^2)
 
 #create storage location
 test_dfs <- list()
@@ -178,5 +180,199 @@ cowplot::plot_grid(
   plotlist = fig_list,
   ncol = (number_sequential+1),
   rel_heights = c(1, 3, 3, 3, 3, 3))
+
+```
+
+## Sequential updating and poorly specified priors at roots
+
+If poorly specified priors are present at root nodes, biased predictions can propagate downstream through the network. As a consequence, the corresponding edge functions may also converge toward parameter regions that are ecologically implausible or otherwise outside a reasonable range. Such behaviour can, however, be diagnosed by visually inspecting the marginal plots or by examining the residual distributions in the boxplots.
+
+At the same time, this provides a useful learning opportunity. If the foundational PPMN is based on a large amount of synthesized literature, but repeated updating with new data consistently drives the model away from a decent fit, this indicates a substantive issue that requires explanation. Either the new data are unrepresentative or problematic, or the prior information synthesized from the literature does not generalize to the system under study. In that way, disagreement between the foundational PPMN and new observations can itself reveal an important gap in our understanding.
+
+```{r, seq_update_test_2, fig.width=8, fig.height=8, warning=FALSE}
+
+#create a network
+example_data <- data.frame(
+  edge = c(
+    rep("Chl~TP", 3),
+    rep("Chl~TP", 2),
+    rep("pH~Chl", 3),
+    rep("HCO3~pH", 3),
+    rep("CO2onlyuser~HCO3", 2)),
+
+  `function` = c(
+    rep("sigmoidal", 3),
+    rep("log10", 2),
+    rep("sigmoidal", 3),
+    rep("sigmoidal", 3),
+    rep("logit", 2)),
+
+  transformation = c(
+    rep("log", 3),
+    rep("log10", 2),
+    rep(NA, 3),
+    rep(NA, 3),
+    rep("log", 2)),
+
+  parameter = c(
+    "b0","b1","b2",
+    "b0","b1",
+    "b0","b1","b2",
+    "b0","b1","b2",
+    "b0","b1"),
+
+  estimate = c(
+    2000,   4,   1,  # Chl ~ TP #bad priors for asymptote and scale
+    -0.3, 3.5,       # Chl ~ TP #bad priors for slope and intercept
+    7.5,   -4,   4,  # pH ~ Chl
+    90,   7.5, 0.2,  # HCO3 ~ pH
+    2.8, -0.7),      # CO2onlyuser ~ HCO3
+
+  error = c(
+    20,   0.3,  0.2,
+    0.2,  0.1,
+    4,      2,    1,
+    20,   1.5, 0.05,
+    0.3,  0.1))
+
+#build ppmn
+mod1    <- build_ppmn(formula, example_data)
+
+#sequentially update the ppmn on the different data sets
+mod_list <- vector("list", (number_sequential+1))
+mod_list[[1]] <- mod1
+for(u in 2:length(mod_list)){
+m <- u-1
+mod_list[[u]] <- update_ppmn(mod_list[[m]], test_dfs[[m]])}
+
+#plot df correct lengths first one should be duplicated
+plot_dfs <- c(test_dfs[1], test_dfs)
+
+#plot all childs and variables
+vars <- c("Chl", "pH", "HCO3", "CO2onlyuser")
+var_list <- setNames(
+  lapply(vars, function(v){Map(function(mod, dat)
+    marginal_ppmn(mod, child = v, data = dat),
+     mod_list, plot_dfs)}), vars)
+
+#create labels for above the figures
+labs <- c("Foundational PPMN", paste("Update", seq_len(number_sequential)))
+labtext <- lapply(seq_len(number_sequential+1), function(l)
+ggplot() +
+annotate("text", label=labs[l], x=0, y=0)+
+theme_void())
+
+#create correct order for figs 
+figs <- seq_len(number_sequential+1)
+fig_list <- c(
+  labtext[figs],
+  lapply(figs, \(i) var_list$Chl[[i]][[3]]),
+  lapply(figs, \(i) var_list$pH[[i]][[1]]),
+  lapply(figs, \(i) var_list$HCO3[[i]][[1]]),
+  lapply(figs, \(i) var_list$CO2onlyuser[[i]][[1]]))
+
+#plot all the figures together
+cowplot::plot_grid(
+  plotlist = fig_list,
+  ncol = (number_sequential+1),
+  rel_heights = c(1, 3, 3, 3, 3, 3))
+
+#display the residuals of the first update
+mod_list[[2]]$Residuals$resid_boxplot
+
+```
+
+## Sequential updating and non-informative prior
+
+```{r, seq_update_test_3, fig.width=8, fig.height=8, warning=FALSE}
+
+#create a network
+example_data <- data.frame(
+  edge = c(
+    rep("Chl~TP", 3),
+    rep("Chl~TP", 2),
+    rep("pH~Chl", 3),
+    rep("HCO3~pH", 3),
+    rep("CO2onlyuser~HCO3", 2)),
+
+  `function` = c(
+    rep("sigmoidal", 3),
+    rep("log10", 2),
+    rep("sigmoidal", 3),
+    rep("sigmoidal", 3),
+    rep("logit", 2)),
+
+  transformation = c(
+    rep("log", 3),
+    rep("log10", 2),
+    rep(NA, 3),
+    rep(NA, 3),
+    rep("log", 2)),
+
+  parameter = c(
+    "b0","b1","b2",
+    "b0","b1",
+    "b0","b1","b2",
+    "b0","b1","b2",
+    "b0","b1"),
+
+  estimate = c(
+    200,  0,  0,  # Chl ~ TP 
+    0,    0,      # Chl ~ TP 
+    7.5,  0,  0,  # pH ~ Chl
+    90,   0,  0,  # HCO3 ~ pH
+    0,    0),     # CO2onlyuser ~ HCO3
+
+error = c(
+    100,  2,  2,
+    2,    2,
+    4,    2,  2,
+    45,   2,  2,
+    2,    2))
+
+#build ppmn
+mod1    <- build_ppmn(formula, example_data)
+
+#sequentially update the ppmn on the different data sets
+mod_list <- vector("list", (number_sequential+1))
+mod_list[[1]] <- mod1
+for(u in 2:length(mod_list)){
+m <- u-1
+mod_list[[u]] <- update_ppmn(mod_list[[m]], test_dfs[[m]])}
+
+#plot df correct lengths first one should be duplicated
+plot_dfs <- c(test_dfs[1], test_dfs)
+
+#plot all childs and variables
+vars <- c("Chl", "pH", "HCO3", "CO2onlyuser")
+var_list <- setNames(
+  lapply(vars, function(v){Map(function(mod, dat)
+    marginal_ppmn(mod, child = v, data = dat),
+     mod_list, plot_dfs)}), vars)
+
+#create labels for above the figures
+labs <- c("Foundational PPMN", paste("Update", seq_len(number_sequential)))
+labtext <- lapply(seq_len(number_sequential+1), function(l)
+ggplot() +
+annotate("text", label=labs[l], x=0, y=0)+
+theme_void())
+
+#create correct order for figs 
+figs <- seq_len(number_sequential+1)
+fig_list <- c(
+  labtext[figs],
+  lapply(figs, \(i) var_list$Chl[[i]][[3]]),
+  lapply(figs, \(i) var_list$pH[[i]][[1]]),
+  lapply(figs, \(i) var_list$HCO3[[i]][[1]]),
+  lapply(figs, \(i) var_list$CO2onlyuser[[i]][[1]]))
+
+#plot all the figures together
+cowplot::plot_grid(
+  plotlist = fig_list,
+  ncol = (number_sequential+1),
+  rel_heights = c(1, 3, 3, 3, 3, 3))
+
+#display the residuals of the first update
+mod_list[[2]]$Residuals$resid_boxplot
 
 ```

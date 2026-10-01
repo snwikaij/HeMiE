@@ -284,7 +284,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   object$`Old parameters` <- object$Parameters
   object$Parameters       <- old_params
 
-  object$Info <- list(scale=scale, method=method, weights=weights,
+  object$Info <- list(method=method, weights=weights,
                       function_particle_weights=function_particle_weights,
                       function_weights=object$FunctionWeights,
                       lambda=unlist(lambda), ESS=ESS)

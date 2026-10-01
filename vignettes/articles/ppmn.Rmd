@@ -244,6 +244,7 @@ f_{Chl|TN, TP}(.) = f_{Chl|TN, TP}(x_{TN}, x_{TP}, \theta_{Chl|TN,TP,1},  \theta
 \\
 f_{Taxa|Chl}(.)=f_{Taxa|Chl}(x_{Chl}, \theta_{Taxa|Chl})=exp(\beta_0 + \beta_1 \cdot Log(x_{Chl}))
 $$
+
 Both edge function are then combined to form a network expressed as below
 
 $$
@@ -280,11 +281,20 @@ foundational_ppmn$PlotDBN
 
 ```
 
+We can also inspect the structure of the synthesized network by printing a summary of the model in tabular form. The summary reports the number of vertices, the number of synthesized parameters in the network, and the number of parameter estimates provided in the meta-data. This is followed by a table describing each individual edge function, including the corresponding edge, function type, dependent and independent variables, and the additional information required to define the model.
+
+```{r, examp_2_ppmn_b}
+
+#print the summary.
+print(foundational_ppmn)
+
+```
+
 ## Marginal PPMN function
 
 The network structure shows only one view of the information we incorporated. As with the results of Kaijser et al. (2025) we might be interested in viewing the association or the marginal edge-function itself an added variable plot. To do so an example data frame is created as given below. If we wish to omitted the points as we do not actually have real data then set the argument `alpha` to 0.
 
-```{r, examp_2_ppmn_b,fig.width=8, fig.height=6, warning=F}
+```{r, examp_2_ppmn_c, fig.width=8, fig.height=6, warning=F}
 
 library(cowplot)
 
@@ -327,7 +337,7 @@ $$
 
 Below an example of the predictive fit function applied to the the example data given above.
 
-```{r, examp_2_ppmn_c, fig.width=8, fig.height=8, warning=F}
+```{r, examp_2_ppmn_d, fig.width=8, fig.height=8, warning=F}
 
 #Apply the pred_fit function
 pred_performance <- pred_fit_ppmn(object = foundational_ppmn, new_data = df)

@@ -25,7 +25,7 @@
     l        <- r^2
   }else if(type=="continuous"){
     if(is.null(MAD)){stop("Why is MAD not there?")}
-    r        <- (x_raw - x_hat) / MAD
+    r        <- (x_raw-x_hat)/MAD
     l        <- r^2
   }else{stop("Unknown response type: ", type)}
 
