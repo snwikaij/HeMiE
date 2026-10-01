@@ -433,13 +433,13 @@ updated_ppmn_95 <- update_ppmn(object = foundational_ppmn, new_data = train_data
 
 #Display the residuals on top of each other
 cowplot::plot_grid(
-updated_ppmn_5$Residuals$residual_plot,
-updated_ppmn_50$Residuals$residual_plot,
-updated_ppmn_95$Residuals$residual_plot,
-ncol=1, labels=c("KL fraction 5%",
-                 "KL fraction 50%",
-                 "KL fraction 95%"),
-label_y = 1.02, label_x = 1.25)
+  updated_ppmn_5$Residuals$resid_boxplot,
+  updated_ppmn_50$Residuals$resid_boxplot,
+  updated_ppmn_95$Residuals$resid_boxplot,
+  ncol=1, labels=c("KL fraction 5%",
+                   "KL fraction 50%",
+                    "KL fraction 95%"),
+  label_y=1.02, label_x=1.25)
 
 ```
 

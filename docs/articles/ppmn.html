@@ -594,13 +594,13 @@ and 1.</p>
 <span></span>
 <span><span class="co">#Display the residuals on top of each other</span></span>
 <span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span></span>
-<span><span class="va">updated_ppmn_5</span><span class="op">$</span><span class="va">Residuals</span><span class="op">$</span><span class="va">residual_plot</span>,</span>
-<span><span class="va">updated_ppmn_50</span><span class="op">$</span><span class="va">Residuals</span><span class="op">$</span><span class="va">residual_plot</span>,</span>
-<span><span class="va">updated_ppmn_95</span><span class="op">$</span><span class="va">Residuals</span><span class="op">$</span><span class="va">residual_plot</span>,</span>
-<span>ncol<span class="op">=</span><span class="fl">1</span>, labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KL fraction 5%"</span>,</span>
-<span>                 <span class="st">"KL fraction 50%"</span>,</span>
-<span>                 <span class="st">"KL fraction 95%"</span><span class="op">)</span>,</span>
-<span>label_y <span class="op">=</span> <span class="fl">1.02</span>, label_x <span class="op">=</span> <span class="fl">1.25</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="va">updated_ppmn_5</span><span class="op">$</span><span class="va">Residuals</span><span class="op">$</span><span class="va">resid_boxplot</span>,</span>
+<span>  <span class="va">updated_ppmn_50</span><span class="op">$</span><span class="va">Residuals</span><span class="op">$</span><span class="va">resid_boxplot</span>,</span>
+<span>  <span class="va">updated_ppmn_95</span><span class="op">$</span><span class="va">Residuals</span><span class="op">$</span><span class="va">resid_boxplot</span>,</span>
+<span>  ncol<span class="op">=</span><span class="fl">1</span>, labels<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"KL fraction 5%"</span>,</span>
+<span>                   <span class="st">"KL fraction 50%"</span>,</span>
+<span>                    <span class="st">"KL fraction 95%"</span><span class="op">)</span>,</span>
+<span>  label_y<span class="op">=</span><span class="fl">1.02</span>, label_x<span class="op">=</span><span class="fl">1.25</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/updating_via_KL_divergence-1.png" class="r-plt" alt="" width="768"></p>
 <p>Below the box plots the number behind <code>Kl=</code> indicates the
 information learned from the data. The median and mu (mean) indicate the
