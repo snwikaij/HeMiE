@@ -259,6 +259,7 @@ described below.
 \cdot Log(x\_{TN}) + \beta_1 \cdot Log(x\_{TP})\\ \\
 f\_{Taxa\|Chl}(.)=f\_{Taxa\|Chl}(x\_{Chl},
 \theta\_{Taxa\|Chl})=exp(\beta_0 + \beta_1 \cdot Log(x\_{Chl})) \$\$
+
 Both edge function are then combined to form a network expressed as
 below
 
