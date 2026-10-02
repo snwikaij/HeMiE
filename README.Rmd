@@ -10,6 +10,12 @@ knitr::opts_chunk$set(
   out.width = "100%"
 )
 
+#try(remove.packages("HeMiE"), silent = TRUE)
+#unlink("C:/Users/admin/AppData/Local/R/win-library/4.3/HeMiE", recursive = TRUE, force = TRUE)
+#unlink("C:/Users/admin/AppData/Local/R/win-library/4.3/00LOCK-HeMiE", recursive = TRUE, force = TRUE)
+#devtools::document()
+#devtools::install()
+
 #run this to check r
 #devtools::document()
 #devtools::check()

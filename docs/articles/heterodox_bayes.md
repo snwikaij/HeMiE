@@ -1,4 +1,4 @@
-# Heterodox Bayes and Other Things
+# Heterodox Bayes and Other Things (scrap book)
 
 ## Heterodox Bayes
 
@@ -13,31 +13,38 @@ model parameters. These full Bayesian methods integrate full;
 uncertainty’ about all parameters in the model ‘uncertainty’.
 
 This section will focus largely on the theoretical parts Heterodox
-Bayesian methods (a term coined by Richard Hahn). These methods do not
-follow direct orthodox Bayes interpretation. Often they miss an exact
-likelihood and thus in the orthodox Bayesian sense do not directly
-attach ‘uncertainty’ to the estimation of a probability measure of the
-data given some model parameter. This in itself brings some challenges
-with the interpretation of the outcomes as the probability is not a pure
-reflection of the data given a model parameter.
+Bayesian methods. These methods do not follow direct orthodox Bayes
+interpretation. Often they miss an exact likelihood and thus in the
+orthodox Bayesian sense do not directly attach ‘uncertainty’ to the
+estimation of a probability measure of the data given some model
+parameter. This in itself brings some challenges with the interpretation
+of the outcomes as the probability is not a pure reflection of the data
+given a model parameter.
 
 A simple generalization of Bayes theorem as
 $`Posterior \ probability \propto Likelihood \cdot Prior`$ which can be
 more formally expressed as
-$`P(\theta | x, I) \propto P(x|\theta) \cdot P(\theta | I)`$. As
-discussed before the heterodoxy of many methods (not all) methods
+$`P(\theta | x, I) \propto P(x|\theta) \cdot P(\theta | I)`$. Here
+$`\theta`$ is the model parameter $`x`$ the data and $`I`$ denotes
+information. Since I have been writing parts together and dumping
+information in here the consistency of notations was not my concern at
+all.
+
+As discussed before the heterodoxy of many methods (not all) methods
 describe here do $`Information? \ \propto Funky\ thing \cdot Prior`$.
 Because the likelihood is not an exact, the posterior is that neither. A
 standard notation could be like
-$`P(\theta|x, I, \lambda) \propto L(x, \theta) \cdot P(\theta|x)`$. Here
-$`L`$ would indicate a loss, pseudo-likelihood, weight or other data
-generating model to extract information from the data. A full expression
-would then be of the form
+$`P(\theta|x, I, \omega) \propto \omega(x, \theta) \cdot P(\theta|I)`$.
+Here $`\omega`$ would indicate a loss, pseudo-likelihood, weight or
+other data generating model or something else. I denoted it in the
+posterior so that it is explicitly clear it is not a formal (orthodox)
+Bayes. A full expression would then be of the form
 
 ``` math
 
-P(\theta|x, I, \lambda) = \frac{L(x, \theta)\cdot P(\theta | I)}{\int L(x, \theta)\cdot P(\theta|theta)\cdot d(\theta)}
+P(\theta|x, I, \omega) = \frac{\omega(x, \theta)\cdot P(\theta | I)}{\int  \omega(x, \theta)\cdot P(\theta | I) \cdot d(\theta)}
 ```
+
 In this equation the $`x`$ representing the data and $`\theta`$ a
 quantity of interest and $`I`$ prior information. The $`L`$ denotes some
 data dependent function. In this view, the posterior need not be
@@ -47,29 +54,49 @@ re-weighting of prior information by a data-dependent functions of the
 model parameter.
 
 In general this also brings some benefits with it. Assume we take the
-following propositions serious
-$`p_1 = \{ \text{Models do not ontologically exist they are concepts} \}`$
-(Cox …) and so also probability is a model then deFinetti (…)
-$`p_2 = \{ \text{Probability does not ontologically exist} \}`$. In
-these propositions exists would mean exists as ontological. The
-following statement would not therefore logically follow as a decent
-ontological commitment
-$`s_1 = \{ \text{I believe the model parameter is ...} \}`$. The
-question arising from this statement what is this believe in the model
-parameter? It would not be a representational definition of believe.
-Skepticism blocks us to commit ontological. Hence, we can take a
-pragmatic-instrumental stance by suggest that it is an expression or
-compression of information of data. Then it is more about predictive
-adequacy, coherence, internal consistency.
+following proposition of Box (…) ‘all models ar wrong’ (I disagree all
+models are correct because
+$`dependent \:variable = slope \cdot independent \:variable =\ 5= 2 * 2 + 1)`$
+The ‘correctness’ within a formal language is something different then
+the represented phenomenon. If Box meant the later I can agree).
+
+``` math
+
+p_1 = \{ \text{Models do not ontologically exist they are concepts} \}
+```
+and so also probability is a model then deFinetti (…)
+
+``` math
+
+p_2 = \{ \text{Probability does not ontologically exist} \}
+```
+If we take these propositions serious then a claim to an ontological
+property based on a model would not exists. Causality, effects,
+associations or model parameters. Furthermore, claims about what exists
+based on a model would also be invalid on the model alone. What on the
+model alone can be claimed is the coherence within a language
+(Wittgenstein, 1953). Therefore, an ontological statement based on a
+parameter is form of model reification (Frege, 1948; Ryle 1949;
+Wittgenstein, 1953).
+
+The question arising from these statements what this belief/idea/thought
+about the model parameter? Skepticism blocks us to commit ontological.
+The resulting position is therefore not that effects, causes,
+associations, or probabilities cannot exist. It is that their
+ontological existence is not established merely by their appearance in
+an inferential model. The pragmatic question becomes what differences
+follow from adopting one representation rather than another, and how
+those consequences withstand confrontation with experience. Then we can
+simply say lets see what works (William, 1907).
 
 ### Classical statistics and estimation
 
 All statistics focuses on estimating the parameter of interest
 $`\theta`$ which in most (G)LMs is denoted as the parameter $`\mu`$ or
-$`\beta`$. For consistency I will use the parameter of interest $`\mu`$
-or $`\theta`$. The later is presented as a more general expression for
-e.g., mean, median, mode etc. However, in the following $`\mu`$ will be
-used.
+$`\beta`$. For consistency I will often use the parameter of interest by
+$`\theta`$. The later is presented as a more general expression for
+e.g., mean, median, mode etc. The next section will focus on $`mu`$ as
+is common in estimation.
 
 The population parameter $`\mu`$ is fixed but unknown. To investigate
 the plausible values for $`\mu`$, we collect measurements or samples.
@@ -134,8 +161,8 @@ $`\mu`$ in a long-run of repeated experiments at 95% is
 A visual explanation of this concept is provided in the following Shiny
 app: <https://snwikaij.shinyapps.io/shiny/>.
 
-Furthermore, it is clear that statistics does do nothing with causality
-and the focus on error-control. Causality starts by satisfying
+Furthermore, it is clear that statistics (alone) has nothing to do with
+causality and the focus is error-control. Causality starts by satisfying
 theoretical conditions needed the arrive at believes in these concepts.
 Hence, error-control and causality start a-priori (Fisher 1949, Pearl
 2009, Mayo 2018). Such a focus and framework is extremely useful if
@@ -155,16 +182,13 @@ $`\text{Posterior}\, \text{probability} = \frac{\text{Likelihood} \cdot \text{Pr
 More formally Bayes theorem is often notated with A and B where P
 indicates probability and ‘\|’ given or conditional on.
 $`P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}`$. Other expression such as
-$`P(\theta|Data, Info) = \frac{P(Data|\theta) \cdot P(\theta|info)}{P(Data)}`$
+$`P(\theta|Data, Information) = \frac{P(Data|\theta) \cdot P(\theta|Information)}{P(Data)}`$
 are to highlight that the posterior describes the information of that
 conditional on the prior information that is given. Many more notations
 are common where $`\theta`$ is used to express a quantity of interested,
 mostly the expected values of a model parameter. This often in
 combination with $`x`$ that represent the data. Below I will use A and
-B, and hope in the future to fall back to consistently use just
-$`\theta`$, $`\mu`$ and $`x`$. Since I have been writing parts together
-and dumping information in here the consistency of notations was not my
-concern at all.
+B.
 
 The derivation of Bayes theorem relies on the axioms probability theory.
 

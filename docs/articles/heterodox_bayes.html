@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Heterodox Bayes and Other Things • HeMiE</title>
+<title>Heterodox Bayes and Other Things (scrap book) • HeMiE</title>
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.4.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><link href="../extra.css" rel="stylesheet">
-<meta property="og:title" content="Heterodox Bayes and Other Things">
+<meta property="og:title" content="Heterodox Bayes and Other Things (scrap book)">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -35,7 +35,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-topics-methods">
 <li><a class="dropdown-item" href="../articles/ppmn.html">Posterior Predictive Meta-analytic Networks (PPMN)</a></li>
     <li><a class="dropdown-item" href="../articles/play_ppmn.html">Playing around with the PPMN</a></li>
-    <li><a class="dropdown-item" href="../articles/heterodox_bayes.html">Heterodox Bayes and Other Things</a></li>
+    <li><a class="dropdown-item" href="../articles/heterodox_bayes.html">Heterodox Bayes and Other Things (scrap book)</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Functions &amp; Data</a></li>
@@ -58,7 +58,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
 
-      <h1>Heterodox Bayes and Other Things</h1>
+      <h1>Heterodox Bayes and Other Things (scrap book)</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/snwikaij/HeMiE/blob/HEAD/vignettes/articles/heterodox_bayes.Rmd" class="external-link"><code>vignettes/articles/heterodox_bayes.Rmd</code></a></small>
@@ -80,31 +80,42 @@ Bayesian methods considering it uses a full likelihood and prior on the
 model parameters. These full Bayesian methods integrate full;
 uncertainty’ about all parameters in the model ‘uncertainty’.</p>
 <p>This section will focus largely on the theoretical parts Heterodox
-Bayesian methods (a term coined by Richard Hahn). These methods do not
-follow direct orthodox Bayes interpretation. Often they miss an exact
-likelihood and thus in the orthodox Bayesian sense do not directly
-attach ‘uncertainty’ to the estimation of a probability measure of the
-data given some model parameter. This in itself brings some challenges
-with the interpretation of the outcomes as the probability is not a pure
-reflection of the data given a model parameter.</p>
+Bayesian methods. These methods do not follow direct orthodox Bayes
+interpretation. Often they miss an exact likelihood and thus in the
+orthodox Bayesian sense do not directly attach ‘uncertainty’ to the
+estimation of a probability measure of the data given some model
+parameter. This in itself brings some challenges with the interpretation
+of the outcomes as the probability is not a pure reflection of the data
+given a model parameter.</p>
 <p>A simple generalization of Bayes theorem as
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mi>o</mi><mi>s</mi><mi>t</mi><mi>e</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi><mspace width="0.222em"></mspace><mi>p</mi><mi>r</mi><mi>o</mi><mi>b</mi><mi>a</mi><mi>b</mi><mi>i</mi><mi>l</mi><mi>i</mi><mi>t</mi><mi>y</mi><mo>∝</mo><mi>L</mi><mi>i</mi><mi>k</mi><mi>e</mi><mi>l</mi><mi>i</mi><mi>h</mi><mi>o</mi><mi>o</mi><mi>d</mi><mo>⋅</mo><mi>P</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi></mrow><annotation encoding="application/x-tex">Posterior \ probability \propto Likelihood \cdot Prior</annotation></semantics></math>
 which can be more formally expressed as
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>x</mi><mo>,</mo><mi>I</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∝</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo stretchy="false" form="prefix">|</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>I</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(\theta | x, I) \propto P(x|\theta) \cdot P(\theta | I)</annotation></semantics></math>.
-As discussed before the heterodoxy of many methods (not all) methods
+Here
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
+is the model parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
+the data and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>I</mi><annotation encoding="application/x-tex">I</annotation></semantics></math>
+denotes information. Since I have been writing parts together and
+dumping information in here the consistency of notations was not my
+concern at all.</p>
+<p>As discussed before the heterodoxy of many methods (not all) methods
 describe here do
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mi>n</mi><mi>f</mi><mi>o</mi><mi>r</mi><mi>m</mi><mi>a</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>?</mi><mspace width="0.222em"></mspace><mo>∝</mo><mi>F</mi><mi>u</mi><mi>n</mi><mi>k</mi><mi>y</mi><mspace width="0.222em"></mspace><mi>t</mi><mi>h</mi><mi>i</mi><mi>n</mi><mi>g</mi><mo>⋅</mo><mi>P</mi><mi>r</mi><mi>i</mi><mi>o</mi><mi>r</mi></mrow><annotation encoding="application/x-tex">Information? \ \propto Funky\ thing \cdot Prior</annotation></semantics></math>.
 Because the likelihood is not an exact, the posterior is that neither. A
 standard notation could be like
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>x</mi><mo>,</mo><mi>I</mi><mo>,</mo><mi>λ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∝</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(\theta|x, I, \lambda) \propto L(x, \theta) \cdot P(\theta|x)</annotation></semantics></math>.
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>x</mi><mo>,</mo><mi>I</mi><mo>,</mo><mi>ω</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∝</mo><mi>ω</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>I</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">P(\theta|x, I, \omega) \propto \omega(x, \theta) \cdot P(\theta|I)</annotation></semantics></math>.
 Here
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>L</mi><annotation encoding="application/x-tex">L</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ω</mi><annotation encoding="application/x-tex">\omega</annotation></semantics></math>
 would indicate a loss, pseudo-likelihood, weight or other data
-generating model to extract information from the data. A full expression
-would then be of the form</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>x</mi><mo>,</mo><mi>I</mi><mo>,</mo><mi>λ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>I</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mo>∫</mo><mi>L</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>t</mi><mi>h</mi><mi>e</mi><mi>t</mi><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>d</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
-P(\theta|x, I, \lambda) = \frac{L(x, \theta)\cdot P(\theta | I)}{\int L(x, \theta)\cdot P(\theta|theta)\cdot d(\theta)}
-</annotation></semantics></math> In this equation the
+generating model or something else. I denoted it in the posterior so
+that it is explicitly clear it is not a formal (orthodox) Bayes. A full
+expression would then be of the form</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>x</mi><mo>,</mo><mi>I</mi><mo>,</mo><mi>ω</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>ω</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>I</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mo>∫</mo><mi>ω</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>I</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>d</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">
+P(\theta|x, I, \omega) = \frac{\omega(x, \theta)\cdot P(\theta | I)}{\int  \omega(x, \theta)\cdot P(\theta | I) \cdot d(\theta)}
+</annotation></semantics></math></p>
+<p>In this equation the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
 representing the data and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
@@ -118,20 +129,34 @@ data and parameters. It may instead be understood as a normalized
 re-weighting of prior information by a data-dependent functions of the
 model parameter.</p>
 <p>In general this also brings some benefits with it. Assume we take the
-following propositions serious
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mn>1</mn></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">Models do not ontologically exist they are concepts</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">p_1 = \{ \text{Models do not ontologically exist they are concepts} \}</annotation></semantics></math>
-(Cox …) and so also probability is a model then deFinetti (…)
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mn>2</mn></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">Probability does not ontologically exist</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">p_2 = \{ \text{Probability does not ontologically exist} \}</annotation></semantics></math>.
-In these propositions exists would mean exists as ontological. The
-following statement would not therefore logically follow as a decent
-ontological commitment
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>s</mi><mn>1</mn></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">I believe the model parameter is ...</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">s_1 = \{ \text{I believe the model parameter is ...} \}</annotation></semantics></math>.
-The question arising from this statement what is this believe in the
-model parameter? It would not be a representational definition of
-believe. Skepticism blocks us to commit ontological. Hence, we can take
-a pragmatic-instrumental stance by suggest that it is an expression or
-compression of information of data. Then it is more about predictive
-adequacy, coherence, internal consistency.</p>
+following proposition of Box (…) ‘all models ar wrong’ (I disagree all
+models are correct because
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>d</mi><mi>e</mi><mi>p</mi><mi>e</mi><mi>n</mi><mi>d</mi><mi>e</mi><mi>n</mi><mi>t</mi><mspace width="0.222em"></mspace><mi>v</mi><mi>a</mi><mi>r</mi><mi>i</mi><mi>a</mi><mi>b</mi><mi>l</mi><mi>e</mi><mo>=</mo><mi>s</mi><mi>l</mi><mi>o</mi><mi>p</mi><mi>e</mi><mo>⋅</mo><mi>i</mi><mi>n</mi><mi>d</mi><mi>e</mi><mi>p</mi><mi>e</mi><mi>n</mi><mi>d</mi><mi>e</mi><mi>n</mi><mi>t</mi><mspace width="0.222em"></mspace><mi>v</mi><mi>a</mi><mi>r</mi><mi>i</mi><mi>a</mi><mi>b</mi><mi>l</mi><mi>e</mi><mo>=</mo><mspace width="0.222em"></mspace><mn>5</mn><mo>=</mo><mn>2</mn><mo>*</mo><mn>2</mn><mo>+</mo><mn>1</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">dependent \:variable = slope \cdot independent \:variable =\ 5= 2 * 2 + 1)</annotation></semantics></math>
+The ‘correctness’ within a formal language is something different then
+the represented phenomenon. If Box meant the later I can agree).</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mn>1</mn></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">Models do not ontologically exist they are concepts</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">
+p_1 = \{ \text{Models do not ontologically exist they are concepts} \}
+</annotation></semantics></math> and so also probability is a model then
+deFinetti (…)</p>
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>p</mi><mn>2</mn></msub><mo>=</mo><mo stretchy="false" form="prefix">{</mo><mtext mathvariant="normal">Probability does not ontologically exist</mtext><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">
+p_2 = \{ \text{Probability does not ontologically exist} \}
+</annotation></semantics></math> If we take these propositions serious
+then a claim to an ontological property based on a model would not
+exists. Causality, effects, associations or model parameters.
+Furthermore, claims about what exists based on a model would also be
+invalid on the model alone. What on the model alone can be claimed is
+the coherence within a language (Wittgenstein, 1953). Therefore, an
+ontological statement based on a parameter is form of model reification
+(Frege, 1948; Ryle 1949; Wittgenstein, 1953).</p>
+<p>The question arising from these statements what this
+belief/idea/thought about the model parameter? Skepticism blocks us to
+commit ontological. The resulting position is therefore not that
+effects, causes, associations, or probabilities cannot exist. It is that
+their ontological existence is not established merely by their
+appearance in an inferential model. The pragmatic question becomes what
+differences follow from adopting one representation rather than another,
+and how those consequences withstand confrontation with experience. Then
+we can simply say lets see what works (William, 1907).</p>
 <div class="section level3">
 <h3 id="classical-statistics-and-estimation">Classical statistics and estimation<a class="anchor" aria-label="anchor" href="#classical-statistics-and-estimation"></a>
 </h3>
@@ -141,14 +166,12 @@ which in most (G)LMs is denoted as the parameter
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>
 or
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>β</mi><annotation encoding="application/x-tex">\beta</annotation></semantics></math>.
-For consistency I will use the parameter of interest
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>
-or
+For consistency I will often use the parameter of interest by
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>.
 The later is presented as a more general expression for e.g., mean,
-median, mode etc. However, in the following
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>
-will be used.</p>
+median, mode etc. The next section will focus on
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mi>u</mi></mrow><annotation encoding="application/x-tex">mu</annotation></semantics></math>
+as is common in estimation.</p>
 <p>The population parameter
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>
 is fixed but unknown. To investigate the plausible values for
@@ -206,17 +229,17 @@ in a long-run of repeated experiments at 95% is</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>1</mn><mo>−</mo><mi>c</mi><mo>=</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mi>n</mi></msub><mo>&gt;</mo><mi>μ</mi><mo>−</mo><mn>1.96</mn><mo>⋅</mo><mfrac><mi>σ</mi><msqrt><mi>n</mi></msqrt></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.222em"></mspace><mtext mathvariant="normal">and</mtext><mspace width="0.222em"></mspace><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mover><mi>X</mi><mo accent="true">‾</mo></mover><mi>n</mi></msub><mo>&lt;</mo><mi>μ</mi><mo>−</mo><mn>1.96</mn><mo>⋅</mo><mfrac><mi>σ</mi><msqrt><mi>n</mi></msqrt></mfrac><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">1  - c = P(\bar{X}_n &gt; \mu - 1.96 \cdot \frac{\sigma}{\sqrt{n}}) ~\text{and}~  P(\bar{X}_n &lt; \mu - 1.96 \cdot \frac{\sigma}{\sqrt{n}})</annotation></semantics></math>.</p>
 <p>A visual explanation of this concept is provided in the following
 Shiny app: <a href="https://snwikaij.shinyapps.io/shiny/" class="external-link uri">https://snwikaij.shinyapps.io/shiny/</a>.</p>
-<p>Furthermore, it is clear that statistics does do nothing with
-causality and the focus on error-control. Causality starts by satisfying
-theoretical conditions needed the arrive at believes in these concepts.
-Hence, error-control and causality start a-priori (Fisher 1949, Pearl
-2009, Mayo 2018). Such a focus and framework is extremely useful if
-objectivity over repetitions are the goal and favorable. While classical
-statistics focuses on fixed but unknown parameters, error-control and
-objectivity of information, Bayesian methods extend this perspective by
-introducing prior information and viewing parameters as random
-variables. This shift opens the door to more flexible and informative
-inference, as explained in the next section.</p>
+<p>Furthermore, it is clear that statistics (alone) has nothing to do
+with causality and the focus is error-control. Causality starts by
+satisfying theoretical conditions needed the arrive at believes in these
+concepts. Hence, error-control and causality start a-priori (Fisher
+1949, Pearl 2009, Mayo 2018). Such a focus and framework is extremely
+useful if objectivity over repetitions are the goal and favorable. While
+classical statistics focuses on fixed but unknown parameters,
+error-control and objectivity of information, Bayesian methods extend
+this perspective by introducing prior information and viewing parameters
+as random variables. This shift opens the door to more flexible and
+informative inference, as explained in the next section.</p>
 </div>
 <div class="section level3">
 <h3 id="bayes-theorem-and-probablistic-estimation">Bayes theorem and probablistic estimation<a class="anchor" aria-label="anchor" href="#bayes-theorem-and-probablistic-estimation"></a>
@@ -230,7 +253,7 @@ More formally Bayes theorem is often notated with A and B where P
 indicates probability and ‘|’ given or conditional on.
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>A</mi><mo stretchy="false" form="prefix">|</mo><mi>B</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo stretchy="false" form="prefix">|</mo><mi>A</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>A</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>B</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}</annotation></semantics></math>.
 Other expression such as
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>D</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>,</mo><mi>I</mi><mi>n</mi><mi>f</mi><mi>o</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>D</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo stretchy="false" form="prefix">|</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>i</mi><mi>n</mi><mi>f</mi><mi>o</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>D</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">P(\theta|Data, Info) = \frac{P(Data|\theta) \cdot P(\theta|info)}{P(Data)}</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>D</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo>,</mo><mi>I</mi><mi>n</mi><mi>f</mi><mi>o</mi><mi>r</mi><mi>m</mi><mi>a</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mfrac><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>D</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo stretchy="false" form="prefix">|</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>⋅</mo><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="false" form="prefix">|</mo><mi>I</mi><mi>n</mi><mi>f</mi><mi>o</mi><mi>r</mi><mi>m</mi><mi>a</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>D</mi><mi>a</mi><mi>t</mi><mi>a</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">P(\theta|Data, Information) = \frac{P(Data|\theta) \cdot P(\theta|Information)}{P(Data)}</annotation></semantics></math>
 are to highlight that the posterior describes the information of that
 conditional on the prior information that is given. Many more notations
 are common where
@@ -238,14 +261,7 @@ are common where
 is used to express a quantity of interested, mostly the expected values
 of a model parameter. This often in combination with
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>
-that represent the data. Below I will use A and B, and hope in the
-future to fall back to consistently use just
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>μ</mi><annotation encoding="application/x-tex">\mu</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>x</mi><annotation encoding="application/x-tex">x</annotation></semantics></math>.
-Since I have been writing parts together and dumping information in here
-the consistency of notations was not my concern at all.</p>
+that represent the data. Below I will use A and B.</p>
 <p>The derivation of Bayes theorem relies on the axioms probability
 theory.</p>
 <p><strong>Premise 1)</strong></p>

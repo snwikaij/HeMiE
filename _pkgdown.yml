@@ -16,7 +16,7 @@ navbar:
         href: articles/ppmn.html
       - text: "Playing around with the PPMN"
         href: articles/play_ppmn.html
-      - text: "Heterodox Bayes and Other Things"
+      - text: "Heterodox Bayes and Other Things (scrap book)"
         href: articles/heterodox_bayes.html
 
     functions:
