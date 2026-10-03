@@ -18,6 +18,8 @@ navbar:
         href: articles/play_ppmn.html
       - text: "Heterodox Bayes and Other Things (scrap book)"
         href: articles/heterodox_bayes.html
+      - text: "References"
+        href: articles/references.html
 
     functions:
       text: "Functions & Data"

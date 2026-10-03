@@ -1,0 +1,58 @@
+# References
+
+## References
+
+Baguley, T. (2009). Standardized or simple effect size: What should be
+reported? British Journal of Psychology, 100(3), 603–617.
+<https://doi.org/10.1348/000712608X377117>
+
+Box, G. E. P. (1976). Science and statistics. Journal of the American
+Statistical Association, 71(356), 791–799.
+<https://doi.org/10.1080/01621459.1976.10480949>
+
+Cohen, J. (1988). Statistical power analysis for the behavioral sciences
+(2nd ed.). Lawrence Erlbaum Associates.
+
+de Finetti, B. (1974). Theory of probability: A critical introductory
+treatment (A. Machí & A. Smith, Trans.; Vol. 1). Wiley.
+
+Fisher, R. A. (1949). The design of experiments (5th ed.). Oliver and
+Boyd.
+
+Frege, G. (1948). Sense and reference (M. Black, Trans.). The
+Philosophical Review, 57(3), 209–230. <https://doi.org/10.2307/2181485>
+
+Gelman, A., Carlin, J. B., Stern, H. S., Dunson, D. B., Vehtari, A., &
+Rubin, D. B. (2013). Bayesian data analysis (3rd ed.). CRC Press.
+
+James, W. (1907). Pragmatism: A new name for some old ways of thinking:
+Popular lectures on philosophy. Longmans, Green, and Co.
+
+Kaijser, W., Musiol, M., Schneider, A. R., Prati, S., Brauer, V. S.,
+Bayer, R., Birk, S., Brauns, M., Dunne, L., Enss, J., Farias, L., Feld,
+C. K., Feldhaus, L., Gillmann, S. M., Hupało, K., Osakpolor, S. E.,
+Olberg, S. L. M., Pimentel, I. M., Schäfer, R. B., … Hering, D. (2025).
+Meta-analysis-derived estimates of stressor–response associations for
+riverine organism groups. Nature Ecology & Evolution, 9(12), 2304–2321.
+<https://doi.org/10.1038/s41559-025-02884-4> Nature
+
+Kruschke, J. K. (2014). Doing Bayesian data analysis: A tutorial with R,
+JAGS, and Stan (2nd ed.). Academic Press.
+
+Mayo, D. G. (2018). Statistical inference as severe testing: How to get
+beyond the statistics wars. Cambridge University Press.
+<https://doi.org/10.1017/9781107286184>
+
+McElreath, R. (2015). Statistical rethinking: A Bayesian course with
+examples in R and Stan. Chapman & Hall/CRC.
+
+Pearl, J. (2009). Causality: Models, reasoning, and inference (2nd ed.).
+Cambridge University Press.
+
+Ryle, G. (1949). The concept of mind. Hutchinson’s University Library.
+
+Tukey, J. W. (1969). Analyzing data: Sanctification or detective work?
+American Psychologist, 24(2), 83–91. <https://doi.org/10.1037/h0027108>
+
+Wittgenstein, L. (1953). Philosophical investigations (G. E. M.
+Anscombe, Trans.). Blackwell.

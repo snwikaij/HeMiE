@@ -12,6 +12,7 @@ update_ppmn(
   method = "kernel",
   up_strength = 0.95,
   max_lambda = 1000,
+  diagnostics = T,
   covar = T,
   seed = 123
 )
@@ -34,6 +35,8 @@ Here the default of the update strength is 95\%.}
 when using the method 'manual'.}
 
 \item{max_lambda}{Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).}
+
+\item{diagnostics}{If residual diagnostics should be returned (default diagnostics = T).}
 
 \item{covar}{Covariance matrix that is calculated between model parameters (default covar = T).}
 

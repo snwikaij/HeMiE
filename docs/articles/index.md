@@ -8,3 +8,4 @@
   PPMN](https://snwikaij.github.io/HeMiE/articles/play_ppmn.md):
 - [Posterior Predictive Meta-analytic
   Networks](https://snwikaij.github.io/HeMiE/articles/ppmn.md):
+- [References](https://snwikaij.github.io/HeMiE/articles/references.md):

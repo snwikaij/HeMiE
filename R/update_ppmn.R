@@ -11,6 +11,7 @@
 #' @param up_strength The fraction of information that is allowed to concentrate in the generalized posterior
 #'  when using the method 'manual'.
 #' @param max_lambda Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).
+#' @param diagnostics If residual diagnostics should be returned (default diagnostics = T).
 #' @param covar Covariance matrix that is calculated between model parameters (default covar = T).
 #' @param seed Seed value 123.
 #'
@@ -25,7 +26,7 @@
 #' @export
 update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
                         method="kernel", up_strength=0.95, max_lambda=1000,
-                        covar=T, seed=123){
+                        diagnostics=T, covar=T, seed=123){
 
   if(nsim<1){stop("number of simulations cannot be smaller than 1.")}
   if(level>0.99999){stop("level cannot be larger than .99999.")}
@@ -330,7 +331,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
 #update residual diagnostics#
 #############################
 
-  object <- .ppmn_resid_diagnostic(object, new_data)
+  if(diagnostics){object <- .ppmn_resid_diagnostic(object, new_data)}
 
 ########################
 #rebuild parameter table#

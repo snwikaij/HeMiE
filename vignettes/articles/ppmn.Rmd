@@ -18,7 +18,7 @@ Ecological information is accumulated across numerous independent studies that d
 
 This fragmentation is unavoidable. Ecological systems are high-dimensional, and no individual study can simultaneously measure all relevant abiotic and biotic variables. Furthermore, ecological understanding develops as new mechanisms and interactions are better understood. As a result, ecological networks are necessarily incomplete and continuously updated from scattered information.
 
-Existing syntheses frequently describe interactions only as positive or negative relationships. While such qualitative descriptions are useful for conceptual understanding, they provide little information about the magnitude of ecological responses. Conversely, conventional meta-analyses summarize information using standardized effect sizes, such as Cohen's d,
+Existing syntheses frequently describe interactions only as positive or negative relationships. While such qualitative descriptions are useful for conceptual understanding, they provide little information about the magnitude of ecological responses. Conversely, conventional meta-analyses summarize information using standardized effect sizes, such as Cohen's d (1988),
 
 $$
 d=\frac{\overline{x}_{treatment}-\overline{x}_{control}}{SD_{pooled}}

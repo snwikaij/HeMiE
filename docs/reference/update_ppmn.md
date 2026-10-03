@@ -19,6 +19,7 @@ update_ppmn(
   method = "kernel",
   up_strength = 0.95,
   max_lambda = 1000,
+  diagnostics = T,
   covar = T,
   seed = 123
 )
@@ -60,6 +61,10 @@ update_ppmn(
 
   Maximum lambda that can be set for Generalized Bayesian Updating
   (default max_lambda = 1000).
+
+- diagnostics:
+
+  If residual diagnostics should be returned (default diagnostics = T).
 
 - covar:
 

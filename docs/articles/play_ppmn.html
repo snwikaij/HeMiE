@@ -36,6 +36,7 @@
 <li><a class="dropdown-item" href="../articles/ppmn.html">Posterior Predictive Meta-analytic Networks (PPMN)</a></li>
     <li><a class="dropdown-item" href="../articles/play_ppmn.html">Playing around with the PPMN</a></li>
     <li><a class="dropdown-item" href="../articles/heterodox_bayes.html">Heterodox Bayes and Other Things (scrap book)</a></li>
+    <li><a class="dropdown-item" href="../articles/references.html">References</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Functions &amp; Data</a></li>
@@ -471,6 +472,351 @@ identified regions.</p>
 <span><span class="co">#display the residuals of the first update</span></span>
 <span><span class="va">mod_list</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">Residuals</span><span class="op">$</span><span class="va">resid_boxplot</span></span></code></pre></div>
 <p><img src="play_ppmn_files/figure-html/seq_update_test_3-2.png" class="r-plt" alt="" width="768"></p>
+</div>
+<div class="section level3">
+<h3 id="sequential-updates-and-convergence">Sequential updates and convergence<a class="anchor" aria-label="anchor" href="#sequential-updates-and-convergence"></a>
+</h3>
+<p>With sequential updating, the PPMN is expected to progressively adapt
+its parameter distributions toward values that better agree with the
+incoming data. Because Generalized Bayesian Updating re-weights
+parameter samples according to a loss function, repeated updates should
+reduce the expected loss until further data provide little additional
+adjustment. However, because the loss used during updating is based on
+standardized residuals that are subsequently aggregated across the
+network, changes in the raw loss are not necessarily straightforward to
+interpret. We therefore additionally evaluated convergence using the
+absolute mean residual deviation. For the complete PPMN, this was
+calculated as the mean absolute deviation of the child-specific mean
+residuals from zero, thereby avoiding cancellation between positive and
+negative residuals. A progressive decline followed by stabilization
+indicates that sequential updating increasingly centers the network
+predictions on the observations. The same pattern can be examined
+separately for each child on the mean residual deviation.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co">#number of repeated simulations</span></span>
+<span><span class="va">nsim</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
+<span></span>
+<span><span class="co">#number of sequential updats</span></span>
+<span><span class="va">m</span>    <span class="op">&lt;-</span> <span class="fl">5</span></span>
+<span></span>
+<span><span class="co">#create a network</span></span>
+<span><span class="va">example_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  edge <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Chl~TP"</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Chl~TP"</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"pH~Chl"</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"HCO3~pH"</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"CO2onlyuser~HCO3"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span></span>
+<span>  `function` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"sigmoidal"</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"log10"</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"sigmoidal"</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"sigmoidal"</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"logit"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span></span>
+<span>  transformation <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"log"</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"log10"</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fl">3</span><span class="op">)</span>,</span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"log"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
+<span></span>
+<span>  parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="st">"b0"</span>,<span class="st">"b1"</span>,<span class="st">"b2"</span>,</span>
+<span>    <span class="st">"b0"</span>,<span class="st">"b1"</span>,</span>
+<span>    <span class="st">"b0"</span>,<span class="st">"b1"</span>,<span class="st">"b2"</span>,</span>
+<span>    <span class="st">"b0"</span>,<span class="st">"b1"</span>,<span class="st">"b2"</span>,</span>
+<span>    <span class="st">"b0"</span>,<span class="st">"b1"</span><span class="op">)</span>,</span>
+<span></span>
+<span>  estimate <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fl">130</span>,    <span class="fl">4.5</span>,   <span class="fl">0.8</span>,   <span class="co"># Chl ~ TP</span></span>
+<span>    <span class="op">-</span><span class="fl">1.1</span>,   <span class="fl">1.2</span>,          <span class="co"># Chl ~ TP</span></span>
+<span>    <span class="fl">10.5</span>,  <span class="op">-</span><span class="fl">3.5</span>,     <span class="fl">4</span>,   <span class="co"># pH ~ Chl</span></span>
+<span>    <span class="fl">120</span>,    <span class="fl">7.5</span>,   <span class="fl">0.5</span>,   <span class="co"># HCO3 ~ pH</span></span>
+<span>    <span class="fl">2.8</span>,   <span class="op">-</span><span class="fl">0.7</span><span class="op">)</span>,         <span class="co"># CO2onlyuser ~ HCO3</span></span>
+<span></span>
+<span>  error <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>    <span class="fl">20</span>,    <span class="fl">0.5</span>,   <span class="fl">0.25</span>,</span>
+<span>    <span class="fl">0.4</span>,  <span class="fl">0.15</span>,</span>
+<span>    <span class="fl">1</span>,       <span class="fl">2</span>,      <span class="fl">1</span>,</span>
+<span>    <span class="fl">30</span>,    <span class="fl">1.5</span>,   <span class="fl">0.05</span>,</span>
+<span>    <span class="fl">0.5</span>,   <span class="fl">0.1</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#create formula</span></span>
+<span><span class="va">formula</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fun<span class="op">=</span><span class="st">"sigmoidal"</span>, edge<span class="op">=</span><span class="st">"Chl~TP"</span>, trans<span class="op">=</span><span class="st">"log"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fun<span class="op">=</span><span class="st">"log10"</span>, edge<span class="op">=</span><span class="st">"Chl~TP"</span>, trans<span class="op">=</span><span class="st">"log10"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fun<span class="op">=</span><span class="st">"sigmoidal"</span>, edge<span class="op">=</span><span class="st">"pH~Chl"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fun<span class="op">=</span><span class="st">"sigmoidal"</span>, edge<span class="op">=</span><span class="st">"HCO3~pH"</span><span class="op">)</span>,</span>
+<span></span>
+<span>                <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fun<span class="op">=</span><span class="st">"logit"</span>,     edge<span class="op">=</span><span class="st">"CO2onlyuser~HCO3"</span>,  trans<span class="op">=</span><span class="st">"log"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#build ppmn</span></span>
+<span><span class="va">mod1</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/build_ppmn.html">build_ppmn</a></span><span class="op">(</span><span class="va">formula</span>, <span class="va">example_data</span><span class="op">)</span></span>
+<span><span class="va">mod_dgp</span> <span class="op">&lt;-</span> <span class="va">mod1</span></span>
+<span></span>
+<span><span class="co">#set 'true' parameters</span></span>
+<span><span class="va">true_par</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  `ef1`            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>b0<span class="op">=</span><span class="fl">100</span>, b1<span class="op">=</span><span class="fl">4.5</span>,  b2<span class="op">=</span><span class="fl">.7</span><span class="op">)</span>,  <span class="co"># Chl ~ TP</span></span>
+<span>  `ef2`            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>b0<span class="op">=</span><span class="op">-</span><span class="fl">0.8</span>, b1<span class="op">=</span><span class="fl">1.1</span>,  b2<span class="op">=</span><span class="fl">.7</span><span class="op">)</span>, <span class="co"># Chl ~ TP</span></span>
+<span>  `ef3`            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>b0<span class="op">=</span><span class="fl">8.5</span>, b1<span class="op">=</span><span class="op">-</span><span class="fl">4.5</span>, b2<span class="op">=</span><span class="fl">6</span><span class="op">)</span>,   <span class="co"># pH ~ Chl</span></span>
+<span>  `ef4`            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>b0<span class="op">=</span><span class="fl">100</span>, b1<span class="op">=</span><span class="fl">7</span>,    b2<span class="op">=</span><span class="fl">0.4</span><span class="op">)</span>, <span class="co"># HCO3 ~ pH</span></span>
+<span>  `ef5`            <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>b0<span class="op">=</span><span class="fl">2.5</span>, b1<span class="op">=</span><span class="op">-</span><span class="fl">.5</span><span class="op">)</span><span class="op">)</span>          <span class="co"># CO2onlyuser ~ HCO3</span></span>
+<span></span>
+<span><span class="co">#store the 'true' params in dgp mod</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">e</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">true_par</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="kw">for</span><span class="op">(</span><span class="va">p</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">true_par</span><span class="op">[[</span><span class="va">e</span><span class="op">]</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="va">mod_dgp</span><span class="op">$</span><span class="va">Parameters</span><span class="op">[[</span><span class="va">e</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">p</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="st">"mu"</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">true_par</span><span class="op">[[</span><span class="va">e</span><span class="op">]</span><span class="op">]</span><span class="op">[</span><span class="va">p</span><span class="op">]</span><span class="op">}</span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">#predict one edge using DGP parameter means</span></span>
+<span><span class="va">pred_dgp</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">edge</span>, <span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
+<span></span>
+<span>  <span class="va">beta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">mod_dgp</span><span class="op">$</span><span class="va">Parameters</span><span class="op">[[</span><span class="va">edge</span><span class="op">]</span><span class="op">]</span>, <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="st">"mu"</span><span class="op">]</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="va">trans</span> <span class="op">&lt;-</span> <span class="va">mod_dgp</span><span class="op">$</span><span class="va">Structure</span><span class="op">$</span><span class="va">predict_dag</span><span class="op">$</span><span class="va">transformations</span><span class="op">[[</span><span class="va">edge</span><span class="op">]</span><span class="op">]</span></span>
+<span>  <span class="kw">if</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">trans</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">||</span> <span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">trans</span><span class="op">)</span><span class="op">)</span> <span class="va">trans</span> <span class="op">&lt;-</span> <span class="cn">NA_character_</span></span>
+<span></span>
+<span>  <span class="fu"><a href="../reference/dot-ppmn_predict_edge.html">.ppmn_predict_edge</a></span><span class="op">(</span><span class="va">mod_dgp</span><span class="op">$</span><span class="va">Structure</span><span class="op">$</span><span class="va">predict_dag</span><span class="op">$</span><span class="va">functions</span><span class="op">[[</span><span class="va">edge</span><span class="op">]</span><span class="op">]</span>, <span class="va">beta</span>, <span class="va">trans</span>, <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">as.matrix</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">)</span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">#gamma simulator</span></span>
+<span><span class="va">rgamma_sim</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mu</span>, <span class="va">sd</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mu</span><span class="op">)</span>,shape <span class="op">=</span> <span class="va">mu</span><span class="op">^</span><span class="fl">2</span><span class="op">/</span><span class="va">sd</span><span class="op">^</span><span class="fl">2</span>,rate  <span class="op">=</span> <span class="va">mu</span><span class="op">/</span><span class="va">sd</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">}</span></span>
+<span></span>
+<span><span class="co">#simulate data sets slightly wider longer realizations (gradient length)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span><span class="va">TP_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">250</span><span class="op">^</span><span class="fl">2</span><span class="op">/</span><span class="fl">150</span><span class="op">^</span><span class="fl">2</span>, <span class="fl">250</span><span class="op">/</span><span class="fl">150</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">sim_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">nsim</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">s</span><span class="op">)</span><span class="op">{</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">j</span><span class="op">)</span><span class="op">{</span></span>
+<span></span>
+<span>    <span class="co">#note that 'true' model is sigmoidal not log10-log10</span></span>
+<span>    <span class="va">mu_Chl</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dot-ppmn_predict_edge.html">.ppmn_predict_edge</a></span><span class="op">(</span><span class="st">"sigmoidal"</span>, <span class="va">true_par</span><span class="op">$</span><span class="va">ef1</span>, trans<span class="op">=</span><span class="st">"log"</span>, <span class="va">TP_sim</span><span class="op">)</span></span>
+<span>    <span class="va">Chl_sim</span> <span class="op">&lt;-</span> <span class="fu">rgamma_sim</span><span class="op">(</span><span class="va">mu_Chl</span>, <span class="va">mu_Chl</span><span class="op">/</span><span class="fl">1.5</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">mu_pH</span>   <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dot-ppmn_predict_edge.html">.ppmn_predict_edge</a></span><span class="op">(</span><span class="st">"sigmoidal"</span>, <span class="va">true_par</span><span class="op">$</span><span class="va">ef3</span>, trans<span class="op">=</span><span class="cn">NA</span>, <span class="va">Chl_sim</span><span class="op">)</span></span>
+<span>    <span class="va">pH_sim</span>  <span class="op">&lt;-</span>  <span class="fu">rgamma_sim</span><span class="op">(</span><span class="va">mu_pH</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mu_pH</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">mu_HCO3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/dot-ppmn_predict_edge.html">.ppmn_predict_edge</a></span><span class="op">(</span><span class="st">"sigmoidal"</span>, <span class="va">true_par</span><span class="op">$</span><span class="va">ef4</span>, trans<span class="op">=</span><span class="cn">NA</span>, <span class="va">pH_sim</span><span class="op">)</span></span>
+<span>    <span class="va">HCO3_sim</span><span class="op">&lt;-</span> <span class="fu">rgamma_sim</span><span class="op">(</span><span class="va">mu_HCO3</span>, <span class="va">mu_HCO3</span><span class="op">/</span><span class="fl">3</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">mu_CO2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Logistic.html" class="external-link">plogis</a></span><span class="op">(</span><span class="va">true_par</span><span class="op">$</span><span class="va">ef5</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">+</span><span class="va">true_par</span><span class="op">$</span><span class="va">ef5</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">HCO3_sim</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">CO2onlyuser</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Beta.html" class="external-link">rbeta</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">mu_CO2</span><span class="op">)</span>, shape1 <span class="op">=</span> <span class="va">mu_CO2</span><span class="op">*</span><span class="fl">20</span>,</span>
+<span>                         shape2 <span class="op">=</span> <span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">mu_CO2</span><span class="op">)</span><span class="op">*</span><span class="fl">20</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>      TP <span class="op">=</span> <span class="va">TP_sim</span>,</span>
+<span>      Chl <span class="op">=</span> <span class="va">Chl_sim</span>,</span>
+<span>      pH <span class="op">=</span> <span class="va">pH_sim</span>,</span>
+<span>      HCO3 <span class="op">=</span> <span class="va">HCO3_sim</span>,</span>
+<span>      CO2onlyuser <span class="op">=</span> <span class="va">CO2onlyuser</span><span class="op">)</span></span>
+<span>    <span class="op">}</span><span class="op">)</span><span class="op">}</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#set estimands</span></span>
+<span><span class="va">estimands</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">mod_dgp</span><span class="op">$</span><span class="va">Parameters</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">edge</span><span class="op">)</span><span class="op">{</span></span>
+<span></span>
+<span>  <span class="va">pars</span> <span class="op">&lt;-</span> <span class="va">mod_dgp</span><span class="op">$</span><span class="va">Parameters</span><span class="op">[[</span><span class="va">edge</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>    edge      <span class="op">=</span> <span class="va">edge</span>,</span>
+<span>    child     <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/grep.html" class="external-link">sub</a></span><span class="op">(</span><span class="st">"~.*"</span>, <span class="st">""</span>, <span class="va">edge</span><span class="op">)</span>,</span>
+<span>    parameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">pars</span><span class="op">)</span>,</span>
+<span>    true      <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">pars</span>, <span class="kw">function</span><span class="op">(</span><span class="va">p</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">p</span><span class="op">[</span><span class="st">"mu"</span><span class="op">]</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#seq updating</span></span>
+<span><span class="va">results1</span> <span class="op">&lt;-</span> <span class="va">results2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">nsim</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#start time</span></span>
+<span><span class="va">start_run</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#do not run this if you do not have time (plus-minus 7 min) or speed it up with</span></span>
+<span><span class="co">#parallel computation (its best to just get a coffee)</span></span>
+<span><span class="kw">for</span><span class="op">(</span><span class="va">s</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">nsim</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">s</span><span class="op">)</span></span>
+<span>  <span class="va">mod</span>       <span class="op">&lt;-</span> <span class="va">mod1</span></span>
+<span>  <span class="va">loss_list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">m</span><span class="op">)</span></span>
+<span>  <span class="va">tot_loss</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"list"</span>, <span class="va">m</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw">for</span><span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_len</a></span><span class="op">(</span><span class="va">m</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span></span>
+<span>    <span class="va">dat</span>      <span class="op">&lt;-</span> <span class="va">sim_data</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
+<span>    <span class="va">mod</span>      <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_ppmn.html">update_ppmn</a></span><span class="op">(</span><span class="va">mod</span>, new_data <span class="op">=</span> <span class="va">dat</span>, nsim <span class="op">=</span> <span class="fl">1000</span>, diagnostics <span class="op">=</span> <span class="cn">F</span><span class="op">)</span></span>
+<span>    <span class="va">pred</span>     <span class="op">&lt;-</span> <span class="fu"><a href="../reference/predict_ppmn.html">predict_ppmn</a></span><span class="op">(</span><span class="va">mod</span>, <span class="va">dat</span>, nsim <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">expected</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">pred</span><span class="op">$</span><span class="va">Expected</span><span class="op">)</span></span>
+<span>    <span class="va">childs</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">expected</span><span class="op">)</span>, <span class="va">mod</span><span class="op">$</span><span class="va">Roots</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">dat</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">r</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.matrix.html" class="external-link">data.matrix</a></span><span class="op">(</span><span class="va">dat</span><span class="op">[</span>, <span class="va">childs</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/data.matrix.html" class="external-link">data.matrix</a></span><span class="op">(</span><span class="va">expected</span><span class="op">[</span>, <span class="va">childs</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="va">mean_res</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html" class="external-link">colMeans</a></span><span class="op">(</span><span class="va">r</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">tot_loss</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>      simulation   <span class="op">=</span> <span class="va">s</span>,</span>
+<span>      update       <span class="op">=</span> <span class="va">j</span>,</span>
+<span>      mean_resid   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">mean_res</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>    <span class="va">loss_list</span><span class="op">[[</span><span class="va">j</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>      simulation   <span class="op">=</span> <span class="va">s</span>,</span>
+<span>      update       <span class="op">=</span> <span class="va">j</span>,</span>
+<span>      child        <span class="op">=</span> <span class="va">childs</span>,</span>
+<span>      mean_resid   <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="va">mean_res</span><span class="op">)</span><span class="op">)</span><span class="op">}</span></span>
+<span></span>
+<span>  <span class="va">results1</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">loss_list</span><span class="op">)</span></span>
+<span>  <span class="va">results2</span><span class="op">[[</span><span class="va">s</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">tot_loss</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="co">#&gt; [1] 3</span></span>
+<span><span class="co">#&gt; [1] 4</span></span>
+<span><span class="co">#&gt; [1] 5</span></span>
+<span><span class="co">#&gt; [1] 6</span></span>
+<span><span class="co">#&gt; [1] 7</span></span>
+<span><span class="co">#&gt; [1] 8</span></span>
+<span><span class="co">#&gt; [1] 9</span></span>
+<span><span class="co">#&gt; [1] 10</span></span>
+<span><span class="co">#&gt; [1] 11</span></span>
+<span><span class="co">#&gt; [1] 12</span></span>
+<span><span class="co">#&gt; [1] 13</span></span>
+<span><span class="co">#&gt; [1] 14</span></span>
+<span><span class="co">#&gt; [1] 15</span></span>
+<span><span class="co">#&gt; [1] 16</span></span>
+<span><span class="co">#&gt; [1] 17</span></span>
+<span><span class="co">#&gt; [1] 18</span></span>
+<span><span class="co">#&gt; [1] 19</span></span>
+<span><span class="co">#&gt; [1] 20</span></span>
+<span><span class="co">#&gt; [1] 21</span></span>
+<span><span class="co">#&gt; [1] 22</span></span>
+<span><span class="co">#&gt; [1] 23</span></span>
+<span><span class="co">#&gt; [1] 24</span></span>
+<span><span class="co">#&gt; [1] 25</span></span>
+<span><span class="co">#&gt; [1] 26</span></span>
+<span><span class="co">#&gt; [1] 27</span></span>
+<span><span class="co">#&gt; [1] 28</span></span>
+<span><span class="co">#&gt; [1] 29</span></span>
+<span><span class="co">#&gt; [1] 30</span></span>
+<span><span class="co">#&gt; [1] 31</span></span>
+<span><span class="co">#&gt; [1] 32</span></span>
+<span><span class="co">#&gt; [1] 33</span></span>
+<span><span class="co">#&gt; [1] 34</span></span>
+<span><span class="co">#&gt; [1] 35</span></span>
+<span><span class="co">#&gt; [1] 36</span></span>
+<span><span class="co">#&gt; [1] 37</span></span>
+<span><span class="co">#&gt; [1] 38</span></span>
+<span><span class="co">#&gt; [1] 39</span></span>
+<span><span class="co">#&gt; [1] 40</span></span>
+<span><span class="co">#&gt; [1] 41</span></span>
+<span><span class="co">#&gt; [1] 42</span></span>
+<span><span class="co">#&gt; [1] 43</span></span>
+<span><span class="co">#&gt; [1] 44</span></span>
+<span><span class="co">#&gt; [1] 45</span></span>
+<span><span class="co">#&gt; [1] 46</span></span>
+<span><span class="co">#&gt; [1] 47</span></span>
+<span><span class="co">#&gt; [1] 48</span></span>
+<span><span class="co">#&gt; [1] 49</span></span>
+<span><span class="co">#&gt; [1] 50</span></span>
+<span><span class="co">#&gt; [1] 51</span></span>
+<span><span class="co">#&gt; [1] 52</span></span>
+<span><span class="co">#&gt; [1] 53</span></span>
+<span><span class="co">#&gt; [1] 54</span></span>
+<span><span class="co">#&gt; [1] 55</span></span>
+<span><span class="co">#&gt; [1] 56</span></span>
+<span><span class="co">#&gt; [1] 57</span></span>
+<span><span class="co">#&gt; [1] 58</span></span>
+<span><span class="co">#&gt; [1] 59</span></span>
+<span><span class="co">#&gt; [1] 60</span></span>
+<span><span class="co">#&gt; [1] 61</span></span>
+<span><span class="co">#&gt; [1] 62</span></span>
+<span><span class="co">#&gt; [1] 63</span></span>
+<span><span class="co">#&gt; [1] 64</span></span>
+<span><span class="co">#&gt; [1] 65</span></span>
+<span><span class="co">#&gt; [1] 66</span></span>
+<span><span class="co">#&gt; [1] 67</span></span>
+<span><span class="co">#&gt; [1] 68</span></span>
+<span><span class="co">#&gt; [1] 69</span></span>
+<span><span class="co">#&gt; [1] 70</span></span>
+<span><span class="co">#&gt; [1] 71</span></span>
+<span><span class="co">#&gt; [1] 72</span></span>
+<span><span class="co">#&gt; [1] 73</span></span>
+<span><span class="co">#&gt; [1] 74</span></span>
+<span><span class="co">#&gt; [1] 75</span></span>
+<span><span class="co">#&gt; [1] 76</span></span>
+<span><span class="co">#&gt; [1] 77</span></span>
+<span><span class="co">#&gt; [1] 78</span></span>
+<span><span class="co">#&gt; [1] 79</span></span>
+<span><span class="co">#&gt; [1] 80</span></span>
+<span><span class="co">#&gt; [1] 81</span></span>
+<span><span class="co">#&gt; [1] 82</span></span>
+<span><span class="co">#&gt; [1] 83</span></span>
+<span><span class="co">#&gt; [1] 84</span></span>
+<span><span class="co">#&gt; [1] 85</span></span>
+<span><span class="co">#&gt; [1] 86</span></span>
+<span><span class="co">#&gt; [1] 87</span></span>
+<span><span class="co">#&gt; [1] 88</span></span>
+<span><span class="co">#&gt; [1] 89</span></span>
+<span><span class="co">#&gt; [1] 90</span></span>
+<span><span class="co">#&gt; [1] 91</span></span>
+<span><span class="co">#&gt; [1] 92</span></span>
+<span><span class="co">#&gt; [1] 93</span></span>
+<span><span class="co">#&gt; [1] 94</span></span>
+<span><span class="co">#&gt; [1] 95</span></span>
+<span><span class="co">#&gt; [1] 96</span></span>
+<span><span class="co">#&gt; [1] 97</span></span>
+<span><span class="co">#&gt; [1] 98</span></span>
+<span><span class="co">#&gt; [1] 99</span></span>
+<span><span class="co">#&gt; [1] 100</span></span>
+<span></span>
+<span><span class="co">#end time</span></span>
+<span><span class="va">end_run</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html" class="external-link">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#total run time</span></span>
+<span><span class="va">end_run</span><span class="op">-</span><span class="va">start_run</span></span>
+<span><span class="co">#&gt; Time difference of 9.32207 mins</span></span>
+<span></span>
+<span><span class="co">#organize results and create quantile bands</span></span>
+<span><span class="va">results1a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">results1</span><span class="op">)</span></span>
+<span><span class="va">loss_df1</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">results1a</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"simulation"</span>, <span class="st">"update"</span>, <span class="st">"child"</span>, <span class="st">"mean_resid"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">mu_seq</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">loss_df1</span>, <span class="va">mean_resid</span><span class="op">~</span><span class="va">update</span><span class="op">+</span><span class="va">child</span>, <span class="va">mean</span><span class="op">)</span>,</span>
+<span>                   ll<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">loss_df1</span>, <span class="va">mean_resid</span><span class="op">~</span><span class="va">update</span><span class="op">+</span><span class="va">child</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">.05</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span>,</span>
+<span>                   ul<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">loss_df1</span>, <span class="va">mean_resid</span><span class="op">~</span><span class="va">update</span><span class="op">+</span><span class="va">child</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">.95</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>,<span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">child_order</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Chl"</span>, <span class="st">"pH"</span>, <span class="st">"HCO3"</span>, <span class="st">"CO2onlyuser"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">loss_df1</span><span class="op">$</span><span class="va">child</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">loss_df1</span><span class="op">$</span><span class="va">child</span>,levels <span class="op">=</span> <span class="va">child_order</span><span class="op">)</span></span>
+<span><span class="va">mu_seq</span><span class="op">$</span><span class="va">child</span>   <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">mu_seq</span><span class="op">$</span><span class="va">child</span>, levels <span class="op">=</span> <span class="va">child_order</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#plot the shift in the mean residuals per edge</span></span>
+<span><span class="va">individual_edge_resid</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">loss_df1</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">update</span>, y <span class="op">=</span> <span class="va">mean_resid</span>, group <span class="op">=</span> <span class="va">simulation</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mu_seq</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">update</span>, ymin <span class="op">=</span> <span class="va">ll</span>, ymax <span class="op">=</span> <span class="va">ul</span>, group <span class="op">=</span> <span class="va">child</span><span class="op">)</span>, inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>, alpha <span class="op">=</span> <span class="fl">0.2</span>, fill <span class="op">=</span> <span class="st">"dodgerblue"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data <span class="op">=</span> <span class="va">mu_seq</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">update</span>, y <span class="op">=</span> <span class="va">mean_resid</span>, group <span class="op">=</span> <span class="va">child</span><span class="op">)</span>, inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>, colour <span class="op">=</span> <span class="st">"dodgerblue3"</span>, linewidth <span class="op">=</span> <span class="fl">1.1</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, linetype <span class="op">=</span> <span class="fl">2</span>, linewidth <span class="op">=</span> <span class="fl">0.8</span>, colour <span class="op">=</span> <span class="st">"tomato3"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html" class="external-link">facet_wrap</a></span><span class="op">(</span><span class="op">~</span> <span class="va">child</span>, ncol <span class="op">=</span> <span class="fl">4</span>, scales <span class="op">=</span> <span class="st">"free_y"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="cn">NULL</span>,y <span class="op">=</span> <span class="st">"Edge mean residual deviation"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#organize results and create quantile bands</span></span>
+<span><span class="va">results2a</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="va">results2</span><span class="op">)</span></span>
+<span><span class="va">loss_df2</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unique.html" class="external-link">unique</a></span><span class="op">(</span><span class="va">results2a</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"simulation"</span>, <span class="st">"update"</span>, <span class="st">"mean_resid"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="va">mu_seq</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">loss_df2</span>, <span class="va">mean_resid</span><span class="op">~</span><span class="va">update</span>, <span class="va">mean</span><span class="op">)</span>,</span>
+<span>ll<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">loss_df2</span>, <span class="va">mean_resid</span><span class="op">~</span><span class="va">update</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">.05</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span>,</span>
+<span>ul<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/aggregate.html" class="external-link">aggregate</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">loss_df2</span>, <span class="va">mean_resid</span><span class="op">~</span><span class="va">update</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">x</span>, <span class="fl">.95</span><span class="op">)</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#plot the total resid of the ppmn this is actually optimized over</span></span>
+<span><span class="va">total_ppmn_loss</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">loss_df2</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">update</span>, y<span class="op">=</span><span class="va">mean_resid</span>, group<span class="op">=</span><span class="va">simulation</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_ribbon.html" class="external-link">geom_ribbon</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">mu_seq</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">update</span>, ymin<span class="op">=</span><span class="va">ll</span>,ymax<span class="op">=</span><span class="va">ul</span>, group<span class="op">=</span><span class="fl">1</span><span class="op">)</span>,</span>
+<span>              alpha<span class="op">=</span><span class="fl">0.2</span>, fill<span class="op">=</span> <span class="st">"dodgerblue"</span>, inherit.aes <span class="op">=</span> <span class="cn">F</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">mu_seq</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">update</span>, y<span class="op">=</span><span class="va">mean_resid</span><span class="op">)</span>, col<span class="op">=</span><span class="st">"dodgerblue3"</span>, inherit.aes <span class="op">=</span> <span class="cn">F</span>, lwd<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.1</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html" class="external-link">geom_hline</a></span><span class="op">(</span>yintercept <span class="op">=</span> <span class="fl">0</span>, col<span class="op">=</span><span class="st">"tomato3"</span>, lty<span class="op">=</span><span class="fl">2</span>, lwd<span class="op">=</span><span class="fl">0.8</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/lims.html" class="external-link">xlim</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">5</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Sequential update"</span>, y <span class="op">=</span> <span class="st">"Total mean absolute \nresidual deviation"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">total_ppmn_loss</span>, <span class="va">individual_edge_resid</span>, ncol<span class="op">=</span><span class="fl">1</span>, rel_heights <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.6</span>, <span class="fl">0.4</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p><img src="play_ppmn_files/figure-html/seq_update_test_4-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

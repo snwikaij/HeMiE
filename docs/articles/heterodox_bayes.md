@@ -54,8 +54,8 @@ re-weighting of prior information by a data-dependent functions of the
 model parameter.
 
 In general this also brings some benefits with it. Assume we take the
-following proposition of Box (…) ‘all models ar wrong’ (I disagree all
-models are correct because
+following proposition of Box (1976) ‘all models ar wrong’ (I disagree
+all models are correct because
 $`dependent \:variable = slope \cdot independent \:variable =\ 5= 2 * 2 + 1)`$
 The ‘correctness’ within a formal language is something different then
 the represented phenomenon. If Box meant the later I can agree).
@@ -64,7 +64,7 @@ the represented phenomenon. If Box meant the later I can agree).
 
 p_1 = \{ \text{Models do not ontologically exist they are concepts} \}
 ```
-and so also probability is a model then deFinetti (…)
+and so also probability is a model then (de Finetti, 1974)
 
 ``` math
 

@@ -20,7 +20,7 @@ negative relationships. While such qualitative descriptions are useful
 for conceptual understanding, they provide little information about the
 magnitude of ecological responses. Conversely, conventional
 meta-analyses summarize information using standardized effect sizes,
-such as Cohen’s d,
+such as Cohen’s d (1988),
 
 ``` math
 
