@@ -87,7 +87,7 @@ ontological existence is not established merely by their appearance in
 an inferential model. The pragmatic question becomes what differences
 follow from adopting one representation rather than another, and how
 those consequences withstand confrontation with experience. Then we can
-simply say lets see what works (William, 1907).
+simply say lets see what works (James, 1907).
 
 ### Classical statistics and estimation
 
@@ -146,6 +146,7 @@ converges to the normal. The probability of observing $`Z`$ under a
 long-run of repetitions
 
 ``` math
+
 P(-1.96\lesssim Z \lesssim 1.96)=0.95
 ```
 .
@@ -154,6 +155,7 @@ Similar, the probability of the intervals of $`\bar{x}`$ to cover
 $`\mu`$ in a long-run of repeated experiments at 95% is
 
 ``` math
+
 1  - c = P(\bar{X}_n > \mu - 1.96 \cdot \frac{\sigma}{\sqrt{n}}) ~\text{and}~  P(\bar{X}_n < \mu - 1.96 \cdot \frac{\sigma}{\sqrt{n}})
 ```
 .
@@ -241,6 +243,7 @@ Therefore
 
 P(A | B) \cdot P(A) = P(B | A) \cdot P(B)
 ```
+
 ``` math
 
 P(A|B) = \frac{P(B|A) \cdot P(A)}{P(B)}
@@ -253,27 +256,30 @@ repeated experiments so that the coverage, denoted as $`c`$ is $`1-c`$.
 More formally $`c`$ would be expressed as $`\alpha`$. The Bayesian does
 not focus on the consistency between studies or error, between studies.
 The Bayesian focuses on the coherence from prior to posterior. The
-Bayesian focuses more on precision and information containmentn (?).
+Bayesian focuses more on precision and information containment (?).
 Bayesian sequential updating then seem to naturally follow from that.
 
 Bayesian sequential updating refers to the practice of re-using the
 derived posterior of a previous model as the prior for the new model.
 For this the assumption of conditional independence between the the
 datasets is assumed. The parameter of interest is $`\theta`$ based on a
-dataset $`Data_1`$ and we derive the posterior.
+dataset $`x_1`$ and we derive the posterior.
+
 ``` math
 
-P(\theta|x_1) = \frac{P(x_1|\theta) \cdot P(\theta)}{P(x_1)}
+P(\theta \mid I, x_1) = \frac{P(x_1 \mid \theta) \cdot P(\theta)}{P(x_1 \mid I)}
 ```
 The next would be
+
 ``` math
 
-P(\theta|x_1, x_2) = \frac{P(x_2|\theta) \cdot P(\theta|x_1)}{P(x_2)}
+P(\theta \mid I, x_1, x_2) = \frac{P(x_2 \mid \theta) \cdot P(\theta \mid I, x_1)}{P(x_2)}
 ```
 till
+
 ``` math
 
-P(\theta|x_n) = \frac{P(x_n|\theta) \cdot P(\theta|x_1,\cdots,x_{n-1})}{P(x_n)}
+P(\theta \mid I, x_n) = \frac{P(x_n \mid \theta) \cdot P(\theta \mid I, x_1,\cdots,x_{n-1})}{P(x_n)}
 ```
 
 For example, we would like to know what $`\mu`$ from a population of
@@ -288,9 +294,9 @@ If the focus lies on objectivity and the error-control over the
 different studies and assume iid then the curve between studies would
 follow that of Fig. 2b below.
 
-![](heterodox_bayes_files/figure-html/sequential%20updating-1.png)
+![](heterodox_bayes_files/figure-html/sequential_updating-1.png)
 
-*Figure 2: Sequential updating with credibility intervals on the left
+*Figure 1: Sequential updating with credibility intervals on the left
 panel and a long-run of means with confidence intervals on the right The
 left panel.*
 
@@ -313,42 +319,53 @@ have on $`\mu`$ to more acceptable values.
 
 ``` math
 
-P(\mu|Data) = \frac{P(Data|\mu) \cdot P(\mu)}{P(Data)}
+P(\theta|x,I) = \frac{P(x|\theta) \cdot P(\theta|I)}{P(x)}
 ```
 
 For a simple mean and variance an analytical approach can be used to
 derive the posterior given the likelihood and prior via the following
 equations.
 
-\$\$\mu\_{posterior} =\frac{\frac{\mu\_{prior} }{\sigma\_{prior}^2} +
-\frac{\hat{x}\_{data} }{\sigma\_{data}^2}}{
-\frac{1}{\sigma\_{prior}^2} + \frac{1}{\sigma\_{data}^2}} \\
-\sigma\_{posterior}=\sqrt{\frac{1}{\frac{1}{\sigma\_{prior}^2}+\frac{1}{\sigma\_{data}^2}}}\$\$
+``` math
+
+\begin{aligned}
+\mu_{posterior}=\frac{\frac{\mu_{prior}}{\sigma_{prior}^2}+ \frac{\hat{x}_{data}}{\sigma_{data}^2}}{\frac{1}{\sigma_{prior}^2}+\frac{1}{\sigma_{data}^2}}\\\sigma_{posterior}=\sqrt{\frac{1}{\frac{1}{\sigma_{prior}^2}+\frac{1}{\sigma_{data}^2}}}
+\end{aligned}
+```
 
 **Derivation:**
 
 **Premise 1)**
 
-Bayes rule can be simplified to \$\$P(\mu\|Data) \propto P(Data\|\mu)
-\cdot P(\mu) \\ N(\mu\_{posterior},
-\sigma\_{posterior}^2)=N(\mu\_{sample}, \sigma\_{sample}^2)\cdot
-N(\mu\_{prior}, \sigma\_{prior}^2)\$\$
+Bayes rule can be simplified to
+
+``` math
+
+\begin{aligned}
+P(\mu|x) \propto P(x|\mu) \cdot P(\mu)\\
+N(\mu_{posterior}, \sigma_{posterior}^2) \propto N(\mu_{sample}, \sigma_{sample}^2)\cdot N(\mu_{prior}, \sigma_{prior}^2)
+\end{aligned}
+```
 
 **Premise 2)**
 
 The PDF for the normal distribution is
+
 ``` math
+
 f(x)=\frac{1}{2\cdot \sqrt{\sigma \pi}}\cdot exp(-\frac{1}{2}(\frac{x-\mu}{\sigma})^2)
 ```
 
 **Premise 3)**
 
-\$\$Prior: P(\mu\_{prior})=\frac{1}{2\cdot \sqrt{\sigma\_{prior}
-\pi}}\cdot
-exp(-\frac{1}{2}(\frac{\theta-\mu\_{prior}}{\sigma\_{prior}})^2) \\
-Likelihood: P(Data\|\mu\_{sample})=\frac{1}{2\cdot
-\sqrt{\sigma\_{sample} \pi}}\cdot
-exp(-\frac{1}{2}(\frac{\mu\_{sample}-\theta}{\sigma\_{sample}})^2) \$\$
+``` math
+
+\begin{aligned}
+Prior: P(\mu_{prior})=\frac{1}{2\cdot \sqrt{\sigma_{prior} \pi}}\cdot exp(-\frac{1}{2}(\frac{\theta-\mu_{prior}}{\sigma_{prior}})^2)
+\\
+Likelihood: P(x|\mu_{sample})=\frac{1}{2\cdot \sqrt{\sigma_{sample} \pi}}\cdot exp(-\frac{1}{2}(\frac{\mu_{sample}-\theta}{\sigma_{sample}})^2)
+\end{aligned}
+```
 
 **Premise 4)**
 
@@ -365,11 +382,14 @@ Since both exponent have the same base we can add the exponent
 resulting in
 
 ``` math
+
 exp(-\frac{1}{2}\cdot[(\frac{\theta-\mu_{prior}}{\sigma_{prior}})^2+(\frac{\mu_{sample}-\theta}{\sigma_{sample}})^2]
 ```
 
 After which brackets can be moved
+
 ``` math
+
 exp(-\frac{1}{2}\cdot[\frac{(\theta-\mu_{prior})^2}{\sigma_{prior}^2}+\frac{(\mu_{sample}-\theta)^2}{\sigma_{sample}^2}])
 ```
 
@@ -378,18 +398,26 @@ exp(-\frac{1}{2}\cdot[\frac{(\theta-\mu_{prior})^2}{\sigma_{prior}^2}+\frac{(\mu
 Expanding the brackets terms
 
 ``` math
+
 (a^2+b^2)=(a-b)\cdot(a-b)=a^2-ab-ab+b^2=a^2-2ab+b^2
 ```
 This means
+
 ``` math
+
 (\theta-\mu_{prior})^2=\theta^2-2\theta\mu_{prior}+\mu_{prior}^2
 ```
+
 and
+
 ``` math
+
 (\mu_{sample}-\theta)^2=\mu_{sample}^2-2\mu_{sample}\theta+\mu_{sample}^2
 ```
 which can be replaced in premise 5
+
 ``` math
+
 exp(-\frac{1}{2}\cdot[\frac{\theta^2-2\theta\mu_{prior}+\mu_{prior}^2}{\sigma_{prior}^2}+\frac{\mu_{sample}^2-2\mu_{sample}\theta+\mu_{sample}^2}{\sigma_{sample}^2}])
 ```
 
@@ -399,6 +427,7 @@ Separating each term by dividing by $`\sigma_{prior}^2`$ and
 $`\sigma_{sample}^2`$
 
 ``` math
+
 exp(-\frac{1}{2}\cdot\frac{\theta^2}{\sigma_{prior}^2}+\frac{-2\theta\mu_{prior}}{\sigma_{prior}^2}+\frac{\mu_{prior}^2}{\sigma_{prior}^2}+
 \frac{\mu_{sample}^2}{\sigma_{sample}^2}+\frac{-2\mu_{sample}\theta}{\sigma_{sample}^2}+\frac{\mu_{sample}^2}{\sigma_{sample}^2})
 ```
@@ -407,29 +436,46 @@ exp(-\frac{1}{2}\cdot\frac{\theta^2}{\sigma_{prior}^2}+\frac{-2\theta\mu_{prior}
 
 Group each term by the nominator
 
-\$\$\frac{\theta^2}{\sigma\_{prior}^2}+\frac{-2\theta\mu\_{prior}}{\sigma\_{prior}^2}+\frac{\mu\_{prior}^2}{\sigma\_{prior}^2}+
-\frac{\mu\_{sample}^2}{\sigma\_{sample}^2}+\frac{-2\mu\_{sample}\theta}{\sigma\_{sample}^2}+\frac{\mu\_{sample}^2}{\sigma\_{sample}^2}=
-\\ \theta^2(\frac{1}{\sigma\_{prior}^2}+\frac{1}{\sigma\_{sample}^2})+
--2\theta(\frac{\mu\_{prior}}{\sigma\_{prior}^2}+\frac{\mu\_{sample}}{\sigma\_{sample}^2})
-+(\frac{\mu\_{prior}^2}{\sigma\_{prior}^2}+\frac{\mu\_{sample}^2}{\sigma\_{sample}^2})
-\$\$ Since the last group is not dependent on $`\theta`$ it is not in
-our focus \$\$
-exp(-\frac{1}{2}\cdot\[\frac{\theta^2}{\sigma\_{prior}^2}+\frac{-2\theta\mu\_{prior}}{\sigma\_{prior}^2}+\frac{\mu\_{prior}^2}{\sigma\_{prior}^2}+
-\frac{\mu\_{sample}^2}{\sigma\_{sample}^2}+\frac{-2\mu\_{sample}\theta}{\sigma\_{sample}^2}+\frac{\mu\_{sample}^2}{\sigma\_{sample}^2}=
+``` math
+
+\begin{aligned}
+\frac{\theta^2}{\sigma_{prior}^2}+\frac{-2\theta\mu_{prior}}{\sigma_{prior}^2}+\frac{\mu_{prior}^2}{\sigma_{prior}^2}+
+\frac{\mu_{sample}^2}{\sigma_{sample}^2}+\frac{-2\mu_{sample}\theta}{\sigma_{sample}^2}+\frac{\mu_{sample}^2}{\sigma_{sample}^2}=
 \\
-exp(-\frac{1}{2}\cdot\theta^2(\frac{1}{\sigma\_{prior}^2}+\frac{1}{\sigma\_{sample}^2})+
--2\theta(\frac{\mu\_{prior}}{\sigma\_{prior}^2}+\frac{\mu\_{sample}}{\sigma\_{sample}^2})
-+not\\ dependent\\ on\\ \theta\]) \$\$
+\theta^2(\frac{1}{\sigma_{prior}^2}+\frac{1}{\sigma_{sample}^2})+
+-2\theta(\frac{\mu_{prior}}{\sigma_{prior}^2}+\frac{\mu_{sample}}{\sigma_{sample}^2})
++(\frac{\mu_{prior}^2}{\sigma_{prior}^2}+\frac{\mu_{sample}^2}{\sigma_{sample}^2})
+\end{aligned}
+```
+Since the last group is not dependent on $`\theta`$ it is not in our
+focus
+
+``` math
+
+\begin{aligned}
+exp(-\frac{1}{2}\cdot[\frac{\theta^2}{\sigma_{prior}^2}+\frac{-2\theta\mu_{prior}}{\sigma_{prior}^2}+\frac{\mu_{prior}^2}{\sigma_{prior}^2}+
+\frac{\mu_{sample}^2}{\sigma_{sample}^2}+\frac{-2\mu_{sample}\theta}{\sigma_{sample}^2}+\frac{\mu_{sample}^2}{\sigma_{sample}^2}=
+\\
+exp(-\frac{1}{2}\cdot\theta^2(\frac{1}{\sigma_{prior}^2}+\frac{1}{\sigma_{sample}^2})+
+-2\theta(\frac{\mu_{prior}}{\sigma_{prior}^2}+\frac{\mu_{sample}}{\sigma_{sample}^2})
++not\ dependent\ on\ \theta])
+\end{aligned}
+```
 
 **Premise 9)**
 
-The goal is to derive $`P(\mu|Data)`$ from
-$`P(\mu|Data) \propto P(Data|\mu) \cdot P(\mu)`$ An the general
-exponential form of the normal distribution is given in Premise 2 and
-the premises 6, 7 and 9 lead to \$\$\frac{1}{2}\cdot \theta^2
-(\frac{1}{\sigma^2})+\theta(\frac{\mu}{\sigma^2})+C= \\
-\frac{1}{2}\cdot\theta^2A+\theta B+C\$\$ the general exponential form
-for the normal distribution is always
+The goal is to derive $`P(\mu|x)`$ from
+$`P(\mu|x) \propto P(x|\mu) \cdot P(\mu)`$ An the general exponential
+form of the normal distribution is given in Premise 2 and the premises
+6, 7 and 9 lead to
+
+``` math
+
+\frac{1}{2}\cdot \theta^2 (\frac{1}{\sigma^2})+\theta(\frac{\mu}{\sigma^2})+C=
+\frac{1}{2}\cdot\theta^2A+\theta B+C
+```
+
+the general exponential form for the normal distribution is always
 $`\frac{1}{2}\cdot\theta^2A+\theta B+C`$ meaning that
 $`A=\frac{1}{\sigma^2}`$ and $`B=\frac{\mu}{\sigma^2}`$ and to obtain
 the standard deviation $`A`$ needs to be re-arranged to
@@ -439,21 +485,40 @@ $`\mu=\frac{B}{A}=\frac{\frac{\mu}{\sigma^2}}{\frac{1}{\sigma^2}}`$
 **Conclusion)**
 
 In Premise 8
+
 ``` math
 
+\begin{aligned}
 exp(-\frac{1}{2}\cdot\theta^2(\frac{1}{\sigma_{prior}^2}+\frac{1}{\sigma_{sample}^2})+
 -2\theta(\frac{\mu_{prior}}{\sigma_{prior}^2}+\frac{\mu_{sample}}{\sigma_{sample}^2})+C)
+\end{aligned}
 ```
-In Premise 9 \$\$ \sigma = \sqrt{\frac{1}{A}}, A=\frac{1}{\sigma^2}\\
-\mu=\frac{B}{A}=\frac{\frac{\mu}{\sigma^2}}{\frac{1}{\sigma^2}} \$\$
-Which implies that \$\$
-\sigma\_{posterior}=\sqrt{\frac{1}{\frac{1}{\sigma\_{prior}^2}+\frac{1}{\sigma\_{sample}^2}}}\\
-\mu\_{posterior}=\frac{\frac{\mu\_{prior}}{\sigma\_{prior}^2} +
-\frac{\mu\_{sample}}{\sigma\_{sample}^2}}{\frac{1}{\sigma\_{prior}^2} +
-\frac{1}{\sigma\_{sample}^2}} \$\$ Another way to obtain the posterior
-including the sample size is via:
+
+In Premise 9
+
 ``` math
-\mu_{posterior}=\frac{\frac{\mu_{prior}}{\sigma_{prior}^2}+\mu_{sample}*\frac{n}{\sigma_{sample}^2}}
+
+\begin{aligned}
+\sigma = \sqrt{\frac{1}{A}}, A=\frac{1}{\sigma^2}\\
+\mu=\frac{B}{A}=\frac{\frac{\mu}{\sigma^2}}{\frac{1}{\sigma^2}}
+\end{aligned}
+```
+
+Which implies that
+
+``` math
+
+\begin{aligned}
+\sigma_{posterior}=\sqrt{\frac{1}{\frac{1}{\sigma_{prior}^2}+\frac{1}{\sigma_{sample}^2}}}\\
+\mu_{posterior}=\frac{\frac{\mu_{prior}}{\sigma_{prior}^2} + \frac{\mu_{sample}}{\sigma_{sample}^2}}{\frac{1}{\sigma_{prior}^2} + \frac{1}{\sigma_{sample}^2}}
+\end{aligned}
+```
+
+Another way to obtain the posterior including the sample size is via:
+
+``` math
+
+\mu_{posterior}=\frac{\frac{\mu_{prior}}{\sigma_{prior}^2}+\mu_{sample}\cdot\frac{n}{\sigma_{sample}^2}}
 {\frac{1}{\sigma_{prior}^2}+\frac{n}{\sigma_{sample}^2}}
 ```
 
@@ -461,12 +526,14 @@ including the sample size is via:
 
 **Premise 1)**
 
-\$\$ Prior: P(\mu\_{prior})=\frac{1}{2\cdot \sqrt{\sigma\_{prior}
-\pi}}\cdot
-exp(-\frac{1}{2}(\frac{\theta-\mu\_{prior}}{\sigma\_{prior}})^2) \\
-Likelihood: P(Data\|\mu\_{sample})=\prod\_{i=1}^n \frac{1}{2\cdot
-\sqrt{\sigma\_{sample} \pi}}\cdot
-exp(-\frac{1}{2}(\frac{x_i-\theta}{\sigma\_{sample}})^2) \$\$
+``` math
+
+\begin{aligned}
+Prior: P(\mu_{prior})=\frac{1}{2\cdot \sqrt{\sigma_{prior} \pi}}\cdot exp(-\frac{1}{2}(\frac{\theta-\mu_{prior}}{\sigma_{prior}})^2)
+\\
+Likelihood: P(x|\mu_{sample})=\prod_{i=1}^n \frac{1}{2\cdot \sqrt{\sigma_{sample} \pi}}\cdot exp(-\frac{1}{2}(\frac{x_i-\theta}{\sigma_{sample}})^2)
+\end{aligned}
+```
 
 **Premise 2)**
 
@@ -509,23 +576,33 @@ exp(\frac{1}{2}\cdot[\frac{-2\theta\sum_{i=1}^nx_i+n\theta^2}{\sigma^2_{sample}}
 **Premise 6)**
 
 The posterior can then be rewritten as
-$`P(\mu|Data) \propto P(Data|\mu) \cdot P(\mu)`$
+$`P(\mu|x) \propto P(x|\mu) \cdot P(\mu)`$
 
-\$\$
-exp(\frac{1}{2}\cdot\[\frac{-2\theta\sum\_{i=1}^nx_i+n\theta^2}{\sigma^2\_{sample}}\])
-\*exp(-\frac{1}{2}\cdot(\frac{\theta-\mu\_{prior}}{\sigma^2\_{prior}})^2)=\\
-exp(\frac{1}{2}\cdot\[\frac{-2\theta\sum\_{i=1}^nx_i+n\theta^2}{\sigma^2\_{sample}}+\frac{\theta-\mu\_{prior}}{\sigma^2\_{prior}})^2\])
-\$\$
+``` math
+
+\begin{aligned}
+exp(\frac{1}{2}\cdot[\frac{-2\theta\sum_{i=1}^nx_i+n\theta^2}{\sigma^2_{sample}}])
+*exp(-\frac{1}{2}\cdot(\frac{\theta-\mu_{prior}}{\sigma^2_{prior}})^2)=\\
+exp(\frac{1}{2}\cdot[\frac{-2\theta\sum_{i=1}^nx_i+n\theta^2}{\sigma^2_{sample}}+\frac{\theta-\mu_{prior}}{\sigma^2_{prior}})^2])
+\end{aligned}
+```
 
 **Premise 7)**
 
 Expanding the term of the nominator in the prior and substitute it back
-in the previous equation. \$\$
-(\theta-\mu\_{prior})^2=\theta^2-2\theta\mu\_{prior}+\mu\_{prior}^2 \\
-\frac{\theta^2}{\sigma\_{prior}^2}+\frac{-2\theta\mu\_{prior}}{\sigma\_{prior}^2}+\frac{\mu\_{prior}^2}{\sigma\_{prior}^2}
+in the previous equation.
+
+``` math
+
+\begin{aligned}
+(\theta-\mu_{prior})^2=\theta^2-2\theta\mu_{prior}+\mu_{prior}^2
 \\
-exp(-\frac{1}{2}\cdot\[\frac{\theta^2}{\sigma\_{prior}^2}+\frac{-2\theta\mu\_{prior}}{\sigma\_{prior}^2}+\frac{\mu\_{prior}^2}{\sigma\_{prior}^2}+
-\frac{-2\theta\sum\_{i=1}^nx_i+n\theta^2}{\sigma^2\_{sample}}\]) \$\$
+\frac{\theta^2}{\sigma_{prior}^2}+\frac{-2\theta\mu_{prior}}{\sigma_{prior}^2}+\frac{\mu_{prior}^2}{\sigma_{prior}^2}
+\\
+exp(-\frac{1}{2}\cdot[\frac{\theta^2}{\sigma_{prior}^2}+\frac{-2\theta\mu_{prior}}{\sigma_{prior}^2}+\frac{\mu_{prior}^2}{\sigma_{prior}^2}+
+\frac{-2\theta\sum_{i=1}^nx_i+n\theta^2}{\sigma^2_{sample}}])
+\end{aligned}
+```
 
 **Premise 8)**
 
@@ -561,12 +638,13 @@ exp(-\frac{1}{2}\cdot\theta^2(\frac{1}{\sigma_{prior}^2}+\frac{n}{\sigma_{sample
 
 From the steps 8 and 9 in the previous derivation we arive at
 
-\$\$
-\sigma\_{posterior}=\sqrt{\frac{1}{\frac{1}{\sigma\_{prior}^2}+\frac{n}{\sigma\_{sample}^2}}}\\
-\mu\_{posterior}=\frac{\frac{\mu\_{prior}}{\sigma\_{prior}^2} +
-\frac{\mu\_{sample}\cdot
-n}{\sigma\_{sample}^2}}{\frac{1}{\sigma\_{prior}^2} +
-\frac{n}{\sigma\_{sample}^2}} \$\$
+``` math
+
+\begin{aligned}
+\sigma_{posterior}=\sqrt{\frac{1}{\frac{1}{\sigma_{prior}^2}+\frac{n}{\sigma_{sample}^2}}}\\
+\mu_{posterior}=\frac{\frac{\mu_{prior}}{\sigma_{prior}^2} + \frac{\mu_{sample}\cdot n}{\sigma_{sample}^2}}{\frac{1}{\sigma_{prior}^2} + \frac{n}{\sigma_{sample}^2}}
+\end{aligned}
+```
 
 As might be clear this is less computational heavy than MCMC methods.
 For more then two parameter such an analytically approach becomes more
@@ -579,41 +657,61 @@ happens in Bayes theorem.
 
 Standard Bayesian models update the likelihood and prior to the
 posterior via
+
 ``` math
+
 P(\theta|x) = \frac{ P(x|\theta) \cdot P(\theta)}{P(x)}
 ```
+
 taking the log of the terms results in
 
 ``` math
+
 log(P(\theta|x)) = log(P(x|\theta)) + log(P(\theta)) - log(P(x))
 ```
 
 Here the likelihood is written as $`-log(P(x|\theta))`$, the negative
 log-likelihood. So this is similar to
 
-\$\$-log(P(x\|\theta))=L(x; \theta)\\ log(P(x\|\theta))=-L(x;
-\theta)\$\$ where $`L`$ is a loss function of the data $`x`$ connected
-to the model parameter $`\theta`$. Fully, this is corresponding to
+``` math
+
+\begin{aligned}
+-log(P(x|\theta))=L(x; \theta)\\
+log(P(x|\theta))=-L(x; \theta)
+\end{aligned}
+```
+
+where $`L`$ is a loss function of the data $`x`$ connected to the model
+parameter $`\theta`$. Fully, this is corresponding to
 
 ``` math
+
 log(P(\theta|x)) = -L(x; \theta) + log(P(\theta)) - log(p(x))
 ```
+
 The exponent of this becomes
+
 ``` math
 
 exp(log(P(\theta|x))) = exp(-L(x; \theta)) \cdot exp(log(P(\theta))) \cdot exp(-log(P(x)))
 ```
+
 This results in
+
 ``` math
 
 P(\theta|x) = exp(-L(x; \theta)) \cdot P(\theta) \cdot \frac{1}{P(x)}
 ```
+
 which is equally to
+
 ``` math
 
 P(\theta|x) = \frac{exp(-L(x; \theta)) \cdot P(\theta)}{P(x)}
 ```
+
 which can be re-written as
+
 ``` math
 
 P(\theta|x) = exp(-L(x; \theta)) \cdot P(\theta)
@@ -632,8 +730,13 @@ In a simplified case, assuming both the prior and the data-generating
 model are normally distributed, the ABC-rejection algorithm begins by
 simulating a parameter from the prior distribution.
 
-\$\$ \mu\_{i}^\*\sim N(\mu\_{prior},\sigma\_{prior}^2) \\
-\sigma\_{i}^{2\*}\sim Exp(rate) \$\$
+``` math
+
+\begin{aligned}
+\mu_{i}^*\sim N(\mu_{prior},\sigma_{prior}^2) \\
+\sigma_{i}^{2*}\sim Exp(rate)
+\end{aligned}
+```
 
 The asterisk ($`^*`$) denotes that these parameters are temporary, and
 this will become important later.Next, a data-generating model is used
@@ -681,24 +784,28 @@ approximates the posterior distribution of $`\mu`$.
 Instead of $`P`$ the function ‘$`f`$’ are used this to highlight that
 the probability is a mapping function. A mapping function being a ‘rule’
 that maps $`x`$ to $`y`$ and so $`y=f(x)`$.
+
 ``` math
 
-f(\beta \mid Data, Info) = 
-\frac{f(Data \mid \beta) \cdot f(\beta \mid Info)}
-{\int f(Data \mid \beta) \cdot f(\beta \mid Info)}
+f(\theta \mid x, I) = 
+\frac{f(x \mid \theta) \cdot f(\theta \mid I)}
+{\int f(x \mid \theta) \cdot f(\theta \mid I) \cdot d\theta}
 ```
 The integral in the denominator is used to scale the posterior
 probability to one. This expression is sometimes simplified to
+
 ``` math
-f(\beta \mid Data, Info) = f(Data \mid \beta) \propto f(\beta \mid Info)
+
+f(\theta \mid x, I) = f(x \mid \theta) \propto f(\theta \mid I)
 ```
+
 Where the $`\propto`$ symbol indicates ‘proportional to’. Therefore, the
 posterior is nothing more than a function that describes the probability
-$`y`$ as a function of $`\beta`$ conditional on $`Data`$ and $`Info`$
-($`y=f(\beta \mid Data, Info)`$). This cannot be solely conditional on
-the $`Data`$ as the $`Data`$ is not uncertain our information/believe is
-uncertain about a none existing object $`\beta`$ (unless Platonism is
-true).
+$`y`$ as a function of $`\theta`$ conditional on $`x`$ and $`I`$
+($`y=f(\theta \mid x, I)`$). This cannot be solely conditional on the
+$`x`$ as the $`x`$ is not uncertain our information (‘belief’
+thoughts/ideas) is uncertain about a none existing object $`\theta`$
+(unless Platonism is true).
 
 In the previous part a single prior model was used. Bayesian Model
 Averaging (BMA) has the advantages that it allows multiple ($`k`$)
@@ -707,16 +814,19 @@ $`f`$ so multiple priors as $`f_k`$ in the equation below can be seen
 nothing more as multiple functions (or models). This in my opinion makes
 it easier to see that there is only optimized between multiple
 functions. It sound weird to say to optimize between probabilities.
+
 Hence, multiple possible scenarios that could have been responsible for
 $`\beta`$ can be introduced as below.
+
 ``` math
 
-f(\beta \mid Data,Info) = \frac{f(Data \mid \beta) \cdot f_k(\beta \mid Info)}{\int \left( \sum_{k=1}^{k} f(Data \mid \beta) \cdot f_k(\beta \mid Info) \right)}
+f(\theta \mid x, I) = \frac{f(x \mid \theta) \cdot f_k(\theta \mid I)}{\int \left( \sum_{k=1}^{k} f(x \mid \theta) \cdot f_k(\theta \mid I) \right)}
 ```
-Now it should be clear that each $`\beta`$ contained within
+
+Now it should be clear that each $`\theta`$ contained within
 $`g(E(y \mid x_{ij})) = \sum_{j=1}^{v} \beta_j \cdot x_{ij}`$ is being
 restricted by the prior models. While in frequentism it is unrestricted
-and ‘complete indifference’ towards the possibility of $`\beta`$. All
+and ‘complete indifference’ towards the possibility of $`\theta`$. All
 these methods can be used in a meta-analysis.
 
 ### Meta-analysis
@@ -725,31 +835,46 @@ A standard meta-analysis uses a measure of location (mean) and scale
 (precision) to estimate a pooled value based on all parameters. For a
 fixed meta-analysis the pooled parameter is derived via the following
 equation.
+
 ``` math
+
 \theta_{pooled} = \frac{\sum_{i=1}^{k}(\theta_i\cdot w_i)}{\sum_{k=1}^kw_i}
 ```
 $`\theta_i`$ is the extracted effect-size for a study $`i`$. The $`w_i`$
-is the weight per study $`i`$ for allk $`k`$ studies, derived from the
+is the weight per study $`i`$ for all $`k`$ studies, derived from the
 precision $`1/se_i^2`$ via the equation below.
+
 ``` math
+
 w_i = \frac{1}{se_i^2}
 ```
+
 The standard error for the pooled effect-size can then be derived via
 the formula given below.
 
 ``` math
+
 se(\theta_{pooled})=\frac{1}{\sqrt\sum_{i=1}^{k}(w_i)}
 ```
 For a random-effect meta-analysis the variance between studies is
 separately modeled. In the metafor package REML or (Restricted Maximum
 Likelihood) is used to estimate this between study variance. However it
-is also possible using the DerSimonian and Laird method. \$\$
-\tau^2=max(0,
-\frac{Q-(k-1)}{\sum\_{i=1}^{k}\frac{1}{w_i}-\frac{\sum\_{i=1}^{k}1/w_i^2}{\sum\_{i=1}^{k}1/w_i}})\\
-\\ w^\*\_i=\frac{1}{(\frac{1}{w_i}+\tau^2)} \\ \theta\_{pooled} =
-\frac{\sum\_{i=1}^{k}(\theta_i\cdot w^\*\_i)}{\sum\_{i=1}^{k}(w^\*\_i)}
-\\ se(\theta\_{pooled})=\frac{1}{\sqrt(\sum\_{i=1}^{k}w^\*\_i)} \$\$ If
-we now go back to how we analytically derived the posterior we can
+is also possible using the DerSimonian and Laird method.
+
+``` math
+
+\begin{aligned}
+\tau^2=max(0, \frac{Q-(k-1)}{\sum_{i=1}^{k}\frac{1}{w_i}-\frac{\sum_{i=1}^{k}1/w_i^2}{\sum_{i=1}^{k}1/w_i}})\
+\\
+w^*_i=\frac{1}{(\frac{1}{w_i}+\tau^2)}
+\\
+\theta_{pooled} = \frac{\sum_{i=1}^{k}(\theta_i\cdot w^*_i)}{\sum_{i=1}^{k}(w^*_i)}
+\\
+se(\theta_{pooled})=\frac{1}{\sqrt(\sum_{i=1}^{k}w^*_i)}
+\end{aligned}
+```
+
+If we now go back to how we analytically derived the posterior we can
 devise a function that can analytically perform a fixed effect
 meta-analysis with ease. I have placed this in a function called
 ‘abmeta’. In in simple cases it approximates the results of metafor and
@@ -760,22 +885,27 @@ variance component slightly differs with that from metafor and the
 ### BMA and meta-analysis
 
 In a meta-analysis we do not talk about $`\beta`$ but about a set of
-estimates $`\beta=\{\beta_{i}, ..., \beta_{n}\}`$ meaning that
-$`f(Meta-data\mid\{\beta_{i}, ..., \beta_{n}\})`$. Hereby the
+estimates $`\theta=\{\theta_{i}, ..., \theta_{n}\}`$ meaning that
+$`f(x_{meta-data}\mid\{\theta_{i}, ..., \theta_{n}\})`$. Hereby the
 flexibility allows that these estimates are either likelihood estimates
-($`\hat{\beta}`$) or posterior estimates ($`\beta`$). and we end up with
-an expression that should capture the inference to an underlying pooled
-model parameter.
+($`\hat{\theta}`$) or posterior estimates ($`\beta`$). and we end up
+with an expression that should capture the inference to an underlying
+pooled model parameter.
+
 ``` math
 
-f(\beta_{poolded} \mid Meta-data,Info) = \frac{f(Meta-data \mid \{\beta_{i}, ..., \beta_{n}\}) \cdot f_k(\beta_{pooled} \mid Info)}{\int \left( \sum_{k=1}^{m} f(Meta-data \mid \{\beta_{i}, ..., \beta_{n}\}) \cdot f_k(\beta_{pooled} \mid Info) \right)}
+f(\theta_{poolded} \mid x_{meta-data}, I) = \frac{f(x_{meta-data} \mid \{\theta_{i}, ..., \theta_{n}\}) \cdot f_k(\theta_{pooled} \mid I)}{\int \left( \sum_{k=1}^{m} f(x_{meta-data} \mid \{\theta_{i}, ..., \theta_{n}\}) \cdot f_k(\theta_{pooled} \mid I) \right)}
 ```
 Assuming the pooled parameter $`\beta_pooled`$is derived the equation
 layed out before the variance of the pooled parameter can be
 analytically derived as given by Hoeting et al. (1999):
 
-\$\$ SE(\beta\_{pooled}) = \sqrt{\sum^m\_{k=1}( w\_{prior} \cdot
-(\beta_k^2+SE(\beta_k)^2))-\beta\_{pooled}^2}\\ \$\$
+``` math
+
+\begin{aligned}
+SE(\theta_{pooled}) = \sqrt{\sum^m_{k=1}( w_{prior} \cdot (\theta_k^2+SE(\theta_k)^2))-\theta_{pooled}^2}\\
+\end{aligned}
+```
 
 ### A short reflection on uncertainty
 
@@ -805,7 +935,7 @@ In Bayesian updating, the prior reflects the extent to which we want to
 sacrifice over the objectivity (Ignorance of any prior information) of
 the likelihood by using information which cannot be formalized into the
 likelihood. This is captured by the relationship
-$`f(\theta \mid Data, Info) = f(Data \mid \theta) \propto f(\theta \mid Info)`$
+$`f(\theta \mid x, I) = f(x \mid \theta) \propto f(\theta \mid I)`$
 
 The posterior, therefore, is merely the weighted combination of the
 prior and likelihood. It represents the relationship (e.g., $`0.25`$ as
@@ -818,12 +948,12 @@ While this argument may be unsound — because unicorns do not exist — the
 reasoning itself is not flawed. The issue lies with the premises, not
 the structure of the argument. Hence, uncertainty does not exist in the
 ‘real’ world; it resides solely in our minds. We cannot be ‘wrong’ or
-‘correct’ about $`f(\beta \mid \text{Data, Info})`$ because it does not
-exist as a tangible entity/object. Even if it did, its existence would
-have no impact on reality because uncertainty is unrelated to the way
-reality operates. In the real world, events either occur or they do not.
-If my unicorn does not exist, I will never see it, and it was never
-orange in the first place.
+‘correct’ about $`f(\theta \mid x, I)`$ because it does not exist as a
+tangible entity/object. Even if it did, its existence would have no
+impact on reality because uncertainty is unrelated to the way reality
+operates. In the real world, events either occur or they do not. If my
+unicorn does not exist, I will never see it, and it was never orange in
+the first place.
 
 We should also avoid treating models as a definitive representation of
 reality. Models are tools that convey information and serve as pragmatic
