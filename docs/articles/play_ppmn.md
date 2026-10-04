@@ -66,15 +66,15 @@ example_data <- data.frame(
 
   estimate = c(
     100,   4, 0.5,   # Chl ~ TP
-    -1.1,   1,       # Chl ~ TP
+    -1.1,  1,        # Chl ~ TP
     7.5,  -6,   4,   # pH ~ Chl
     90,  7.5, 0.2,   # HCO3 ~ pH
     2.8,-0.7),       # CO2onlyuser ~ HCO3
 
   error = c(
     20,   0.5, 0.25,
-    0.3, 0.4,
-    4,  2,      1,
+    0.3,  0.4,
+    4,      2,    1,
     20,   1.5, 0.05,
     0.3,  0.1))
 
@@ -245,7 +245,7 @@ example_data <- data.frame(
 
   estimate = c(
     2000,   4,   1,  # Chl ~ TP #bad priors for asymptote and scale
-    -0.3, 3.5,       # Chl ~ TP #bad priors for slope and intercept
+    -0.3, 4.5,       # Chl ~ TP #bad priors for slope and intercept
     7.5,   -6,   4,  # pH ~ Chl
     90,   7.5, 0.2,  # HCO3 ~ pH
     2.8, -0.7),      # CO2onlyuser ~ HCO3
@@ -315,13 +315,11 @@ mod_list[[2]]$Residuals$resid_boxplot
 Using non-informative priors, the PPMN should in principle still update
 appropriately, although convergence may be slower because the initial
 parameter space is much broader. This also appears to be the case here.
-The fit for the relationship HCO3~pH remains suboptimal, but clear
-shifts toward a more reasonable fit are visible for the other edge
-functions. A similar issue arises when fitting nonlinear models by
-maximum likelihood, where successful numerical optimization can depend
-strongly on the specification of suitable starting values, particularly
-when the objective function contains multiple local optima or poorly
-identified regions.
+The fit for all remains sub optimal. A similar issue arises when fitting
+non-linear models by maximum likelihood, where successful numerical
+optimization can depend strongly on the specification of suitable
+starting values, particularly when the objective function contains
+multiple local optima or poorly identified regions.
 
 ``` r
 
@@ -481,7 +479,7 @@ example_data <- data.frame(
   estimate = c(
     130,    4.5,   0.8,   # Chl ~ TP
     -1.1,   1.2,          # Chl ~ TP
-    10.5,  -3.5,     4,   # pH ~ Chl
+    10.5,  -4.5,     4,   # pH ~ Chl
     120,    7.5,   0.5,   # HCO3 ~ pH
     2.8,   -0.7),         # CO2onlyuser ~ HCO3
 
@@ -511,7 +509,7 @@ mod_dgp <- mod1
 true_par <- list(
   `ef1`            = c(b0=100, b1=4.5,  b2=.7),  # Chl ~ TP
   `ef2`            = c(b0=-0.8, b1=1.1,  b2=.7), # Chl ~ TP
-  `ef3`            = c(b0=8.5, b1=-4.5, b2=6),   # pH ~ Chl
+  `ef3`            = c(b0=8.5, b1=-5.5, b2=6),   # pH ~ Chl
   `ef4`            = c(b0=100, b1=7,    b2=0.4), # HCO3 ~ pH
   `ef5`            = c(b0=2.5, b1=-.5))          # CO2onlyuser ~ HCO3
 
@@ -581,7 +579,7 @@ results1 <- results2 <- vector("list", nsim)
 #start time
 start_run <- Sys.time()
 
-#do not run this if you do not have time (plus-minus 10-20 min) or speed it up with
+#do not run this if you do not have time (plus-minus 10-15 min) or speed it up with
 #parallel computation (its best to just get a coffee)
 for(s in seq_len(nsim)){
 
@@ -723,7 +721,7 @@ end_run <- Sys.time()
 
 #total run time
 end_run-start_run
-#> Time difference of 11.15573 mins
+#> Time difference of 9.425153 mins
 
 #organize results and create quantile bands
 results1a <- do.call(rbind, results1)
