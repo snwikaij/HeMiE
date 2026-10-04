@@ -4,7 +4,7 @@
 \alias{.ppmn_kl_calibrate}
 \title{Grid approximation for Kullenback-Leibler divergence}
 \usage{
-.ppmn_kl_calibrate(r_data, r_prior, n_boot = 2000, n_grid)
+.ppmn_kl_calibrate(r_data, r_prior, n_boot = 2000, n_grid, n_samp)
 }
 \arguments{
 \item{r_data}{Residuals of the data.}

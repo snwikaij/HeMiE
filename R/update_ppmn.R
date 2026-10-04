@@ -85,7 +85,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
 
   if(method=="kernel"){
 
-    kl_target     <- .ppmn_kl_calibrate(resid_1, resid_0, n_boot=2000, n_grid=3000)
+    kl_target     <- .ppmn_kl_calibrate(resid_1, resid_0, n_boot=2000, n_grid=3000, n_samp=nrow(obs_mat))
     lambda        <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
 
   }else if(method=="manual"){

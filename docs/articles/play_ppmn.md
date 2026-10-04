@@ -67,7 +67,7 @@ example_data <- data.frame(
   estimate = c(
     100,   4, 0.5,   # Chl ~ TP
     -1.1,   1,       # Chl ~ TP
-    7.5,  -4,   4,   # pH ~ Chl
+    7.5,  -6,   4,   # pH ~ Chl
     90,  7.5, 0.2,   # HCO3 ~ pH
     2.8,-0.7),       # CO2onlyuser ~ HCO3
 
@@ -246,7 +246,7 @@ example_data <- data.frame(
   estimate = c(
     2000,   4,   1,  # Chl ~ TP #bad priors for asymptote and scale
     -0.3, 3.5,       # Chl ~ TP #bad priors for slope and intercept
-    7.5,   -4,   4,  # pH ~ Chl
+    7.5,   -6,   4,  # pH ~ Chl
     90,   7.5, 0.2,  # HCO3 ~ pH
     2.8, -0.7),      # CO2onlyuser ~ HCO3
 
@@ -446,7 +446,7 @@ separately for each child on the mean residual deviation.
 nsim <- 100
 
 #number of sequential updats
-m    <- 5
+m    <- 10
 
 #create a network
 example_data <- data.frame(
@@ -581,7 +581,7 @@ results1 <- results2 <- vector("list", nsim)
 #start time
 start_run <- Sys.time()
 
-#do not run this if you do not have time (plus-minus 7 min) or speed it up with
+#do not run this if you do not have time (plus-minus 10-20 min) or speed it up with
 #parallel computation (its best to just get a coffee)
 for(s in seq_len(nsim)){
 
@@ -723,7 +723,7 @@ end_run <- Sys.time()
 
 #total run time
 end_run-start_run
-#> Time difference of 9.32207 mins
+#> Time difference of 11.15573 mins
 
 #organize results and create quantile bands
 results1a <- do.call(rbind, results1)
@@ -760,7 +760,7 @@ total_ppmn_loss <- ggplot(loss_df2, aes(x=update, y=mean_resid, group=simulation
   geom_line(data=mu_seq, aes(x=update, y=mean_resid), col="dodgerblue3", inherit.aes = F, lwd=1.2)+
   geom_line(alpha = .1)+
   geom_hline(yintercept = 0, col="tomato3", lty=2, lwd=0.8)+
-  xlim(1, 5)+
+  xlim(1, 10)+
   theme_classic() +
   labs(x = "Sequential update", y = "Total mean absolute \nresidual deviation")
 

@@ -5,7 +5,7 @@ Grid approximation for Kullenback-Leibler divergence
 ## Usage
 
 ``` r
-.ppmn_kl_calibrate(r_data, r_prior, n_boot = 2000, n_grid)
+.ppmn_kl_calibrate(r_data, r_prior, n_boot = 2000, n_grid, n_samp)
 ```
 
 ## Arguments

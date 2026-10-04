@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 #devtools::document()
 #devtools::build_readme()
 #.rs.restartR()
-#pkgdown::build_site()
+#pkgdown::build_site(lazy = T)
 
 #within the terminal run this to update
 #git add -A
