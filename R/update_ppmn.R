@@ -8,7 +8,7 @@
 #' method is 'kernel', The other method 'manual' uses the Kullenback-Leibler divergence applied
 #' over the number of simulations to express the concentration strength relative to no change relative to the prior.
 #' Here the default of the update strength is 95%.
-#' @param up_strength The fraction of information that is allowed to concentrate in the generalized posterior
+#' @param up_chararacter The fraction of information that is allowed to concentrate in the generalized posterior
 #'  when using the method 'manual'.
 #' @param max_lambda Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).
 #' @param diagnostics If residual diagnostics should be returned (default diagnostics = T).
@@ -25,15 +25,23 @@
 #'
 #' @export
 update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
-                        method="kernel", up_strength=0.95, max_lambda=1000,
+                        method="kernel3", up_character=NULL, max_lambda=1000,
                         diagnostics=T, covar=T, seed=123){
 
   if(nsim<1){stop("number of simulations cannot be smaller than 1.")}
   if(level>0.99999){stop("level cannot be larger than .99999.")}
   if(level<0.00001){stop("level cannot be smaller than .00001.")}
-  if(!is.null(up_strength)){
-    if(up_strength>1){stop("update fraction cannot be larger than 1.")}
-    if(up_strength<0){stop("update fraction cannot be smaller than 0.")}}
+
+  if(method=="manual"){
+    if(is.null(up_character) || up_character>1 || up_character<0){
+      stop("The update character for method 'manual' is the update fraction and cannot be smaller than 0 or larger than 1.")}}
+  if(method=="oob"){
+    if(is.null(up_character) || up_character<1){
+      stop("The update character for method 'oob' is the number sequence length and cannot be smaller than 1.")}}
+  if(method=="best_frac"){
+    if(is.null(up_character) || up_character>1 || up_character<0){
+      stop("The update character for method 'best_frac' is best percentage of particles and cannot be smaller than 0 or larger than 1.")}}
+
   if(!inherits(object,"ppmn")){class(object) <- c("ppmn","list")}
 
   #seed
@@ -83,21 +91,50 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
     z <- z[is.finite(z)]
     if(length(z)==0){NA}else{median(z)}})
 
-  if(method=="kernel"){
+  if(method=="kernel1"){
 
-    kl_target     <- .ppmn_kl_calibrate(resid_1, resid_0, n_boot=2000, n_grid=3000, n_samp=nrow(obs_mat))
-    lambda        <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
+    kl_target <- .ppmn_resid_mc_kl(resid1=lossandresid$resid1, resid0=lossandresid$resid0, loss=loss)
+    lambda    <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
+
+  }else if(method=="kernel2"){
+
+    kl_target <- .ppmn_kl_calibrate(resid_1, resid_0, n_boot=2000, n_grid=3000, n_samp=nrow(obs_mat))
+    lambda    <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
+
+  }else if(method=="kernel3"){
+
+    best      <- which.min(loss)
+    resid_1   <- lossandresid$resid1[,,best]
+    resid_0   <- lossandresid$resid1
+    kl_target <- .ppmn_resid_bboot(resid1 = resid_1, resid0 = resid_0)
+    lambda    <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
 
   }else if(method=="manual"){
 
-    kl_target     <- log(1/(1-up_strength))
+    kl_target     <- log(1/(1-up_character))
     lambda        <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
 
-  }else{stop("Method should be 'kernel' or 'manual'.")}
+  }else if(method=="sqrtn"){
+
+    lambda <- sqrt(nrow(obs_mat))
+
+  }else if(method=="best_frac"){
+
+    lambda <- .ppmn_lambda_level(loss, best_frac=up_character, max_lambda=max_lambda)
+
+  }else if(method=="oob"){
+
+    lambda        <- .ppmn_oob_lambda_pred(obs_mat, lossandresid$loss1, max_lambda, seed,
+                                           seq_len=update_character, n_boot=1000)
+
+  }else{stop("Method should be 'kernel1', 'kernel2', 'kernel3', 'manual', 'sqrtn', 'best_frac' or 'oob'.")}
 
   weights                   <- .ppmn_stable_weights(loss, lambda)
   ESS                       <- 1/sum(weights^2)
   function_particle_weights <- list()
+
+  if(lambda>max_lambda){warning("Lambda exceeds max_lambda, consider increasing max_lambda.")}
+  if(ESS<5){warning("The ESS is 5 indicating either priors are strong or nsim is too low.")}
 
 ############################################
 #nodes that contribute to observed vertices#
@@ -288,7 +325,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   object$Info <- list(method=method, weights=weights,
                       function_particle_weights=function_particle_weights,
                       function_weights=object$FunctionWeights,
-                      lambda=unlist(lambda), ESS=ESS)
+                      lambda=lambda, ESS=ESS)
 
 ##########################
 #rebuild covariance Sigma#
@@ -361,7 +398,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
       parameters=names(sub),
       do.call(rbind,sub))})
 
-  object$`Parameter table` <- do.call(rbind.data.frame,par_tab)
-  rownames(object$`Parameter table`) <- NULL
+  object$ParameterTable <- do.call(rbind.data.frame, par_tab)
+  rownames(object$ParameterTable) <- NULL
 
 return(object)}

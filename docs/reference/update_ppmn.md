@@ -16,8 +16,8 @@ update_ppmn(
   new_data,
   nsim = 3000,
   level = 0.9,
-  method = "kernel",
-  up_strength = 0.95,
+  method = "kernel3",
+  up_character = NULL,
   max_lambda = 1000,
   diagnostics = T,
   covar = T,
@@ -52,11 +52,6 @@ update_ppmn(
   to express the concentration strength relative to no change relative
   to the prior. Here the default of the update strength is 95%.
 
-- up_strength:
-
-  The fraction of information that is allowed to concentrate in the
-  generalized posterior when using the method 'manual'.
-
 - max_lambda:
 
   Maximum lambda that can be set for Generalized Bayesian Updating
@@ -74,3 +69,8 @@ update_ppmn(
 - seed:
 
   Seed value 123.
+
+- up_chararacter:
+
+  The fraction of information that is allowed to concentrate in the
+  generalized posterior when using the method 'manual'.

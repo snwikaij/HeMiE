@@ -580,18 +580,18 @@ define how strongly the posterior is allowed to concentrate. The update
 strength is then indirectly determined via the Kullback-Leibler
 divergence (KL-divergence). This is performed by setting the
 <code>method</code> to <code>manual</code> and defining
-<code>up_strength</code> as a proportion of the concentration between 0
+<code>up_character</code> as a proportion of the concentration between 0
 and 1.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Update the foundational ppmn allowing the data to dominate by 5%</span></span>
-<span><span class="va">updated_ppmn_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_ppmn.html">update_ppmn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">foundational_ppmn</span>, new_data <span class="op">=</span> <span class="va">train_data</span>, method <span class="op">=</span> <span class="st">"manual"</span>, up_strength <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
+<span><span class="va">updated_ppmn_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_ppmn.html">update_ppmn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">foundational_ppmn</span>, new_data <span class="op">=</span> <span class="va">train_data</span>, method <span class="op">=</span> <span class="st">"manual"</span>, up_character <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Update the foundational ppmn allowing the data to dominate by 50%</span></span>
-<span><span class="va">updated_ppmn_50</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_ppmn.html">update_ppmn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">foundational_ppmn</span>, new_data <span class="op">=</span> <span class="va">train_data</span>, method <span class="op">=</span> <span class="st">"manual"</span>, up_strength <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="va">updated_ppmn_50</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_ppmn.html">update_ppmn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">foundational_ppmn</span>, new_data <span class="op">=</span> <span class="va">train_data</span>, method <span class="op">=</span> <span class="st">"manual"</span>, up_character <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Update the foundational ppmn allowing the data to dominate by 95%</span></span>
-<span><span class="va">updated_ppmn_95</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_ppmn.html">update_ppmn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">foundational_ppmn</span>, new_data <span class="op">=</span> <span class="va">train_data</span>, method <span class="op">=</span> <span class="st">"manual"</span>, up_strength <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
+<span><span class="va">updated_ppmn_95</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_ppmn.html">update_ppmn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">foundational_ppmn</span>, new_data <span class="op">=</span> <span class="va">train_data</span>, method <span class="op">=</span> <span class="st">"manual"</span>, up_character <span class="op">=</span> <span class="fl">0.95</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co">#Display the residuals on top of each other</span></span>
 <span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span></span>
@@ -603,15 +603,14 @@ and 1.</p>
 <span>                    <span class="st">"KL fraction 95%"</span><span class="op">)</span>,</span>
 <span>  label_y<span class="op">=</span><span class="fl">1.02</span>, label_x<span class="op">=</span><span class="fl">1.25</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/updating_via_KL_divergence-1.png" class="r-plt" alt="" width="768"></p>
-<p>Below the box plots the number behind <code>Kl=</code> indicates the
-information learned from the data. The median and mu (mean) indicate the
-center of the residuals. For Characeae, the residuals are standardized.
-However, Characeae is a binary response variable, and while
-standardization via the pearson residuals is correct
+<p>Below the box plots the median and mu (mean) indicate the center of
+the residuals. For Characeae, the residuals are standardized. However,
+Characeae is a binary response variable, and while standardization via
+the pearson residuals is correct
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mrow><mi>p</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msqrt><annotation encoding="application/x-tex">\sqrt{p\cdot (1-p)}</annotation></semantics></math>there
 remains a gap especially because the data is dominated by presences. The
 majority of the residuals seem well centered with exception of DOC and
-HCO3. Ofcourse, this could be further investigated looking at the
+HCO3. Of course, this could be further investigated looking at the
 marginal predictions. This especially easy because each edge function is
 an univariate relation.</p>
 </div>
@@ -742,8 +741,8 @@ are displayed as below.</p>
 <span><span class="co">#The summary of the results</span></span>
 <span><span class="va">mac_15</span><span class="op">$</span><span class="va">summary</span></span>
 <span><span class="co">#&gt;      root       mu      med       se        ll       ul</span></span>
-<span><span class="co">#&gt; TP     TP 12.04471 12.17564 1.295676 10.151062 14.14832</span></span>
-<span><span class="co">#&gt; Temp Temp 15.13774 14.37402 6.597532  4.427184 24.23722</span></span></code></pre></div>
+<span><span class="co">#&gt; TP     TP 11.81380 11.76955 1.204180 10.126448 13.78043</span></span>
+<span><span class="co">#&gt; Temp Temp 15.10005 14.37402 6.623158  4.427184 24.23722</span></span></code></pre></div>
 <p>For 1 macrophyte species the expected valuss for TP and temperature
 are displayed as below.</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
@@ -757,9 +756,9 @@ are displayed as below.</p>
 <code class="sourceCode R"><span></span>
 <span><span class="co">#The summary of the results</span></span>
 <span><span class="va">mac_1</span><span class="op">$</span><span class="va">summary</span></span>
-<span><span class="co">#&gt;      root         mu      med         se         ll        ul</span></span>
-<span><span class="co">#&gt; TP     TP 423.438610 383.6015 175.290479 196.281297 702.12391</span></span>
-<span><span class="co">#&gt; Temp Temp   9.122559   7.4944   4.634947   4.217925  15.60231</span></span></code></pre></div>
+<span><span class="co">#&gt;      root         mu        med         se         ll       ul</span></span>
+<span><span class="co">#&gt; TP     TP 443.202403 422.588996 178.852544 197.519443 702.1239</span></span>
+<span><span class="co">#&gt; Temp Temp   9.968053   8.189864   5.106594   4.217925  17.4254</span></span></code></pre></div>
 <p>Clearly the observed variance of the expected value is much smaller
 for 15 macrophyte species than for 1 macrophyte species. From this we
 can infer that the information 15 species provides more information

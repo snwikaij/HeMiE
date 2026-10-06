@@ -9,7 +9,7 @@
 #'
 #' @importFrom stats density rnorm quantile
 #'
-.ppmn_kl_calibrate <- function(r_data, r_prior, n_boot=2000, n_grid, n_samp){
+.ppmn_kl_calibrate <- function(r_data, r_prior, n_boot=1000, n_grid, n_samp){
 
   eps <- .Machine$double.eps
 
@@ -27,11 +27,13 @@
 
   if(length(rd)<2||length(rp)<2){return(0)}
 
-  bw_data <- density(rd, kernel="gaussian", bw="nrd0")$bw
+  #trim edges
+  q_prior      <- quantile(rd, c(.005,.995), na.rm=T)
+  rd           <- rd[rd>=q_prior[1] & rd<=q_prior[2]]
+  bw_data      <- density(rd, kernel="gaussian", bw="nrd0")$bw
 
-  #smoothed bootstrap
+  #bayesboot (smoothed) bootstrap
   r_boot <- sample(rd, size=n_samp*n_boot, replace=T)
-  r_boot <- r_boot+rnorm(n_samp*n_boot, mean=0, sd=bw_data)
   r_boot <- matrix(r_boot, nrow=n_samp, ncol=n_boot)
 
   weights <- rgamma(n_samp*n_boot, shape=1, rate=1)

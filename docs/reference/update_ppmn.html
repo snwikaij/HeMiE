@@ -59,8 +59,8 @@ To updated the prior these losses each particles is then weighted inversely rela
 <span>  <span class="va">new_data</span>,</span>
 <span>  nsim <span class="op">=</span> <span class="fl">3000</span>,</span>
 <span>  level <span class="op">=</span> <span class="fl">0.9</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"kernel"</span>,</span>
-<span>  up_strength <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"kernel3"</span>,</span>
+<span>  up_character <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_lambda <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  diagnostics <span class="op">=</span> <span class="cn">T</span>,</span>
 <span>  covar <span class="op">=</span> <span class="cn">T</span>,</span>
@@ -95,11 +95,6 @@ over the number of simulations to express the concentration strength relative to
 Here the default of the update strength is 95%.</p></dd>
 
 
-<dt id="arg-up-strength">up_strength<a class="anchor" aria-label="anchor" href="#arg-up-strength"></a></dt>
-<dd><p>The fraction of information that is allowed to concentrate in the generalized posterior
-when using the method 'manual'.</p></dd>
-
-
 <dt id="arg-max-lambda">max_lambda<a class="anchor" aria-label="anchor" href="#arg-max-lambda"></a></dt>
 <dd><p>Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).</p></dd>
 
@@ -114,6 +109,11 @@ when using the method 'manual'.</p></dd>
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>Seed value 123.</p></dd>
+
+
+<dt id="arg-up-chararacter">up_chararacter<a class="anchor" aria-label="anchor" href="#arg-up-chararacter"></a></dt>
+<dd><p>The fraction of information that is allowed to concentrate in the generalized posterior
+when using the method 'manual'.</p></dd>
 
 </dl></div>
 

@@ -14,6 +14,8 @@ knitr::opts_chunk$set(
 #unlink("C:/Users/admin/AppData/Local/R/win-library/4.3/HeMiE", recursive = TRUE, force = TRUE)
 #unlink("C:/Users/admin/AppData/Local/R/win-library/4.3/00LOCK-HeMiE", recursive = TRUE, force = TRUE)
 #devtools::document()
+#devtools::build_readme()
+#devtools::load_all()
 #devtools::install()
 
 #run this to check r

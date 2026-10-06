@@ -721,7 +721,7 @@ end_run <- Sys.time()
 
 #total run time
 end_run-start_run
-#> Time difference of 9.425153 mins
+#> Time difference of 10.01283 mins
 
 #organize results and create quantile bands
 results1a <- do.call(rbind, results1)
@@ -736,7 +736,7 @@ mu_seq$child   <- factor(mu_seq$child, levels = child_order)
 
 #plot the shift in the mean residuals per edge
 individual_edge_resid <- ggplot(loss_df1, aes(x = update, y = mean_resid, group = simulation)) +
-  geom_ribbon(data = mu_seq, aes(x = update, ymin = ll, ymax = ul, group = child), inherit.aes = FALSE, alpha = 0.2, fill = "dodgerblue") +
+  geom_ribbon(data = mu_seq, aes(x = update, ymin = ll, ymax = ul, group = child), inherit.aes = FALSE, alpha = 0.05, fill = "dodgerblue") +
   geom_line(alpha = 0.2) +
   geom_line(data = mu_seq, aes(x = update, y = mean_resid, group = child), inherit.aes = FALSE, colour = "dodgerblue3", linewidth = 1.1) +
   geom_hline(yintercept = 0, linetype = 2, linewidth = 0.8, colour = "tomato3") +

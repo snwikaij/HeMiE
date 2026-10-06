@@ -9,17 +9,14 @@ print.ppmn <- function(x, ...){
 
   #number of vertices
   n_vertices <- igraph::vcount(
-    x$Structure$visual_dag$graph
-  )
+    x$Structure$visual_dag$graph)
 
   #number of unique synthesized parameters
   n_parameters <- sum(
     vapply(
       x$Parameters,
       length,
-      integer(1)
-    )
-  )
+      integer(1)))
 
   #total number of parameter estimates synthesized
   n_estimates <- sum(
@@ -59,18 +56,14 @@ print.ppmn <- function(x, ...){
 
     cat("\nGeneralized Bayesian update\n")
     cat("---------------------------\n")
-
-    #method
-    if(!is.null(x$Info$method)){
-      cat("Method :", x$Info$method, "\n")
-    }
+    cat("Method   :", x$Info$method, "\n")
 
     update_table <- data.frame(
       Lambda = round(
-        as.numeric(x$Info$lambda)[1],
+        as.numeric(x$Info$lambda),
         3),
         ESS = round(
-        as.numeric(x$Info$ESS)[1],
+        as.numeric(x$Info$ESS),
         1
         )
       )

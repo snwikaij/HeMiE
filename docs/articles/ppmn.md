@@ -540,19 +540,19 @@ It is also possible to influence the update strength and manually define
 how strongly the posterior is allowed to concentrate. The update
 strength is then indirectly determined via the Kullback-Leibler
 divergence (KL-divergence). This is performed by setting the `method` to
-`manual` and defining `up_strength` as a proportion of the concentration
-between 0 and 1.
+`manual` and defining `up_character` as a proportion of the
+concentration between 0 and 1.
 
 ``` r
 
 #Update the foundational ppmn allowing the data to dominate by 5%
-updated_ppmn_5 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_strength = 0.05)
+updated_ppmn_5 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.05)
 
 #Update the foundational ppmn allowing the data to dominate by 50%
-updated_ppmn_50 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_strength = 0.5)
+updated_ppmn_50 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.5)
 
 #Update the foundational ppmn allowing the data to dominate by 95%
-updated_ppmn_95 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_strength = 0.95)
+updated_ppmn_95 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.95)
 
 #Display the residuals on top of each other
 cowplot::plot_grid(
@@ -567,14 +567,13 @@ cowplot::plot_grid(
 
 ![](ppmn_files/figure-html/updating_via_KL_divergence-1.png)
 
-Below the box plots the number behind `Kl=` indicates the information
-learned from the data. The median and mu (mean) indicate the center of
-the residuals. For Characeae, the residuals are standardized. However,
+Below the box plots the median and mu (mean) indicate the center of the
+residuals. For Characeae, the residuals are standardized. However,
 Characeae is a binary response variable, and while standardization via
 the pearson residuals is correct $`\sqrt{p\cdot (1-p)}`$there remains a
 gap especially because the data is dominated by presences. The majority
-of the residuals seem well centered with exception of DOC and HCO3.
-Ofcourse, this could be further investigated looking at the marginal
+of the residuals seem well centered with exception of DOC and HCO3. Of
+course, this could be further investigated looking at the marginal
 predictions. This especially easy because each edge function is an
 univariate relation.
 
@@ -721,8 +720,8 @@ cowplot::plot_grid(mac_15$plots$TP,
 #The summary of the results
 mac_15$summary
 #>      root       mu      med       se        ll       ul
-#> TP     TP 12.04471 12.17564 1.295676 10.151062 14.14832
-#> Temp Temp 15.13774 14.37402 6.597532  4.427184 24.23722
+#> TP     TP 11.81380 11.76955 1.204180 10.126448 13.78043
+#> Temp Temp 15.10005 14.37402 6.623158  4.427184 24.23722
 ```
 
 For 1 macrophyte species the expected valuss for TP and temperature are
@@ -742,9 +741,9 @@ cowplot::plot_grid(mac_1$plots$TP,
 
 #The summary of the results
 mac_1$summary
-#>      root         mu      med         se         ll        ul
-#> TP     TP 423.438610 383.6015 175.290479 196.281297 702.12391
-#> Temp Temp   9.122559   7.4944   4.634947   4.217925  15.60231
+#>      root         mu        med         se         ll       ul
+#> TP     TP 443.202403 422.588996 178.852544 197.519443 702.1239
+#> Temp Temp   9.968053   8.189864   5.106594   4.217925  17.4254
 ```
 
 Clearly the observed variance of the expected value is much smaller for
