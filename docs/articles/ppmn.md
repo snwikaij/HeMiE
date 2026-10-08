@@ -719,9 +719,9 @@ cowplot::plot_grid(mac_15$plots$TP,
 
 #The summary of the results
 mac_15$summary
-#>      root       mu      med       se        ll       ul
-#> TP     TP 11.81380 11.76955 1.204180 10.126448 13.78043
-#> Temp Temp 15.10005 14.37402 6.623158  4.427184 24.23722
+#>      root       mu      med       se       ll       ul
+#> TP     TP 10.75515 10.59498 1.093059 9.224247 12.68953
+#> Temp Temp 15.03629 14.64215 6.416436 5.290349 24.23722
 ```
 
 For 1 macrophyte species the expected valuss for TP and temperature are
@@ -741,9 +741,9 @@ cowplot::plot_grid(mac_1$plots$TP,
 
 #The summary of the results
 mac_1$summary
-#>      root         mu        med         se         ll       ul
-#> TP     TP 443.202403 422.588996 178.852544 197.519443 702.1239
-#> Temp Temp   9.968053   8.189864   5.106594   4.217925  17.4254
+#>      root        mu        med         se         ll       ul
+#> TP     TP 444.86518 422.588996 179.123903 196.427991 702.1239
+#> Temp Temp  10.05218   8.419107   5.149246   4.217925  17.5294
 ```
 
 Clearly the observed variance of the expected value is much smaller for

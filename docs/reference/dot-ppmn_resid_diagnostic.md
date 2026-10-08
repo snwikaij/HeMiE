@@ -5,7 +5,7 @@ Helper function to residual diagnostics
 ## Usage
 
 ``` r
-.ppmn_resid_diagnostic(object, data, mad_constant = 1)
+.ppmn_resid_diagnostic(object, data, mad_constant = 1.4826)
 ```
 
 ## Arguments

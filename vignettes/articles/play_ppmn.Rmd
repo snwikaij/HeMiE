@@ -387,7 +387,7 @@ With sequential updating, the PPMN is expected to progressively adapt its parame
 #number of repeated simulations
 nsim <- 100
 
-#number of sequential updats
+#number of sequential updates
 m    <- 10
 
 #create a network
@@ -452,7 +452,7 @@ mod_dgp <- mod1
 #set 'true' parameters
 true_par <- list(
   `ef1`            = c(b0=100, b1=4.5,  b2=.7),  # Chl ~ TP
-  `ef2`            = c(b0=-0.8, b1=1.1,  b2=.7), # Chl ~ TP
+  `ef2`            = c(b0=-0.8, b1=1.1),         # Chl ~ TP
   `ef3`            = c(b0=8.5, b1=-5.5, b2=6),   # pH ~ Chl
   `ef4`            = c(b0=100, b1=7,    b2=0.4), # HCO3 ~ pH
   `ef5`            = c(b0=2.5, b1=-.5))          # CO2onlyuser ~ HCO3
@@ -473,7 +473,7 @@ pred_dgp <- function(edge, x){
   .ppmn_predict_edge(mod_dgp$Structure$predict_dag$functions[[edge]], beta, trans, as.matrix(x))}
 
 #gamma simulator
-rgamma_sim <- function(mu, sd){rgamma(length(mu),shape = mu^2/sd^2,rate  = mu/sd^2)}
+rgamma_sim <- function(mu, sd){rgamma(length(mu), shape = mu^2/sd^2,rate  = mu/sd^2)}
 
 #simulate data sets slightly wider longer realizations (gradient length)
 set.seed(123)
@@ -488,7 +488,7 @@ sim_data <- lapply(seq_len(nsim), function(s){
     Chl_sim <- rgamma_sim(mu_Chl, mu_Chl/1.5)
 
     mu_pH   <- .ppmn_predict_edge("sigmoidal", true_par$ef3, trans=NA, Chl_sim)
-    pH_sim  <-  rgamma_sim(mu_pH, rep(.5, length(mu_pH)))
+    pH_sim  <-  rgamma_sim(mu_pH, .5)
 
     mu_HCO3 <- .ppmn_predict_edge("sigmoidal", true_par$ef4, trans=NA, pH_sim)
     HCO3_sim<- rgamma_sim(mu_HCO3, mu_HCO3/3)
@@ -505,17 +505,6 @@ sim_data <- lapply(seq_len(nsim), function(s){
       HCO3 = HCO3_sim,
       CO2onlyuser = CO2onlyuser)
     })})
-
-#set estimands
-estimands <- do.call(rbind, lapply(names(mod_dgp$Parameters), function(edge){
-
-  pars <- mod_dgp$Parameters[[edge]]
-
-  data.frame(
-    edge      = edge,
-    child     = sub("~.*", "", edge),
-    parameter = names(pars),
-    true      = sapply(pars, function(p) as.numeric(p["mu"])))}))
 
 #seq updating
 results1 <- results2 <- vector("list", nsim)
@@ -579,8 +568,8 @@ mu_seq$child   <- factor(mu_seq$child, levels = child_order)
 
 #plot the shift in the mean residuals per edge
 individual_edge_resid <- ggplot(loss_df1, aes(x = update, y = mean_resid, group = simulation)) +
-  geom_ribbon(data = mu_seq, aes(x = update, ymin = ll, ymax = ul, group = child), inherit.aes = FALSE, alpha = 0.05, fill = "dodgerblue") +
-  geom_line(alpha = 0.2) +
+  geom_ribbon(data = mu_seq, aes(x = update, ymin = ll, ymax = ul, group = child), inherit.aes = FALSE, alpha = 0.2, fill = "dodgerblue") +
+  geom_line(alpha = 0.05) +
   geom_line(data = mu_seq, aes(x = update, y = mean_resid, group = child), inherit.aes = FALSE, colour = "dodgerblue3", linewidth = 1.1) +
   geom_hline(yintercept = 0, linetype = 2, linewidth = 0.8, colour = "tomato3") +
   facet_wrap(~ child, ncol = 4, scales = "free_y") +
@@ -595,15 +584,270 @@ ll=aggregate(data=loss_df2, mean_resid~update, function(x) quantile(x, .05))[,2]
 ul=aggregate(data=loss_df2, mean_resid~update, function(x) quantile(x, .95))[,2])
 
 #plot the total resid of the ppmn this is actually optimized over
+#I assume that the mean is that of a half normal distribution with mu=0 which is approximately
+#0.8*sd. I assume that the residuals are more or less standardized so sd=1.
+#Therefore, the horizontal dashed line is at 0.8.
 total_ppmn_loss <- ggplot(loss_df2, aes(x=update, y=mean_resid, group=simulation)) +
   geom_ribbon(data=mu_seq, aes(x=update, ymin=ll,ymax=ul, group=1),
               alpha=0.2, fill= "dodgerblue", inherit.aes = F)+
   geom_line(data=mu_seq, aes(x=update, y=mean_resid), col="dodgerblue3", inherit.aes = F, lwd=1.2)+
   geom_line(alpha = .1)+
-  geom_hline(yintercept = 0, col="tomato3", lty=2, lwd=0.8)+
+  geom_hline(yintercept = 0.8, col="tomato3", lty=2, lwd=0.8)+#assume half normal mean
   xlim(1, 10)+
   theme_classic() +
   labs(x = "Sequential update", y = "Total mean absolute \nresidual deviation")
 
 cowplot::plot_grid(total_ppmn_loss, individual_edge_resid, ncol=1, rel_heights = c(0.6, 0.4))
+```
+## Sequential updates convergence of mean residuals under different sample sizes
+
+This whole code takes 1.5 hours to run be careful. Perhaps I should have parallelized the function to speed it up. However, that is for future Wim. Basically the code below sequentially updates the PPMN 10 times using simulated data generated from the previous network. This procedure was repeated 100 times for sample sizes of n=30, 100, 200, and 300. During updating, I traced the mean residuals and parameters of edge functions (ef) 1, 3, 4, and 5. I omitted ef2 because its log10–log10 model was not used to generate the corresponding relationship in the DGP.
+
+Across the simulated scenarios (n=30, n=100, n=200 and n=300), repeated updating generally shifted the residual distributions toward a mean of zero, with stronger stabilization at larger sample sizes (n=300). This does not mean that the estimand is recovered properly only that it optimizes.
+
+```{r, seq_update_test_5_resids, fig.width=8, fig.height=8, warning=FALSE}
+
+#build ppmn
+model     <- mod1
+dgp_model <- mod1
+
+#set 'true' parameters
+true_par <- list(
+  `ef1`            = c(b0=100, b1=4.5,  b2=.7),  # Chl ~ TP
+  `ef2`            = c(b0=-0.8, b1=1.1),         # Chl ~ TP
+  `ef3`            = c(b0=8.5, b1=-5.5, b2=6),   # pH ~ Chl
+  `ef4`            = c(b0=100, b1=7,    b2=0.4), # HCO3 ~ pH
+  `ef5`            = c(b0=2.5, b1=-.5))          # CO2onlyuser ~ HCO3
+
+#store the 'true' params in dgp mod
+for(e in names(true_par)){
+  for(p in names(true_par[[e]])){
+    dgp_model$Parameters[[e]][[p]]["mu"] <- true_par[[e]][p]}}
+
+#number of repeated simulations
+n_sim <- 100
+
+#number of sequential updats
+n_seq <- 10
+
+#sample size
+n_samp <- c(30, 100, 200, 300)
+
+seq_fun <- function(n_sim, n_seq, n_samp, model, dgp_model){
+
+  #inv par back function
+  inv_par  <- function(model){
+
+    ef_names <- grep("^ef", names(model$Parameters), value = TRUE)
+
+    lapply(model$Parameters[ef_names],
+           function(edge){vapply(edge, function(par) unname(par["mu"]), numeric(1))})}
+
+  #get pars for comparison
+  get_pars <- function(model){
+    do.call(rbind, lapply(names(model$Parameters), function(edge){
+
+      pars <-model$Parameters[[edge]]
+
+      data.frame(
+        edge      = edge,
+        child     = sub("~.*", "", edge),
+        parameter = names(pars),
+        est       = sapply(pars, function(p) as.numeric(p["mu"])))}))}
+
+  #apply inv par function
+  true_par <- inv_par(dgp_model)
+
+  #predict one edge using DGP parameter means
+  pred_dgp <- function(edge, x){
+
+    beta <- sapply(mod_dgp$Parameters[[edge]], function(p){as.numeric(p["mu"])})
+
+    trans <- mod_dgp$Structure$predict_dag$transformations[[edge]]
+    if(length(trans) == 0 || is.na(trans)) trans <- NA_character_
+
+    .ppmn_predict_edge(mod_dgp$Structure$predict_dag$functions[[edge]], beta, trans, as.matrix(x))}
+
+  #gamma simulator
+  rgamma_sim <- function(mu, sd){rgamma(length(mu), shape = mu^2/sd^2, rate  = mu/sd^2)}
+
+  #start time
+  start_run <- Sys.time()
+
+  results <- lapply(n_samp, function(n){
+
+    #simulate data sets slightly wider longer realizations (gradient length)
+    TP_sim <- rgamma(n, 250^2/150^2, 250/150^2)
+
+    sim_data <- lapply(seq_len(n_sim), function(s){
+
+      results <- lapply(seq_len(n_seq), function(j){
+
+        #note that 'true' model is sigmoidal not log10-log10
+        mu_Chl  <- .ppmn_predict_edge("sigmoidal", true_par$ef1, trans="log", TP_sim)
+        Chl_sim <- rgamma_sim(mu_Chl, mu_Chl/1.5)
+
+        mu_pH   <- .ppmn_predict_edge("sigmoidal", true_par$ef3, trans=NA, Chl_sim)
+        pH_sim  <-  rgamma_sim(mu_pH, rep(.5, length(mu_pH)))
+
+        mu_HCO3 <- .ppmn_predict_edge("sigmoidal", true_par$ef4, trans=NA, pH_sim)
+        HCO3_sim<- rgamma_sim(mu_HCO3, mu_HCO3/3)
+
+        mu_CO2  <- plogis(true_par$ef5[1]+true_par$ef5[2]*log(HCO3_sim))
+
+        CO2onlyuser <- rbeta(length(mu_CO2), shape1 = mu_CO2*20,
+                             shape2 = (1-mu_CO2)*20)
+
+        data.frame(
+          TP = TP_sim,
+          Chl = Chl_sim,
+          pH = pH_sim,
+          HCO3 = HCO3_sim,
+          CO2onlyuser = CO2onlyuser)
+      })
+
+      results
+
+    })
+
+    #seq updating
+    results1 <- results2 <- vector("list", n_sim)
+
+    for(s in seq_len(n_sim)){
+
+      mod       <- model
+      loss_list <- vector("list", n_seq)
+      pars_list <- vector("list", n_seq)
+
+      for(j in seq_len(n_seq)){
+
+        dat      <- sim_data[[s]][[j]]
+
+        mod      <- update_ppmn(mod, new_data = dat, nsim = 1000, diagnostics = F)
+        pred     <- predict_ppmn(mod, dat, nsim = 1)
+
+        expected <- as.data.frame(pred$Expected)
+        childs   <- intersect(setdiff(names(expected), mod$Roots), names(dat))
+
+        r        <- data.matrix(dat[, childs, drop = FALSE])-data.matrix(expected[, childs, drop = FALSE])
+        mean_res <- colMeans(r, na.rm = TRUE)
+
+        loss_list[[j]] <- data.frame(
+          sample_size  = n,
+          simulation   = s,
+          update       = j,
+          child        = childs,
+          mean_resid   = unname(mean_res))
+
+        pars             <- get_pars(mod)
+        pars$true        <- get_pars(dgp_model)[,4]
+        pars$sample_size <- n
+        pars$simulation  <- s
+        pars$update      <- j
+
+        pars_list[[j]]  <- pars}
+
+      results1[[s]] <- do.call(rbind, loss_list)
+      results2[[s]] <- do.call(rbind, pars_list)
+
+    }
+
+    list(results1=results1, results2=results2)})
+
+  #end time
+  end_run <- Sys.time()
+
+  #total run time
+  print(end_run-start_run)
+
+  results}
+
+test <- seq_fun(n_sim, n_seq, n_samp, model=model, dgp_model=dgp_model)
+
+resid_mean <- lapply(test, function(t){
+
+  res_df      <- do.call(rbind, t$results1)
+  sub_df      <- unique(res_df[, c("sample_size", "simulation", "update", "child", "mean_resid")])
+  mu_seq      <- cbind(aggregate(data=sub_df, mean_resid~update+child, mean),
+                       ll=aggregate(data=sub_df, mean_resid~update+child, function(x) quantile(x, .05))[,3],
+                       ul=aggregate(data=sub_df, mean_resid~update+child, function(x) quantile(x, .95))[,3])
+  child_order <- c("Chl", "pH", "HCO3", "CO2onlyuser")
+
+  sub_df$child   <- factor(sub_df$child ,levels = child_order)
+  mu_seq$child   <- factor(mu_seq$child, levels = child_order)
+
+  pl <- ggplot(sub_df, aes(x = update, y = mean_resid, group = simulation)) +
+    geom_line(alpha = 0.025,linewidth = 0.4) +
+    geom_ribbon(data = mu_seq, aes(x = update, ymin = ll, ymax = ul, group = child), inherit.aes = FALSE, alpha = 0.2, fill = "dodgerblue") +
+    geom_line(data = mu_seq, aes(x = update, y = mean_resid, group = child), inherit.aes = FALSE, colour = "dodgerblue3",  linewidth = 0.8,) +
+    geom_hline(yintercept = 0, linetype = 2, linewidth = 0.8, colour = "tomato3") +
+    scale_x_continuous(breaks = seq(1, max(sub_df$update), 1))+
+    facet_wrap(~ child, ncol = 4, scales = "free_y") +
+    theme_classic() +
+    labs(x = NULL, y = NULL)
+
+  list(data=sub_df, quantiles=mu_seq, plot=pl)})
+
+#create axis titles
+yt <- ggplot()+annotate("text", x=0, y=0, label="Mean residual deviation", angle=90)+theme_void()
+xt <- ggplot()+annotate("text", x=0, y=0, label="Update")+theme_void()
+
+#create facet row title
+row_v_title <- lapply(resid_mean, function(d)
+  ggplot()+annotate("text", x=0, y=0, label=paste0("n=",unique(d$data[,1])), angle=90)+theme_void())
+
+#combine figures
+pl1a   <- cowplot::plot_grid(resid_mean[[1]]$plot, resid_mean[[2]]$plot, resid_mean[[3]]$plot, resid_mean[[4]]$plot, ncol=1)
+pl2a   <- cowplot::plot_grid(plotlist=row_v_title, nrow=length(row_v_title))
+cowplot::plot_grid(cowplot::plot_grid(yt, pl2a, pl1a, rel_widths = c(0.025, 0.025, 0.975), ncol=3),
+                             xt, rel_heights = c(0.975, 0.025), ncol=1)
+```
+
+## Sequential updates convergence of bias under different sample sizes
+
+I only display the two extreme sample-size scenarios (n=30 and n=300). Across the simulations, the asymptote parameter (b0) of ef1, ef2, and ef3 generally shifted toward its generating value during sequential updating. However, b0 of ef2 remained underestimated under both sample-size scenarios. This persistent deviation may reflect convergence toward a loss-minimizing “pseudo-true” parameter. Because the DGP and the predictive (loss-based) representation of the PPMN differ, the parameter configuration minimizing expected loss need not coincide with the parameters used to generate the data. Alternatively, adjustment of the asymptote may compensate for imperfect prior specification of other parameters, because multiple parameter configurations can produce similar reductions in the overall loss. For most other parameters, repeated updating generally reduced bias, with considerably more stable behaviour at larger sample size (n=300). An exception was observed for the final edge function (ef5), for which the prior may have been relatively strong compared with the information supplied by the simulated data. Nevertheless, parameter bias generally declined more rapidly under sequential updating at n=300 than at the smaller sample size. 
+
+I think that such an "informal" convergence  occurs regardless of how the concentration strength is defined. Yet, this does not mean that it is the correct concentration. I need to investigate this further as literature does not apply Generalized Bayesian Updating to such networks.
+
+```{r, seq_update_test_6_bias, fig.width=8, fig.height=8, warning=FALSE}
+
+param_bias <- lapply(test, function(t){
+  res_df      <- do.call(rbind, t$results2)
+  sub_df      <- unique(res_df[, c("edge", "sample_size", "update", "simulation", "parameter", "est", "true")])
+  sub_df      <- sub_df[!sub_df$edge %in% "ef2",]
+  sub_df$bias <- sub_df$est-sub_df$true
+  mu_seq      <- cbind(aggregate(data=sub_df, bias~sample_size+update+edge+parameter, mean),
+                       ll=aggregate(data=sub_df, bias~sample_size+update+edge+parameter, function(x) quantile(x, .05))[,5],
+                       ul=aggregate(data=sub_df, bias~sample_size+update+edge+parameter, function(x) quantile(x, .95))[,5])
+  edge_order    <- c("ef1", "ef3", "ef4", "ef5")
+
+  sub_df$edge   <- factor(sub_df$edge, levels = edge_order)
+  mu_seq$edge   <- factor(mu_seq$edge, levels = edge_order)
+
+  pl <- ggplot(sub_df, aes(x=update, y=bias, group=simulation)) +
+    geom_line(alpha = 0.025, linewidth=0.4)+
+    geom_ribbon(data = mu_seq, aes(x=update, ymin = ll, ymax = ul),
+                inherit.aes = FALSE, alpha = 0.2, fill = "dodgerblue")+
+                  geom_line(data = mu_seq, aes(x = update, y = bias),
+                            inherit.aes = FALSE, colour = "dodgerblue3", linewidth = 0.8) +
+                  geom_hline(yintercept = 0, linetype = 2, linewidth = 0.8, colour = "tomato3") +
+                  scale_x_continuous(breaks = seq(1, max(sub_df$update), 1))+
+                  facet_wrap(.~ edge+parameter, scales="free_y", ncol = 3)+
+                  theme_classic() +
+                  theme(strip.text = element_text(size = 6, margin = margin(1, 1, 1, 1)),
+                        strip.background = element_rect(linewidth = 0.2))+
+                  labs(x = NULL, y = NULL)
+
+                list(data=sub_df, quantiles=mu_seq, plot=pl)})
+
+ytb <- ggplot()+annotate("text", x=0, y=0, label="Bias", angle=90)+theme_void()
+
+pl1b <- cowplot::plot_grid(param_bias[[1]]$plot, param_bias[[4]]$plot, ncol=1)
+pl2b <- cowplot::plot_grid(row_v_title[[1]],
+                             row_v_title[[4]],
+                             nrow=2)
+
+cowplot::plot_grid(cowplot::plot_grid(ytb, pl2b, pl1b, rel_widths = c(0.025, 0.025, 0.975), ncol=3),
+                               xt, rel_heights = c(0.975, 0.025), ncol=1)
+
 ```

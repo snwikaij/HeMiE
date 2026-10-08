@@ -134,7 +134,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   function_particle_weights <- list()
 
   if(lambda>max_lambda){warning("Lambda exceeds max_lambda, consider increasing max_lambda.")}
-  if(ESS<5){warning("The ESS is 5 indicating either priors are strong or nsim is too low.")}
+  if(ESS<5){warning("The ESS is smaller than 5, indicating the posterior concentration may be too strong.")}
 
 ############################################
 #nodes that contribute to observed vertices#
@@ -293,7 +293,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
       diff_mu_par[!active_par]               <- 0
       diff_mu_par[!is.finite(diff_mu_par)]   <- 0
 
-      sigma_weighted <- t(diff_mu_par)%*%sweep(diff_mu_par,1,weights,"*")
+      sigma_weighted <- t(diff_mu_par) %*% sweep(diff_mu_par, 1, weights, "*")
       sigma_weighted <- sigma_weighted+diag(eps,ncol(sigma_weighted))}
 
 ##########################

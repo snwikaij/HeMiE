@@ -1,3 +1,4 @@
+
 #' Helper transformation function
 #'
 #' @param x_raw Raw observations.
@@ -12,9 +13,9 @@
   #constant
   eps <- .Machine$double.eps
 
-  ######################
-  #loss and resid funcs#
-  ######################
+######################
+#loss and resid funcs#
+######################
 
   if(type %in% c("binary", "proportional")){
     p_hat    <- pmin(pmax(x_hat, eps), 1-eps)
@@ -29,18 +30,12 @@
     l        <- r^2
   }else{stop("Unknown response type: ", type)}
 
+
   #check for inf and na and stuff
   bad <- (!is.finite(l) | !is.finite(r))
 
-  #set to max
   if(any(bad)){
-    finite_l <- l[is.finite(l)]
-    finite_r <- r[is.finite(r)]
+    l[bad] <- NA
+    r[bad] <- NA}
 
-    cap_loss  <- if(length(finite_l) > 0){max(finite_l)}else{1}
-    cap_resid <- if(length(finite_r) > 0){finite_r[which.max(abs(finite_r))]}else{1}
-
-    l[bad] <- cap_loss
-    r[bad] <- cap_resid}
-
-  list(loss = l, residuals = r)}
+  list(loss=l, residuals=r)}

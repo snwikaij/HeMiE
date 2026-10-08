@@ -5,7 +5,7 @@ Helper function to calculate loss and residuals
 ## Usage
 
 ``` r
-.ppmn_loss_resid(obs_mat, preds, obs_nodes, nsim, mad_constant = 1)
+.ppmn_loss_resid(obs_mat, preds, obs_nodes, nsim, mad_constant = 1.4826)
 ```
 
 ## Arguments

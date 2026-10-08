@@ -8,7 +8,7 @@
 #'
 #' @importFrom stats mad median na.omit quantile aggregate
 #'
-.ppmn_resid_diagnostic <- function(object, data, mad_constant=1){
+.ppmn_resid_diagnostic <- function(object, data, mad_constant=1.4826){
 
   eps <- .Machine$double.eps
 

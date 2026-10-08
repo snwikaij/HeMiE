@@ -4,7 +4,7 @@
 \alias{.ppmn_loss_resid}
 \title{Helper function to calculate loss and residuals}
 \usage{
-.ppmn_loss_resid(obs_mat, preds, obs_nodes, nsim, mad_constant = 1)
+.ppmn_loss_resid(obs_mat, preds, obs_nodes, nsim, mad_constant = 1.4826)
 }
 \arguments{
 \item{obs_mat}{Observed values matrix.}

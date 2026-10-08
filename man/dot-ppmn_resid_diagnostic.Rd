@@ -4,7 +4,7 @@
 \alias{.ppmn_resid_diagnostic}
 \title{Helper function to residual diagnostics}
 \usage{
-.ppmn_resid_diagnostic(object, data, mad_constant = 1)
+.ppmn_resid_diagnostic(object, data, mad_constant = 1.4826)
 }
 \arguments{
 \item{object}{An updated PPMN.}

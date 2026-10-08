@@ -10,7 +10,7 @@
 #'
 #' @importFrom stats mad median
 #'
-.ppmn_loss_resid <- function(obs_mat, preds, obs_nodes, nsim, mad_constant=1){
+.ppmn_loss_resid <- function(obs_mat, preds, obs_nodes, nsim, mad_constant=1.4826){
 
   #constant
   eps     <- .Machine$double.eps
