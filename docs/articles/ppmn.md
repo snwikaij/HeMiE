@@ -538,34 +538,34 @@ updated_ppmn$Residuals$resid_boxplot
 
 It is also possible to influence the update strength and manually define
 how strongly the posterior is allowed to concentrate. The update
-strength is then indirectly determined via the Kullback-Leibler
-divergence (KL-divergence). This is performed by setting the `method` to
-`manual` and defining `up_character` as a proportion of the
+strength is then indirectly determined via the best fraction of the
+weights attached to the particles. This is performed by setting the
+`method` to `manual` and defining `up_character` as a proportion of the
 concentration between 0 and 1.
 
 ``` r
 
-#Update the foundational ppmn allowing the data to dominate by 5%
+#Update the foundational ppmn allowing the data to dominate by 95%
 updated_ppmn_5 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.05)
 
-#Update the foundational ppmn allowing the data to dominate by 50%
-updated_ppmn_50 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.5)
+#Update the foundational ppmn allowing the data to dominate by 80%
+updated_ppmn_50 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.2)
 
-#Update the foundational ppmn allowing the data to dominate by 95%
-updated_ppmn_95 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.95)
+#Update the foundational ppmn allowing the data to dominate by 50%
+updated_ppmn_95 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.5)
 
 #Display the residuals on top of each other
 cowplot::plot_grid(
   updated_ppmn_5$Residuals$resid_boxplot,
   updated_ppmn_50$Residuals$resid_boxplot,
   updated_ppmn_95$Residuals$resid_boxplot,
-  ncol=1, labels=c("KL fraction 5%",
-                   "KL fraction 50%",
-                    "KL fraction 95%"),
+  ncol=1, labels=c("Best 5%",
+                   "Best 20%",
+                   "Best 50%"),
   label_y=1.02, label_x=1.25)
 ```
 
-![](ppmn_files/figure-html/updating_via_KL_divergence-1.png)
+![](ppmn_files/figure-html/updating_manual-1.png)
 
 Below the box plots the median and mu (mean) indicate the center of the
 residuals. For Characeae, the residuals are standardized. However,
@@ -719,9 +719,9 @@ cowplot::plot_grid(mac_15$plots$TP,
 
 #The summary of the results
 mac_15$summary
-#>      root       mu      med       se       ll       ul
-#> TP     TP 10.75515 10.59498 1.093059 9.224247 12.68953
-#> Temp Temp 15.03629 14.64215 6.416436 5.290349 24.23722
+#>      root        mu       med        se       ll        ul
+#> TP     TP  7.245508  7.114287 0.9079697 6.059410  8.972521
+#> Temp Temp 15.744199 15.408993 6.8758133 4.185943 24.025263
 ```
 
 For 1 macrophyte species the expected valuss for TP and temperature are
@@ -741,9 +741,9 @@ cowplot::plot_grid(mac_1$plots$TP,
 
 #The summary of the results
 mac_1$summary
-#>      root        mu        med         se         ll       ul
-#> TP     TP 444.86518 422.588996 179.123903 196.427991 702.1239
-#> Temp Temp  10.05218   8.419107   5.149246   4.217925  17.5294
+#>      root        mu       med         se         ll        ul
+#> TP     TP 464.56950 443.51846 184.860306 180.418341 702.12391
+#> Temp Temp  11.11372  10.12429   5.614371   4.293264  19.75292
 ```
 
 Clearly the observed variance of the expected value is much smaller for

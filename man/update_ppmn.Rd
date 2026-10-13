@@ -9,7 +9,7 @@ update_ppmn(
   new_data,
   nsim = 3000,
   level = 0.9,
-  method = "kernel3",
+  method = "oob_fast",
   up_character = NULL,
   max_lambda = 1000,
   diagnostics = T,

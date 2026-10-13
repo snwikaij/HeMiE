@@ -11,7 +11,7 @@
 disp_ppmn <- function(object, new_data, nsim=3000, level=0.9, gd_display=F, seed=123){
 
   pred1    <- predict_ppmn(object, new_data, nsim = nsim)
-  ppmn_100 <- update_ppmn(object, up_strength = .9999, new_data, nsim=nsim)
+  ppmn_100 <- suppressWarnings(update_ppmn(object, up_character = 0, new_data=new_data, method="best_frac", nsim=nsim))
   pred_100 <- predict_ppmn(ppmn_100, new_data, nsim = nsim)
 
   #set seed
@@ -36,31 +36,27 @@ disp_ppmn <- function(object, new_data, nsim=3000, level=0.9, gd_display=F, seed
   #substract difference
   diffpred <- pred1_stack-pred100_stack
   diffpred <- na.omit(diffpred)
+
   #standardize per standard mod
   sdpred1  <- apply(pred1_stack, 2, function(x) sd(x, na.rm = T))
+
   #divide diff so by sd standard model
   stdzdiff <- sweep(diffpred, 2, sdpred1, "/")
 
-  #prb per link
-  m_link <- colSums(stdzdiff>0)/nrow(stdzdiff)
-
   #map
-  maxpost            <- function(x){d <- density(x); d$x[which.max(d$y)]}
+  maxpost  <- function(x){d <- density(x); d$x[which.max(d$y)]}
 
   #density curves
   forestplot <- do.call(rbind, lapply(seq_len(ncol(stdzdiff)), function(i){
     d <- stdzdiff[,i]
     q <- quantile(d, c((1-level)/2, 1-(1-level)/2))
-    data.frame(Variable=obs_nodes[i], GD=m_link[i], median=median(d), map=maxpost(d), mu=mean(d), ll=q[1], ul=q[2])}))
+    data.frame(Variable=obs_nodes[i], median=median(d), map=maxpost(d), mu=mean(d), ll=q[1], ul=q[2])}))
 
-  if(gd_display == T){
-    setasname <- paste0(rownames(forestplot), "\nGD=",round(forestplot$GD,2))
-  }else{
-    setasname <- rownames(forestplot)
-  }
+  #rownames
+  rownames(forestplot) <- NULL
 
   #create final results
-  plot <- ggplot(forestplot, aes(setasname, median)) +
+  plot <- ggplot(forestplot, aes(Variable, median)) +
     geom_hline(yintercept = 0, linetype = 2,
                linewidth = .6, colour = "tomato3") +
     geom_point()+
@@ -69,4 +65,8 @@ disp_ppmn <- function(object, new_data, nsim=3000, level=0.9, gd_display=F, seed
     labs(x = NULL, y = "Displacement") +
     theme_classic()
 
-  list(plot=plot, results=forestplot)}
+  out <- list(plot=plot, results=forestplot)
+
+  class(out) <- c("ppmn_disp","list")
+
+  invisible(out)}

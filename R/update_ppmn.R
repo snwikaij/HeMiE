@@ -25,22 +25,19 @@
 #'
 #' @export
 update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
-                        method="kernel3", up_character=NULL, max_lambda=1000,
+                        method="oob_fast", up_character=NULL, max_lambda=1000,
                         diagnostics=T, covar=T, seed=123){
 
   if(nsim<1){stop("number of simulations cannot be smaller than 1.")}
   if(level>0.99999){stop("level cannot be larger than .99999.")}
   if(level<0.00001){stop("level cannot be smaller than .00001.")}
 
-  if(method=="manual"){
-    if(is.null(up_character) || up_character>1 || up_character<0){
-      stop("The update character for method 'manual' is the update fraction and cannot be smaller than 0 or larger than 1.")}}
   if(method=="oob"){
     if(is.null(up_character) || up_character<1){
-      stop("The update character for method 'oob' is the number sequence length and cannot be smaller than 1.")}}
-  if(method=="best_frac"){
+      stop("The update character for method 'oob' is the sequence length and cannot be smaller than 1.")}}
+  if(method=="manual"){
     if(is.null(up_character) || up_character>1 || up_character<0){
-      stop("The update character for method 'best_frac' is best percentage of particles and cannot be smaller than 0 or larger than 1.")}}
+      stop("The update character for method 'manual' is the best percentage of particles and cannot be smaller than 0 or larger than 1.")}}
 
   if(!inherits(object,"ppmn")){class(object) <- c("ppmn","list")}
 
@@ -91,43 +88,21 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
     z <- z[is.finite(z)]
     if(length(z)==0){NA}else{median(z)}})
 
-  if(method=="kernel1"){
 
-    kl_target <- .ppmn_resid_mc_kl(resid1=lossandresid$resid1, resid0=lossandresid$resid0, loss=loss)
-    lambda    <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
+  if(method=="manual"){
 
-  }else if(method=="kernel2"){
+    lambda        <- .ppmn_lambda_level(loss, best_frac=up_character, max_lambda=max_lambda)
 
-    kl_target <- .ppmn_kl_calibrate(resid_1, resid_0, n_boot=2000, n_grid=3000, n_samp=nrow(obs_mat))
-    lambda    <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
+  }else if(method=="oob_fast"){
 
-  }else if(method=="kernel3"){
-
-    best      <- which.min(loss)
-    resid_1   <- lossandresid$resid1[,,best]
-    resid_0   <- lossandresid$resid1
-    kl_target <- .ppmn_resid_bboot(resid1 = resid_1, resid0 = resid_0)
-    lambda    <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
-
-  }else if(method=="manual"){
-
-    kl_target     <- log(1/(1-up_character))
-    lambda        <- .ppmn_lambda_kl(loss, kl_target, prior = NULL, max_lambda)
-
-  }else if(method=="sqrtn"){
-
-    lambda <- sqrt(nrow(obs_mat))
-
-  }else if(method=="best_frac"){
-
-    lambda <- .ppmn_lambda_level(loss, best_frac=up_character, max_lambda=max_lambda)
+    lambda        <- .ppmn_lambda_fast(lossandresid$loss1, max_lambda=max_lambda)
 
   }else if(method=="oob"){
 
     lambda        <- .ppmn_oob_lambda_pred(obs_mat, lossandresid$loss1, max_lambda, seed,
                                            seq_len=update_character, n_boot=1000)
 
-  }else{stop("Method should be 'kernel1', 'kernel2', 'kernel3', 'manual', 'sqrtn', 'best_frac' or 'oob'.")}
+  }else{stop("Method should be 'manual', 'oob_fast' or 'oob'.")}
 
   weights                   <- .ppmn_stable_weights(loss, lambda)
   ESS                       <- 1/sum(weights^2)
@@ -319,7 +294,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
     old_params[[id]] <- sub_old}
 
   object$Update           <- object$Update+1
-  object$`Old parameters` <- object$Parameters
+  object$OldParameters    <- object$Parameters
   object$Parameters       <- old_params
 
   object$Info <- list(method=method, weights=weights,

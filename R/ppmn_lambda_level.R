@@ -14,6 +14,12 @@
   loss <- as.numeric(loss)
   S    <- length(loss)
 
+  #single best particle
+  if(best_frac == 0){return(Inf)}
+
+  #no update
+  if(best_frac == 1){return(0)}
+
   #number of best particles is best_frac
   n_best_part <- max(1, ceiling(best_frac*S))
   best        <- order(loss)[seq_len(n_best_part)]
@@ -26,8 +32,7 @@
   #set upper limit
   upper <- max_lambda
 
-  while(flamb(upper)<0 &&upper<1e6){upper <- upper*2}
-
+  while(flamb(upper)<0 && upper<1e6){upper <- upper*2}
   if(flamb(upper)<0){return(upper)}
 
   uniroot(flamb, interval=c(0,upper))$root}

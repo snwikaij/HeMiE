@@ -25,10 +25,6 @@
   #nsamp
   n_samp <- length(resid1)
 
-  #############
-  #Bayes bootp#
-  #############
-
   #weights
   weights <- rgamma(n_samp*n_boot, shape=1, rate=1)
   w_boot  <- matrix(weights, nrow=n_samp, ncol=n_boot)

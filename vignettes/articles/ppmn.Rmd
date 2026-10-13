@@ -418,27 +418,27 @@ updated_ppmn$Residuals$resid_boxplot
 
 ### Fixed information gain training
 
-It is also possible to influence the update strength and manually define how strongly the posterior is allowed to concentrate. The update strength is then indirectly determined via the Kullback-Leibler divergence (KL-divergence). This is performed by setting the `method` to `manual` and defining `up_character` as a proportion of the concentration between 0 and 1. 
+It is also possible to influence the update strength and manually define how strongly the posterior is allowed to concentrate. The update strength is then indirectly determined via the best fraction of the weights attached to the particles. This is performed by setting the `method` to `manual` and defining `up_character` as a proportion of the concentration between 0 and 1. 
 
-```{r, updating_via_KL_divergence, fig.width=8, fig.height=8, warning=FALSE}
-
-#Update the foundational ppmn allowing the data to dominate by 5%
-updated_ppmn_5 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.05)
-
-#Update the foundational ppmn allowing the data to dominate by 50%
-updated_ppmn_50 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.5)
+```{r, updating_manual, fig.width=8, fig.height=8, warning=FALSE}
 
 #Update the foundational ppmn allowing the data to dominate by 95%
-updated_ppmn_95 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.95)
+updated_ppmn_5 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.05)
+
+#Update the foundational ppmn allowing the data to dominate by 80%
+updated_ppmn_50 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.2)
+
+#Update the foundational ppmn allowing the data to dominate by 50%
+updated_ppmn_95 <- update_ppmn(object = foundational_ppmn, new_data = train_data, method = "manual", up_character = 0.5)
 
 #Display the residuals on top of each other
 cowplot::plot_grid(
   updated_ppmn_5$Residuals$resid_boxplot,
   updated_ppmn_50$Residuals$resid_boxplot,
   updated_ppmn_95$Residuals$resid_boxplot,
-  ncol=1, labels=c("KL fraction 5%",
-                   "KL fraction 50%",
-                    "KL fraction 95%"),
+  ncol=1, labels=c("Best 5%",
+                   "Best 20%",
+                   "Best 50%"),
   label_y=1.02, label_x=1.25)
 
 ```
