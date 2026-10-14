@@ -446,9 +446,9 @@ cowplot::plot_grid(pred_performance$plots$Balance, #Predictive balance
 
 ### Specifying network structure
 
-We will use a more elaborated network and data set following the steps
-that were explained above to update the PPMN. First we need to build the
-formula that defines the network structure.
+We will build a more elaborated network following the steps that were
+explained above to update the PPMN. First we build the formula that
+defines the network structure.
 
 ``` r
 
@@ -457,22 +457,24 @@ data(example6)
 
 #Display head
 head(example6)
-#> # A tibble: 6 × 9
-#>   Source      Authors Comment `function` transformation edge  parameter estimate
-#>   <chr>       <chr>   <chr>   <chr>      <chr>          <chr> <chr>        <dbl>
-#> 1 Charophyte… Kolada… NA      class      NA             Char… b0           9.5  
-#> 2 Charophyte… Kolada… NA      class      NA             Char… b1          13.4  
-#> 3 Charophyte… Kolada… NA      class      NA             Char… b2          37.7  
-#> 4 Charophyte… Kolada… NA      class      NA             Char… b3          38.7  
-#> 5 Charophyte… Kolada… NA      class      NA             Char… b4           0.530
-#> 6 Macrophyte… Kaijse… NA      class      NA             Char… b0          14.3  
-#> # ℹ 1 more variable: error <dbl>
+#> # A tibble: 6 × 10
+#>   Source         Authors Type  Comment `function` transformation edge  parameter
+#>   <chr>          <chr>   <chr> <chr>   <chr>      <chr>          <chr> <chr>    
+#> 1 Contribution … Algest… Tabl… NA      log        log            DOC~… b0       
+#> 2 Contribution … Algest… Tabl… NA      log        log            DOC~… b1       
+#> 3 Short-term su… Arthau… Figu… NA      log        log            Macr… b0       
+#> 4 Short-term su… Arthau… Figu… NA      log        log            Macr… b1       
+#> 5 Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  NA             HCO3… b0       
+#> 6 Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  NA             HCO3… b1       
+#> # ℹ 2 more variables: estimate <dbl>, error <dbl>
 
 #Set the formula of the full network
 formula=list(c(fun="sigmoidal", edge="Chl~TP", trans="log",
                prior_mu_b0=100, prior_se_b0=50, trunc_a_b0=0, trunc_b_b0=10000,
                prior_mu_b1=6.2, prior_se_b1=1.6, trunc_a_b1=0,
                prior_mu_b2=0, prior_se_b2=1, trunc_a_b2=0),
+
+             c(fun="log10", edge="Chl~TP", trans="log10"),
 
              c(fun="log", edge="Macrophytes~Chl+Temp+CO2onlyuser", trans="log"),
 
@@ -534,6 +536,113 @@ updated_ppmn$Residuals$resid_boxplot
 
 ![](ppmn_files/figure-html/upload_training_data-1.png)
 
+Eye-balling the residuals the model has decently centralized the fit as
+the majority as the center of the residuals fall within the 2th (25%)
+and 4th (75%) quantiles, with exception of DOC and HCO3. The deviation
+is of DOC and HCO3 is not very extreme as the 1th (5%) and 5th (90%)
+quantiles are still contain the center of the residuals. However, it
+worth to check the marginal fit of these variables.
+
+``` r
+
+#check the marginal curve of the edge function predicting DOC
+pl_doc  <- marginal_ppmn(updated_ppmn, data = train_data, child = "DOC")
+
+#check the marginal curve of the edge function predicting HCO3
+pl_hco3 <- marginal_ppmn(updated_ppmn, data = train_data, child = "HCO3")
+
+cowplot::plot_grid(pl_doc[[1]], pl_hco3[[1]], labels = "AUTO")
+```
+
+![](ppmn_files/figure-html/marginal_check-1.png) The marginal
+predictions of the model follow the data. However, model optimizes the
+predictive loss over a the total network. Due to the sparse data
+(missing values) the actual loss produced by these predictions is
+minimal. Furthermore, the model predictions are based on many studies,
+while the data provided only presents one study, should the model ignore
+all previous “evidence” and aim to perfectly fit the newly provided
+data?
+
+### Multi-edge function
+
+The PPMN can fit multiple-edge functions predicting one child. In the
+DBN provided above the historical
+$`log_10(Chl) = \beta_{0} +\beta_{1} \cdot log_{10}(TP)`$ competing with
+a sigmoidal function. The initial weights that determine the
+contribution to the predictions is
+$`0.5=1/(number \:of \:edge \:functions)=1/2`$. Each weight is uniformly
+distributed at the start and the more edge functions are included the
+lower the weight per function. After seeing new data the best predicting
+function will receive more weight according to its prediction capacity.
+
+``` r
+
+#foundational weights for the multi-edge function
+foundational_ppmn$FunctionWeights$Chl
+#> ef1 ef2 
+#> 0.5 0.5
+
+#update weights for the multi-edge function
+updated_ppmn$FunctionWeights$Chl
+#>        ef1        ef2 
+#> 0.93281624 0.06718376
+
+#what is the id of ef1 (edge function1) and ef2 (edge function2) 
+updated_ppmn$EdgeFunctions
+#>      id       child f                             edge       fun trans
+#> 1   ef1         Chl 1                           Chl~TP sigmoidal   log
+#> 2   ef2         Chl 2                           Chl~TP     log10 log10
+#> 3   ef3 Macrophytes 1 Macrophytes~Chl+Temp+CO2onlyuser       log   log
+#> 4   ef4   Characeae 1                    Characeae~Chl     class  <NA>
+#> 5   ef5          pH 1                           pH~Chl sigmoidal  <NA>
+#> 6   ef6         CO2 1                           CO2~pH sigmoidal  <NA>
+#> 7   ef7 CO2onlyuser 1                 CO2onlyuser~HCO3     logit   log
+#> 8   ef8         DOC 1                          DOC~Chl       log   log
+#> 9   ef9          DO 1                      DO~DOC+Temp       log   log
+#> 10 ef10        HCO3 1                          HCO3~pH sigmoidal  <NA>
+#>                 parents
+#> 1                    TP
+#> 2                    TP
+#> 3  Chl+Temp+CO2onlyuser
+#> 4                   Chl
+#> 5                   Chl
+#> 6                    pH
+#> 7                  HCO3
+#> 8                   Chl
+#> 9              DOC+Temp
+#> 10                   pH
+```
+
+The sigmoidal function increased from 50% to 93%, while the log10 linear
+decreased from 50% to 7%. These are substantial shifts in weights. If
+our ‘hypothesis’ was either is equally plausible then now clearly 93% in
+favor of the sigmoidal function to be be explanation the observed data.
+By using an abuse of words we can suggest the loss-based
+psuedo-BayesFactor is (0.93/0.07)/(0.5/0.5) because
+$`\frac{P(f_{Chl\mid TP, \:sigmoidal}\mid x)}{P(f_{Chl\mid TP, \:log_{10}} \mid x)}=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}\cdot \frac{P(f_{Chl\mid TP, \:sigmoidal})}{P(f_{Chl\mid TP, \:log_{10}})}`$
+which in this case is
+$`\frac{0.97}{0.03}=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}\cdot \frac{0.5}{0.5}`$
+of which the unknown ratio between both models is the
+$`BayesFactor=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}`$,
+therefore
+$`loss-based \:psuedo-BayesFactor=\frac{\frac{0.93}{0.07}}{\frac{0.5}{0.5}} \approx 14`$.
+However a loss-based psuedo-BayesFactor because the method (Generalized
+Bayesian Updating) does not contain a likelihood and updates based on
+loss functions.
+
+``` r
+
+#check the marginal curve of the multi-edge function before updating
+pl_chl1  <- marginal_ppmn(foundational_ppmn, data = train_data, child = "Chl")
+
+#check the marginal curve of the edge function predicting HCO3
+pl_chl2 <- marginal_ppmn(updated_ppmn, data = train_data, child = "Chl")
+
+cowplot::plot_grid(pl_chl1[[3]], pl_chl2[[3]], labels = "AUTO")
+```
+
+![](ppmn_files/figure-html/multi_edge_plot-1.png)
+
 ### Fixed information gain training
 
 It is also possible to influence the update strength and manually define
@@ -567,17 +676,16 @@ cowplot::plot_grid(
 
 ![](ppmn_files/figure-html/updating_manual-1.png)
 
-Below the box plots the median and mu (mean) indicate the center of the
-residuals. For Characeae, the residuals are standardized. However,
-Characeae is a binary response variable, and while standardization via
-the pearson residuals is correct $`\sqrt{p\cdot (1-p)}`$there remains a
-gap especially because the data is dominated by presences. The majority
-of the residuals seem well centered with exception of DOC and HCO3. Of
-course, this could be further investigated looking at the marginal
-predictions. This especially easy because each edge function is an
-univariate relation.
+The text below the box plots show the median and mu (mean) which
+indicate the center of the residuals. The residuals of the Characeae are
+standardized. However, Characeae is a binary response variable, and
+while standardization via the pearson residuals is correct
+$`\sqrt{p\cdot (1-p)}`$there remains a gap especially because the data
+is dominated by presences. The majority of the residuals seem well
+centered with exception of DOC and HCO3; which was previously
+investigated looking at the marginal predictions.
 
-### Display the marginal trends
+### Display marginal trends
 
 ``` r
 
@@ -596,30 +704,14 @@ cowplot::plot_grid(marginal_fig_HCO3[[1]],
 Investigating these figures it is relatively clear why the residuals of
 HCO3 are shifted. The PPMN over predicts the new data. For DOC this is
 also obvious, the whole log-linear function for DOC is in mismatch with
-the actual data. My question for DOC would be why I observe a negative
-trend in the data less DOC with more Chl, this seems contradictory to my
-expectations. I would expect that upon eutrophication the amount of DOC
-would increase due to the the amount of die-off caused by the increasing
-algae growth. Hence, the model also does not learn the negative pattern,
-because we are strongly invested in a positive relation between DOC~Chl.
-Hence, there are two simple reasons:
+the actual data. There are three obvious reasons that should be
+considered:
 
-(1.) The edge function is not the right function. (2.) The data itself
-is not proper.
-
-Which one is a discussion point. It is not a failure to establish this,
-we might not like it, but we cannot suppress what we do not like. It is
-a learning opportunity. if our structural explanation was that DOC~Chl
-relation was positive we need to revise this in light of this new
-information. Clearly there is a case where this is not so. For HCO3~pH
-the mismatch is less severe as we will consequently observe under
-further investigation.
-
-These patterns can also be observed when we would move to validation
-using the validation data. Of course, this validation data is only a
-subset of the whole dataset. Therefore, it will display the same
-pattern. However, to obtain a test dataset that independent of training
-and validation dataset would provide a more comprehensive overview.
+(1.) The edge function is not the right function.(2.) Literature does
+not provide the ‘right’ information. (3.) The data itself is not of the
+right quality. Which one is a discussion point. It is not a failure to
+establish this, we might not like it, but we cannot suppress what we do
+not like. It is a learning opportunity.
 
 ### Apply predictive fit to validation data
 
@@ -719,9 +811,9 @@ cowplot::plot_grid(mac_15$plots$TP,
 
 #The summary of the results
 mac_15$summary
-#>      root        mu       med        se       ll        ul
-#> TP     TP  7.245508  7.114287 0.9079697 6.059410  8.972521
-#> Temp Temp 15.744199 15.408993 6.8758133 4.185943 24.025263
+#>      root       mu      med       se        ll       ul
+#> TP     TP 22.33897 21.67684 6.498195 11.107759 30.87724
+#> Temp Temp 15.51616 13.83952 6.716441  5.029176 24.93666
 ```
 
 For 1 macrophyte species the expected valuss for TP and temperature are
@@ -741,9 +833,9 @@ cowplot::plot_grid(mac_1$plots$TP,
 
 #The summary of the results
 mac_1$summary
-#>      root        mu       med         se         ll        ul
-#> TP     TP 464.56950 443.51846 184.860306 180.418341 702.12391
-#> Temp Temp  11.11372  10.12429   5.614371   4.293264  19.75292
+#>      root        mu        med         se        ll         ul
+#> TP     TP 332.22279 273.048192 221.343236 84.409853 530.382891
+#> Temp Temp   6.41294   5.727844   2.223142  4.079066   9.052005
 ```
 
 Clearly the observed variance of the expected value is much smaller for
@@ -862,16 +954,16 @@ summary(sigmoidal_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 199.75517    3.47923  57.414   <2e-16 ***
-#> b1   6.09134    0.05188 117.413   <2e-16 ***
-#> b2   0.45276    0.04629   9.781   <2e-16 ***
+#> b0 199.76243    3.17739   62.87   <2e-16 ***
+#> b1   6.02532    0.04557  132.22   <2e-16 ***
+#> b2   0.41665    0.03878   10.74   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 25.79 on 147 degrees of freedom
+#> Residual standard error: 23.86 on 147 degrees of freedom
 #> 
-#> Number of iterations to convergence: 7 
-#> Achieved convergence tolerance: 3.861e-06
+#> Number of iterations to convergence: 6 
+#> Achieved convergence tolerance: 2.765e-06
 ```
 
 ### Gompertz equation
@@ -932,16 +1024,16 @@ summary(gompertz_mod)
 #> 
 #> Parameters:
 #>    Estimate Std. Error t value Pr(>|t|)    
-#> b0 193.6638     4.9075  39.463   <2e-16 ***
-#> b1   7.6629     0.8203   9.342   <2e-16 ***
-#> b2   1.2838     0.1373   9.348   <2e-16 ***
+#> b0 207.1623     8.2092  25.235  < 2e-16 ***
+#> b1   5.7615     0.6749   8.537 1.58e-14 ***
+#> b2   0.9545     0.1151   8.292 6.48e-14 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 25.4 on 147 degrees of freedom
+#> Residual standard error: 30.74 on 147 degrees of freedom
 #> 
-#> Number of iterations to convergence: 6 
-#> Achieved convergence tolerance: 2.96e-06
+#> Number of iterations to convergence: 7 
+#> Achieved convergence tolerance: 1.979e-06
 ```
 
 ### Asymptotic-linear
@@ -997,17 +1089,17 @@ summary(asymptotic_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0  99.54370    1.95759  50.850  < 2e-16 ***
-#> b1 127.46817   14.99165   8.503 2.07e-14 ***
-#> b2   0.09164    0.01452   6.310 3.19e-09 ***
+#> b0  98.02897    2.01486  48.653  < 2e-16 ***
+#> b1 120.99778   17.36333   6.969 1.02e-10 ***
+#> b2   0.10217    0.01936   5.276 4.67e-07 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 18.45 on 145 degrees of freedom
+#> Residual standard error: 19.59 on 146 degrees of freedom
 #> 
-#> Number of iterations to convergence: 4 
-#> Achieved convergence tolerance: 5.18e-06
-#>   (2 observations deleted due to missingness)
+#> Number of iterations to convergence: 5 
+#> Achieved convergence tolerance: 5.236e-06
+#>   (1 observation deleted due to missingness)
 ```
 
 ### Gaussian equation
@@ -1064,16 +1156,16 @@ summary(gaussian_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 187.57963    4.26075   44.02   <2e-16 ***
-#> b1   5.95873    0.03088  192.96   <2e-16 ***
-#> b2   1.02321    0.03020   33.88   <2e-16 ***
+#> b0 207.29932    5.35720    38.7   <2e-16 ***
+#> b1   6.01515    0.02854   210.8   <2e-16 ***
+#> b2   0.97195    0.02893    33.6   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 22.01 on 147 degrees of freedom
+#> Residual standard error: 24.96 on 147 degrees of freedom
 #> 
-#> Number of iterations to convergence: 5 
-#> Achieved convergence tolerance: 1.43e-06
+#> Number of iterations to convergence: 4 
+#> Achieved convergence tolerance: 4.778e-06
 ```
 
 ### Bayesian classifier

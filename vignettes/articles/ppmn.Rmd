@@ -357,9 +357,9 @@ cowplot::plot_grid(pred_performance$plots$Balance, #Predictive balance
 
 ### Specifying network structure
 
-We will use a more elaborated network and data set following the steps that were explained above to update the PPMN. First we need to build the formula that defines the network structure.
+We will build a more elaborated network following the steps that were explained above to update the PPMN. First we build the formula that defines the network structure.
 
-```{r, updating_example_large_network}
+```{r, updating_example_large_network, fig.width=8, fig.height=8}
 
 #Load example
 data(example6)
@@ -372,6 +372,8 @@ formula=list(c(fun="sigmoidal", edge="Chl~TP", trans="log",
                prior_mu_b0=100, prior_se_b0=50, trunc_a_b0=0, trunc_b_b0=10000,
                prior_mu_b1=6.2, prior_se_b1=1.6, trunc_a_b1=0,
                prior_mu_b2=0, prior_se_b2=1, trunc_a_b2=0),
+
+             c(fun="log10", edge="Chl~TP", trans="log10"),
 
              c(fun="log", edge="Macrophytes~Chl+Temp+CO2onlyuser", trans="log"),
 
@@ -416,6 +418,50 @@ updated_ppmn$Residuals$resid_boxplot
 
 ```
 
+Eye-balling the residuals the model has decently centralized the fit as the majority as the center of the residuals fall within the 2th (25%) and 4th (75%) quantiles, with exception of DOC and HCO3. The deviation is of DOC and HCO3 is not very extreme as the 1th (5%) and 5th (90%) quantiles are still contain the center of the residuals. However, it worth to check the marginal fit of these variables.
+
+```{r, marginal_check,  warning=F}
+
+#check the marginal curve of the edge function predicting DOC
+pl_doc  <- marginal_ppmn(updated_ppmn, data = train_data, child = "DOC")
+
+#check the marginal curve of the edge function predicting HCO3
+pl_hco3 <- marginal_ppmn(updated_ppmn, data = train_data, child = "HCO3")
+
+cowplot::plot_grid(pl_doc[[1]], pl_hco3[[1]], labels = "AUTO")
+
+```
+The marginal predictions of the model follow the data. However, model optimizes the predictive loss over a the total network. Due to the sparse data (missing values) the actual loss produced by these predictions is minimal. Furthermore, the model predictions are based on many studies, while the data provided only presents one study, should the model ignore all previous "evidence" and aim to perfectly fit the newly provided data? 
+
+### Multi-edge function
+
+The PPMN can fit multiple-edge functions predicting one child. In the DBN provided above the historical $log_10(Chl) = \beta_{0} +\beta_{1} \cdot log_{10}(TP)$ competing with a sigmoidal function. The initial weights that determine the contribution to the predictions is $0.5=1/(number \:of \:edge \:functions)=1/2$. Each weight is uniformly distributed at the start and the more edge functions are included the lower the weight per function. After seeing new data the best predicting function will receive more weight according to its prediction capacity.
+
+```{r, multi_edge_competition, warning=FALSE}
+
+#foundational weights for the multi-edge function
+foundational_ppmn$FunctionWeights$Chl
+
+#update weights for the multi-edge function
+updated_ppmn$FunctionWeights$Chl
+
+#what is the id of ef1 (edge function1) and ef2 (edge function2) 
+updated_ppmn$EdgeFunctions
+
+```
+The sigmoidal function increased from 50% to 93%, while the log10 linear decreased from 50% to 7%. These are substantial shifts in weights. If our 'hypothesis' was either is equally plausible then now clearly 93% in favor of the sigmoidal function to be be explanation the observed data. By using an abuse of words we can suggest the loss-based psuedo-BayesFactor is (0.93/0.07)/(0.5/0.5) because $\frac{P(f_{Chl\mid TP, \:sigmoidal}\mid x)}{P(f_{Chl\mid TP, \:log_{10}} \mid x)}=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}\cdot \frac{P(f_{Chl\mid TP, \:sigmoidal})}{P(f_{Chl\mid TP, \:log_{10}})}$ which in this case is $\frac{0.97}{0.03}=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}\cdot \frac{0.5}{0.5}$ of which the unknown ratio between both models is the $BayesFactor=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}$, therefore $loss-based \:psuedo-BayesFactor=\frac{\frac{0.93}{0.07}}{\frac{0.5}{0.5}} \approx 14$.  However a loss-based psuedo-BayesFactor because the method (Generalized Bayesian Updating) does not contain a likelihood and updates based on loss functions.
+
+```{r,  multi_edge_plot, warning=FALSE}
+
+#check the marginal curve of the multi-edge function before updating
+pl_chl1  <- marginal_ppmn(foundational_ppmn, data = train_data, child = "Chl")
+
+#check the marginal curve of the edge function predicting HCO3
+pl_chl2 <- marginal_ppmn(updated_ppmn, data = train_data, child = "Chl")
+
+cowplot::plot_grid(pl_chl1[[3]], pl_chl2[[3]], labels = "AUTO")
+```
+
 ### Fixed information gain training
 
 It is also possible to influence the update strength and manually define how strongly the posterior is allowed to concentrate. The update strength is then indirectly determined via the best fraction of the weights attached to the particles. This is performed by setting the `method` to `manual` and defining `up_character` as a proportion of the concentration between 0 and 1. 
@@ -443,9 +489,9 @@ cowplot::plot_grid(
 
 ```
 
-Below the box plots the median and mu (mean) indicate the center of the residuals. For Characeae, the residuals are standardized. However, Characeae is a binary response variable, and while standardization via the pearson residuals is correct $\sqrt{p\cdot (1-p)}$there remains a gap especially because the data is dominated by presences. The majority of the residuals seem well centered with exception of DOC and HCO3. Of course, this could be further investigated looking at the marginal predictions. This especially easy because each edge function is an univariate relation.
+The text below the box plots show the median and mu (mean) which indicate the center of the residuals. The residuals of the Characeae are standardized. However, Characeae is a binary response variable, and while standardization via the pearson residuals is correct $\sqrt{p\cdot (1-p)}$there remains a gap especially because the data is dominated by presences. The majority of the residuals seem well centered with exception of DOC and HCO3; which was previously investigated looking at the marginal predictions.
 
-### Display the marginal trends
+### Display marginal trends
 
 ```{r, marginal_update_plots, fig.width=8, fig.height=6, warning=F}
 
@@ -460,14 +506,10 @@ cowplot::plot_grid(marginal_fig_HCO3[[1]],
 
 ```
 
-Investigating these figures it is relatively clear why the residuals of HCO3 are shifted. The PPMN over predicts the new data. For DOC this is also obvious, the whole log-linear function for DOC is in mismatch with the actual data. My question for DOC would be why I observe a negative trend in the data less DOC with more Chl, this seems contradictory to my expectations. I would expect that upon eutrophication the amount of DOC would increase due to the the amount of die-off caused by the increasing algae growth. Hence, the model also does not learn the negative pattern, because we are strongly invested in a positive relation between DOC~Chl. Hence, there are two simple reasons: 
+Investigating these figures it is relatively clear why the residuals of HCO3 are shifted. The PPMN over predicts the new data. For DOC this is also obvious, the whole log-linear function for DOC is in mismatch with the actual data. There are three obvious reasons that should be considered: 
 
-(1.) The edge function is not the right function.
-(2.) The data itself is not proper.
-
-Which one is a discussion point. It is not a failure to establish this, we might not like it, but we cannot suppress what we do not like. It is a learning opportunity. if our structural explanation was that DOC~Chl relation was positive we need to revise this in light of this new information. Clearly there is a case where this is not so. For HCO3~pH the mismatch is less severe as we will consequently observe under further investigation.
-
-These patterns can also be observed when we would move to validation using the validation data. Of course, this validation data is only a subset of the whole dataset. Therefore, it will display the same pattern. However, to obtain a test dataset that independent of training and validation dataset would provide a more comprehensive overview.
+(1.) The edge function is not the right function.(2.) Literature does not provide the 'right' information.
+(3.) The data itself is not of the right quality. Which one is a discussion point. It is not a failure to establish this, we might not like it, but we cannot suppress what we do not like. It is a learning opportunity.
 
 ### Apply predictive fit to validation data
 

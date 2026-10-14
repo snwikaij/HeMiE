@@ -489,9 +489,9 @@ example data given above.</p>
 <div class="section level3">
 <h3 id="specifying-network-structure-1">Specifying network structure<a class="anchor" aria-label="anchor" href="#specifying-network-structure-1"></a>
 </h3>
-<p>We will use a more elaborated network and data set following the
-steps that were explained above to update the PPMN. First we need to
-build the formula that defines the network structure.</p>
+<p>We will build a more elaborated network following the steps that were
+explained above to update the PPMN. First we build the formula that
+defines the network structure.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Load example</span></span>
@@ -499,22 +499,24 @@ build the formula that defines the network structure.</p>
 <span></span>
 <span><span class="co">#Display head</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">example6</span><span class="op">)</span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 9</span></span></span>
-<span><span class="co">#&gt;   Source      Authors Comment `function` transformation edge  parameter estimate</span></span>
-<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Charophyte… Kolada… <span style="color: #BB0000;">NA</span>      class      <span style="color: #BB0000;">NA</span>             Char… b0           9.5  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Charophyte… Kolada… <span style="color: #BB0000;">NA</span>      class      <span style="color: #BB0000;">NA</span>             Char… b1          13.4  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Charophyte… Kolada… <span style="color: #BB0000;">NA</span>      class      <span style="color: #BB0000;">NA</span>             Char… b2          37.7  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Charophyte… Kolada… <span style="color: #BB0000;">NA</span>      class      <span style="color: #BB0000;">NA</span>             Char… b3          38.7  </span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Charophyte… Kolada… <span style="color: #BB0000;">NA</span>      class      <span style="color: #BB0000;">NA</span>             Char… b4           0.530</span></span>
-<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Macrophyte… Kaijse… <span style="color: #BB0000;">NA</span>      class      <span style="color: #BB0000;">NA</span>             Char… b0          14.3  </span></span>
-<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 1 more variable: error &lt;dbl&gt;</span></span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 6 × 10</span></span></span>
+<span><span class="co">#&gt;   Source         Authors Type  Comment `function` transformation edge  parameter</span></span>
+<span><span class="co">#&gt;   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>    </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">1</span> Contribution … Algest… Tabl… <span style="color: #BB0000;">NA</span>      log        log            DOC~… b0       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">2</span> Contribution … Algest… Tabl… <span style="color: #BB0000;">NA</span>      log        log            DOC~… b1       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">3</span> Short-term su… Arthau… Figu… <span style="color: #BB0000;">NA</span>      log        log            Macr… b0       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">4</span> Short-term su… Arthau… Figu… <span style="color: #BB0000;">NA</span>      log        log            Macr… b1       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">5</span> Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  <span style="color: #BB0000;">NA</span>             HCO3… b0       </span></span>
+<span><span class="co">#&gt; <span style="color: #BCBCBC;">6</span> Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  <span style="color: #BB0000;">NA</span>             HCO3… b1       </span></span>
+<span><span class="co">#&gt; <span style="color: #949494;"># ℹ 2 more variables: estimate &lt;dbl&gt;, error &lt;dbl&gt;</span></span></span>
 <span></span>
 <span><span class="co">#Set the formula of the full network</span></span>
 <span><span class="va">formula</span><span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fun<span class="op">=</span><span class="st">"sigmoidal"</span>, edge<span class="op">=</span><span class="st">"Chl~TP"</span>, trans<span class="op">=</span><span class="st">"log"</span>,</span>
 <span>               prior_mu_b0<span class="op">=</span><span class="fl">100</span>, prior_se_b0<span class="op">=</span><span class="fl">50</span>, trunc_a_b0<span class="op">=</span><span class="fl">0</span>, trunc_b_b0<span class="op">=</span><span class="fl">10000</span>,</span>
 <span>               prior_mu_b1<span class="op">=</span><span class="fl">6.2</span>, prior_se_b1<span class="op">=</span><span class="fl">1.6</span>, trunc_a_b1<span class="op">=</span><span class="fl">0</span>,</span>
 <span>               prior_mu_b2<span class="op">=</span><span class="fl">0</span>, prior_se_b2<span class="op">=</span><span class="fl">1</span>, trunc_a_b2<span class="op">=</span><span class="fl">0</span><span class="op">)</span>,</span>
+<span></span>
+<span>             <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fun<span class="op">=</span><span class="st">"log10"</span>, edge<span class="op">=</span><span class="st">"Chl~TP"</span>, trans<span class="op">=</span><span class="st">"log10"</span><span class="op">)</span>,</span>
 <span></span>
 <span>             <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>fun<span class="op">=</span><span class="st">"log"</span>, edge<span class="op">=</span><span class="st">"Macrophytes~Chl+Temp+CO2onlyuser"</span>, trans<span class="op">=</span><span class="st">"log"</span><span class="op">)</span>,</span>
 <span></span>
@@ -537,7 +539,7 @@ build the formula that defines the network structure.</p>
 <span></span>
 <span><span class="co">#Display graph as directed bipartite network</span></span>
 <span><span class="va">foundational_ppmn</span><span class="op">$</span><span class="va">PlotDBN</span></span></code></pre></div>
-<p><img src="ppmn_files/figure-html/updating_example_large_network-1.png" class="r-plt" alt="" width="700"></p>
+<p><img src="ppmn_files/figure-html/updating_example_large_network-1.png" class="r-plt" alt="" width="768"></p>
 <p>The full foundational PPMN has now been build and all previous
 function can be applied. However, we are interested in updating the PPMN
 so that it can learn the constrains of the data if only the roots give
@@ -571,6 +573,105 @@ the multivariate constrains.</p>
 <span><span class="co">#Display the residuals</span></span>
 <span><span class="va">updated_ppmn</span><span class="op">$</span><span class="va">Residuals</span><span class="op">$</span><span class="va">resid_boxplot</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/upload_training_data-1.png" class="r-plt" alt="" width="700"></p>
+<p>Eye-balling the residuals the model has decently centralized the fit
+as the majority as the center of the residuals fall within the 2th (25%)
+and 4th (75%) quantiles, with exception of DOC and HCO3. The deviation
+is of DOC and HCO3 is not very extreme as the 1th (5%) and 5th (90%)
+quantiles are still contain the center of the residuals. However, it
+worth to check the marginal fit of these variables.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#check the marginal curve of the edge function predicting DOC</span></span>
+<span><span class="va">pl_doc</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginal_ppmn.html">marginal_ppmn</a></span><span class="op">(</span><span class="va">updated_ppmn</span>, data <span class="op">=</span> <span class="va">train_data</span>, child <span class="op">=</span> <span class="st">"DOC"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#check the marginal curve of the edge function predicting HCO3</span></span>
+<span><span class="va">pl_hco3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginal_ppmn.html">marginal_ppmn</a></span><span class="op">(</span><span class="va">updated_ppmn</span>, data <span class="op">=</span> <span class="va">train_data</span>, child <span class="op">=</span> <span class="st">"HCO3"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">pl_doc</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, <span class="va">pl_hco3</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span>, labels <span class="op">=</span> <span class="st">"AUTO"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ppmn_files/figure-html/marginal_check-1.png" class="r-plt" alt="" width="700">
+The marginal predictions of the model follow the data. However, model
+optimizes the predictive loss over a the total network. Due to the
+sparse data (missing values) the actual loss produced by these
+predictions is minimal. Furthermore, the model predictions are based on
+many studies, while the data provided only presents one study, should
+the model ignore all previous “evidence” and aim to perfectly fit the
+newly provided data?</p>
+</div>
+<div class="section level3">
+<h3 id="multi-edge-function">Multi-edge function<a class="anchor" aria-label="anchor" href="#multi-edge-function"></a>
+</h3>
+<p>The PPMN can fit multiple-edge functions predicting one child. In the
+DBN provided above the historical
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>10</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>C</mi><mi>h</mi><mi>l</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msub><mi>β</mi><mn>0</mn></msub><mo>+</mo><msub><mi>β</mi><mn>1</mn></msub><mo>⋅</mo><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>10</mn></msub><mrow><mo stretchy="true" form="prefix">(</mo><mi>T</mi><mi>P</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">log_10(Chl) = \beta_{0} +\beta_{1} \cdot log_{10}(TP)</annotation></semantics></math>
+competing with a sigmoidal function. The initial weights that determine
+the contribution to the predictions is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>0.5</mn><mo>=</mo><mn>1</mn><mi>/</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>n</mi><mi>u</mi><mi>m</mi><mi>b</mi><mi>e</mi><mi>r</mi><mspace width="0.222em"></mspace><mi>o</mi><mi>f</mi><mspace width="0.222em"></mspace><mi>e</mi><mi>d</mi><mi>g</mi><mi>e</mi><mspace width="0.222em"></mspace><mi>f</mi><mi>u</mi><mi>n</mi><mi>c</mi><mi>t</mi><mi>i</mi><mi>o</mi><mi>n</mi><mi>s</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>1</mn><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">0.5=1/(number \:of \:edge \:functions)=1/2</annotation></semantics></math>.
+Each weight is uniformly distributed at the start and the more edge
+functions are included the lower the weight per function. After seeing
+new data the best predicting function will receive more weight according
+to its prediction capacity.</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#foundational weights for the multi-edge function</span></span>
+<span><span class="va">foundational_ppmn</span><span class="op">$</span><span class="va">FunctionWeights</span><span class="op">$</span><span class="va">Chl</span></span>
+<span><span class="co">#&gt; ef1 ef2 </span></span>
+<span><span class="co">#&gt; 0.5 0.5</span></span>
+<span></span>
+<span><span class="co">#update weights for the multi-edge function</span></span>
+<span><span class="va">updated_ppmn</span><span class="op">$</span><span class="va">FunctionWeights</span><span class="op">$</span><span class="va">Chl</span></span>
+<span><span class="co">#&gt;        ef1        ef2 </span></span>
+<span><span class="co">#&gt; 0.93281624 0.06718376</span></span>
+<span></span>
+<span><span class="co">#what is the id of ef1 (edge function1) and ef2 (edge function2) </span></span>
+<span><span class="va">updated_ppmn</span><span class="op">$</span><span class="va">EdgeFunctions</span></span>
+<span><span class="co">#&gt;      id       child f                             edge       fun trans</span></span>
+<span><span class="co">#&gt; 1   ef1         Chl 1                           Chl~TP sigmoidal   log</span></span>
+<span><span class="co">#&gt; 2   ef2         Chl 2                           Chl~TP     log10 log10</span></span>
+<span><span class="co">#&gt; 3   ef3 Macrophytes 1 Macrophytes~Chl+Temp+CO2onlyuser       log   log</span></span>
+<span><span class="co">#&gt; 4   ef4   Characeae 1                    Characeae~Chl     class  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 5   ef5          pH 1                           pH~Chl sigmoidal  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 6   ef6         CO2 1                           CO2~pH sigmoidal  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt; 7   ef7 CO2onlyuser 1                 CO2onlyuser~HCO3     logit   log</span></span>
+<span><span class="co">#&gt; 8   ef8         DOC 1                          DOC~Chl       log   log</span></span>
+<span><span class="co">#&gt; 9   ef9          DO 1                      DO~DOC+Temp       log   log</span></span>
+<span><span class="co">#&gt; 10 ef10        HCO3 1                          HCO3~pH sigmoidal  &lt;NA&gt;</span></span>
+<span><span class="co">#&gt;                 parents</span></span>
+<span><span class="co">#&gt; 1                    TP</span></span>
+<span><span class="co">#&gt; 2                    TP</span></span>
+<span><span class="co">#&gt; 3  Chl+Temp+CO2onlyuser</span></span>
+<span><span class="co">#&gt; 4                   Chl</span></span>
+<span><span class="co">#&gt; 5                   Chl</span></span>
+<span><span class="co">#&gt; 6                    pH</span></span>
+<span><span class="co">#&gt; 7                  HCO3</span></span>
+<span><span class="co">#&gt; 8                   Chl</span></span>
+<span><span class="co">#&gt; 9              DOC+Temp</span></span>
+<span><span class="co">#&gt; 10                   pH</span></span></code></pre></div>
+<p>The sigmoidal function increased from 50% to 93%, while the log10
+linear decreased from 50% to 7%. These are substantial shifts in
+weights. If our ‘hypothesis’ was either is equally plausible then now
+clearly 93% in favor of the sigmoidal function to be be explanation the
+observed data. By using an abuse of words we can suggest the loss-based
+psuedo-BayesFactor is (0.93/0.07)/(0.5/0.5) because
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>s</mi><mi>i</mi><mi>g</mi><mi>m</mi><mi>o</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>l</mi></mrow></msub><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>10</mn></msub></mrow></msub><mo>∣</mo><mi>x</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>=</mo><mfrac><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∣</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>s</mi><mi>i</mi><mi>g</mi><mi>m</mi><mi>o</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>l</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∣</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>10</mn></msub></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>⋅</mo><mfrac><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>s</mi><mi>i</mi><mi>g</mi><mi>m</mi><mi>o</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>l</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>10</mn></msub></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">\frac{P(f_{Chl\mid TP, \:sigmoidal}\mid x)}{P(f_{Chl\mid TP, \:log_{10}} \mid x)}=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}\cdot \frac{P(f_{Chl\mid TP, \:sigmoidal})}{P(f_{Chl\mid TP, \:log_{10}})}</annotation></semantics></math>
+which in this case is
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>0.97</mn><mn>0.03</mn></mfrac><mo>=</mo><mfrac><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∣</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>s</mi><mi>i</mi><mi>g</mi><mi>m</mi><mi>o</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>l</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∣</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>10</mn></msub></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac><mo>⋅</mo><mfrac><mn>0.5</mn><mn>0.5</mn></mfrac></mrow><annotation encoding="application/x-tex">\frac{0.97}{0.03}=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}\cdot \frac{0.5}{0.5}</annotation></semantics></math>
+of which the unknown ratio between both models is the
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>B</mi><mi>a</mi><mi>y</mi><mi>e</mi><mi>s</mi><mi>F</mi><mi>a</mi><mi>c</mi><mi>t</mi><mi>o</mi><mi>r</mi><mo>=</mo><mfrac><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∣</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>s</mi><mi>i</mi><mi>g</mi><mi>m</mi><mi>o</mi><mi>i</mi><mi>d</mi><mi>a</mi><mi>l</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>∣</mo><msub><mi>f</mi><mrow><mi>C</mi><mi>h</mi><mi>l</mi><mo>∣</mo><mi>T</mi><mi>P</mi><mo>,</mo><mspace width="0.222em"></mspace><mi>l</mi><mi>o</mi><msub><mi>g</mi><mn>10</mn></msub></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow></mfrac></mrow><annotation encoding="application/x-tex">BayesFactor=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}</annotation></semantics></math>,
+therefore
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>l</mi><mi>o</mi><mi>s</mi><mi>s</mi><mo>−</mo><mi>b</mi><mi>a</mi><mi>s</mi><mi>e</mi><mi>d</mi><mspace width="0.222em"></mspace><mi>p</mi><mi>s</mi><mi>u</mi><mi>e</mi><mi>d</mi><mi>o</mi><mo>−</mo><mi>B</mi><mi>a</mi><mi>y</mi><mi>e</mi><mi>s</mi><mi>F</mi><mi>a</mi><mi>c</mi><mi>t</mi><mi>o</mi><mi>r</mi><mo>=</mo><mfrac><mfrac><mn>0.93</mn><mn>0.07</mn></mfrac><mfrac><mn>0.5</mn><mn>0.5</mn></mfrac></mfrac><mo>≈</mo><mn>14</mn></mrow><annotation encoding="application/x-tex">loss-based \:psuedo-BayesFactor=\frac{\frac{0.93}{0.07}}{\frac{0.5}{0.5}} \approx 14</annotation></semantics></math>.
+However a loss-based psuedo-BayesFactor because the method (Generalized
+Bayesian Updating) does not contain a likelihood and updates based on
+loss functions.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span></span>
+<span><span class="co">#check the marginal curve of the multi-edge function before updating</span></span>
+<span><span class="va">pl_chl1</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginal_ppmn.html">marginal_ppmn</a></span><span class="op">(</span><span class="va">foundational_ppmn</span>, data <span class="op">=</span> <span class="va">train_data</span>, child <span class="op">=</span> <span class="st">"Chl"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co">#check the marginal curve of the edge function predicting HCO3</span></span>
+<span><span class="va">pl_chl2</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginal_ppmn.html">marginal_ppmn</a></span><span class="op">(</span><span class="va">updated_ppmn</span>, data <span class="op">=</span> <span class="va">train_data</span>, child <span class="op">=</span> <span class="st">"Chl"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">pl_chl1</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, <span class="va">pl_chl2</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span>, labels <span class="op">=</span> <span class="st">"AUTO"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="ppmn_files/figure-html/multi_edge_plot-1.png" class="r-plt" alt="" width="700"></p>
 </div>
 <div class="section level3">
 <h3 id="fixed-information-gain-training">Fixed information gain training<a class="anchor" aria-label="anchor" href="#fixed-information-gain-training"></a>
@@ -582,7 +683,7 @@ weights attached to the particles. This is performed by setting the
 <code>method</code> to <code>manual</code> and defining
 <code>up_character</code> as a proportion of the concentration between 0
 and 1.</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Update the foundational ppmn allowing the data to dominate by 95%</span></span>
 <span><span class="va">updated_ppmn_5</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/update_ppmn.html">update_ppmn</a></span><span class="op">(</span>object <span class="op">=</span> <span class="va">foundational_ppmn</span>, new_data <span class="op">=</span> <span class="va">train_data</span>, method <span class="op">=</span> <span class="st">"manual"</span>, up_character <span class="op">=</span> <span class="fl">0.05</span><span class="op">)</span></span>
@@ -603,21 +704,20 @@ and 1.</p>
 <span>                   <span class="st">"Best 50%"</span><span class="op">)</span>,</span>
 <span>  label_y<span class="op">=</span><span class="fl">1.02</span>, label_x<span class="op">=</span><span class="fl">1.25</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/updating_manual-1.png" class="r-plt" alt="" width="768"></p>
-<p>Below the box plots the median and mu (mean) indicate the center of
-the residuals. For Characeae, the residuals are standardized. However,
-Characeae is a binary response variable, and while standardization via
-the pearson residuals is correct
+<p>The text below the box plots show the median and mu (mean) which
+indicate the center of the residuals. The residuals of the Characeae are
+standardized. However, Characeae is a binary response variable, and
+while standardization via the pearson residuals is correct
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msqrt><mrow><mi>p</mi><mo>⋅</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo>−</mo><mi>p</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow></msqrt><annotation encoding="application/x-tex">\sqrt{p\cdot (1-p)}</annotation></semantics></math>there
 remains a gap especially because the data is dominated by presences. The
 majority of the residuals seem well centered with exception of DOC and
-HCO3. Of course, this could be further investigated looking at the
-marginal predictions. This especially easy because each edge function is
-an univariate relation.</p>
+HCO3; which was previously investigated looking at the marginal
+predictions.</p>
 </div>
 <div class="section level3">
-<h3 id="display-the-marginal-trends">Display the marginal trends<a class="anchor" aria-label="anchor" href="#display-the-marginal-trends"></a>
+<h3 id="display-marginal-trends">Display marginal trends<a class="anchor" aria-label="anchor" href="#display-marginal-trends"></a>
 </h3>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Create the marginal plots</span></span>
 <span><span class="va">marginal_fig_HCO3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/marginal_ppmn.html">marginal_ppmn</a></span><span class="op">(</span><span class="va">updated_ppmn</span>, child <span class="op">=</span> <span class="st">"HCO3"</span>, data <span class="op">=</span> <span class="va">train_data</span><span class="op">)</span></span>
@@ -631,33 +731,18 @@ an univariate relation.</p>
 <p>Investigating these figures it is relatively clear why the residuals
 of HCO3 are shifted. The PPMN over predicts the new data. For DOC this
 is also obvious, the whole log-linear function for DOC is in mismatch
-with the actual data. My question for DOC would be why I observe a
-negative trend in the data less DOC with more Chl, this seems
-contradictory to my expectations. I would expect that upon
-eutrophication the amount of DOC would increase due to the the amount of
-die-off caused by the increasing algae growth. Hence, the model also
-does not learn the negative pattern, because we are strongly invested in
-a positive relation between DOC~Chl. Hence, there are two simple
-reasons:</p>
-<p>(1.) The edge function is not the right function. (2.) The data
-itself is not proper.</p>
-<p>Which one is a discussion point. It is not a failure to establish
-this, we might not like it, but we cannot suppress what we do not like.
-It is a learning opportunity. if our structural explanation was that
-DOC~Chl relation was positive we need to revise this in light of this
-new information. Clearly there is a case where this is not so. For
-HCO3~pH the mismatch is less severe as we will consequently observe
-under further investigation.</p>
-<p>These patterns can also be observed when we would move to validation
-using the validation data. Of course, this validation data is only a
-subset of the whole dataset. Therefore, it will display the same
-pattern. However, to obtain a test dataset that independent of training
-and validation dataset would provide a more comprehensive overview.</p>
+with the actual data. There are three obvious reasons that should be
+considered:</p>
+<p>(1.) The edge function is not the right function.(2.) Literature does
+not provide the ‘right’ information. (3.) The data itself is not of the
+right quality. Which one is a discussion point. It is not a failure to
+establish this, we might not like it, but we cannot suppress what we do
+not like. It is a learning opportunity.</p>
 </div>
 <div class="section level3">
 <h3 id="apply-predictive-fit-to-validation-data">Apply predictive fit to validation data<a class="anchor" aria-label="anchor" href="#apply-predictive-fit-to-validation-data"></a>
 </h3>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Assess the performance of the updated ppmn on the validation data </span></span>
 <span><span class="va">pred_fit_val</span>  <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pred_fit_ppmn.html">pred_fit_ppmn</a></span><span class="op">(</span><span class="va">updated_ppmn</span>, <span class="va">val_data</span>, rotate_x <span class="op">=</span> <span class="fl">45</span>, hjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -687,7 +772,7 @@ example I would like to know what the TP or Temperature concentrations
 are if I observe 15 or 1 macrophytes in the leafs.</p>
 <p>I would need to generate monte carlo sampels for TP and Temperature
 that represent the priors.</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Set priors for TP and Temp</span></span>
 <span><span class="va">prior</span>        <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>TP <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html" class="external-link">rgamma</a></span><span class="op">(</span><span class="fl">3000</span>, <span class="fl">80</span><span class="op">^</span><span class="fl">2</span><span class="op">/</span><span class="fl">100</span><span class="op">^</span><span class="fl">2</span>, <span class="fl">80</span><span class="op">/</span><span class="fl">100</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
@@ -712,7 +797,7 @@ vertex that is observed (child). In this example this is
 <code>Macrophytes</code>. Standard display of the prior and posterior
 uses a standard Gaussian kernel density. However, using the Gaussian the
 visualization might reach negative values.</p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#run estimation for 15 macrophytes</span></span>
 <span><span class="va">mac_15</span> <span class="op">&lt;-</span>  <span class="fu"><a href="../reference/root_est_ppmn.html">root_est_ppmn</a></span><span class="op">(</span><span class="va">updated_ppmn</span>, child <span class="op">=</span> <span class="st">"Macrophytes"</span>,</span>
@@ -729,36 +814,36 @@ visualization might reach negative values.</p>
 <span>                        prior <span class="op">=</span> <span class="va">prior</span><span class="op">)</span></span></code></pre></div>
 <p>For 15 macrophyte species the expected values for TP and temperature
 are displayed as below.</p>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Plot results for 15 macrophytes</span></span>
 <span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">mac_15</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">TP</span>, </span>
 <span>                   <span class="va">mac_15</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">Temp</span>, </span>
 <span>                   ncol<span class="op">=</span><span class="fl">2</span>, labels<span class="op">=</span><span class="st">"AUTO"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/figure_15_macrophytes-1.png" class="r-plt" alt="" width="768"></p>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#The summary of the results</span></span>
 <span><span class="va">mac_15</span><span class="op">$</span><span class="va">summary</span></span>
-<span><span class="co">#&gt;      root        mu       med        se       ll        ul</span></span>
-<span><span class="co">#&gt; TP     TP  7.245508  7.114287 0.9079697 6.059410  8.972521</span></span>
-<span><span class="co">#&gt; Temp Temp 15.744199 15.408993 6.8758133 4.185943 24.025263</span></span></code></pre></div>
+<span><span class="co">#&gt;      root       mu      med       se        ll       ul</span></span>
+<span><span class="co">#&gt; TP     TP 22.33897 21.67684 6.498195 11.107759 30.87724</span></span>
+<span><span class="co">#&gt; Temp Temp 15.51616 13.83952 6.716441  5.029176 24.93666</span></span></code></pre></div>
 <p>For 1 macrophyte species the expected valuss for TP and temperature
 are displayed as below.</p>
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Plot results for 1 macrophyte</span></span>
 <span><span class="fu">cowplot</span><span class="fu">::</span><span class="fu"><a href="https://wilkelab.org/cowplot/reference/plot_grid.html" class="external-link">plot_grid</a></span><span class="op">(</span><span class="va">mac_1</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">TP</span>, </span>
 <span>                   <span class="va">mac_1</span><span class="op">$</span><span class="va">plots</span><span class="op">$</span><span class="va">Temp</span>, </span>
 <span>                   ncol<span class="op">=</span><span class="fl">2</span>, labels<span class="op">=</span><span class="st">"AUTO"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/figure_1_macrophyte-1.png" class="r-plt" alt="" width="768"></p>
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#The summary of the results</span></span>
 <span><span class="va">mac_1</span><span class="op">$</span><span class="va">summary</span></span>
-<span><span class="co">#&gt;      root        mu       med         se         ll        ul</span></span>
-<span><span class="co">#&gt; TP     TP 464.56950 443.51846 184.860306 180.418341 702.12391</span></span>
-<span><span class="co">#&gt; Temp Temp  11.11372  10.12429   5.614371   4.293264  19.75292</span></span></code></pre></div>
+<span><span class="co">#&gt;      root        mu        med         se        ll         ul</span></span>
+<span><span class="co">#&gt; TP     TP 332.22279 273.048192 221.343236 84.409853 530.382891</span></span>
+<span><span class="co">#&gt; Temp Temp   6.41294   5.727844   2.223142  4.079066   9.052005</span></span></code></pre></div>
 <p>Clearly the observed variance of the expected value is much smaller
 for 15 macrophyte species than for 1 macrophyte species. From this we
 can infer that the information 15 species provides more information
@@ -836,7 +921,7 @@ x_c=\frac{b_0}{(1+exp(\frac{(b_1-x_p)}{b_2}))}
 </annotation></semantics></math> This equation can be fitted with the
 <code>nls</code> function from the <code>stats</code> package in R. See
 the example below</p>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#load the stats package</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">stats</span><span class="op">)</span></span>
@@ -865,7 +950,7 @@ the example below</p>
 <span>            col<span class="op">=</span><span class="st">"dodgerblue3"</span>, lwd<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/sigmoidal_model_fit-1.png" class="r-plt" alt="" width="768"></p>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Fit model</span></span>
 <span><span class="va">sigmoidal_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nls.html" class="external-link">nls</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/stats/SSlogis.html" class="external-link">SSlogis</a></span><span class="op">(</span><span class="va">x</span>, <span class="va">b0</span>, <span class="va">b1</span>, <span class="va">b2</span><span class="op">)</span>, </span>
@@ -880,16 +965,16 @@ the example below</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Parameters:</span></span>
 <span><span class="co">#&gt;     Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; b0 199.75517    3.47923  57.414   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; b1   6.09134    0.05188 117.413   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; b2   0.45276    0.04629   9.781   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; b0 199.76243    3.17739   62.87   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; b1   6.02532    0.04557  132.22   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; b2   0.41665    0.03878   10.74   &lt;2e-16 ***</span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residual standard error: 25.79 on 147 degrees of freedom</span></span>
+<span><span class="co">#&gt; Residual standard error: 23.86 on 147 degrees of freedom</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Number of iterations to convergence: 7 </span></span>
-<span><span class="co">#&gt; Achieved convergence tolerance: 3.861e-06</span></span></code></pre></div>
+<span><span class="co">#&gt; Number of iterations to convergence: 6 </span></span>
+<span><span class="co">#&gt; Achieved convergence tolerance: 2.765e-06</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="gompertz-equation">Gompertz equation<a class="anchor" aria-label="anchor" href="#gompertz-equation"></a>
@@ -904,7 +989,7 @@ similar to the sigmoidal equation, but has the same curse.</p>
 x_c=b_0 \cdot exp(-exp( b_1 - b_2 \cdot x_p))
 </annotation></semantics></math> This equation can also be fitted with
 the <code>nls</code> function.</p>
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Model parameters</span></span>
 <span><span class="va">b0</span> <span class="op">&lt;-</span> <span class="fl">200</span></span>
@@ -930,7 +1015,7 @@ the <code>nls</code> function.</p>
 <span>            col<span class="op">=</span><span class="st">"dodgerblue3"</span>, lwd<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/gompertz_model_fit-1.png" class="r-plt" alt="" width="768"></p>
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Fit model</span></span>
 <span><span class="va">gompertz_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nls.html" class="external-link">nls</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">b0</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="va">b1</span> <span class="op">-</span> <span class="va">b2</span><span class="op">*</span><span class="va">x</span><span class="op">)</span><span class="op">)</span>,</span>
@@ -945,16 +1030,16 @@ the <code>nls</code> function.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Parameters:</span></span>
 <span><span class="co">#&gt;    Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; b0 193.6638     4.9075  39.463   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; b1   7.6629     0.8203   9.342   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; b2   1.2838     0.1373   9.348   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; b0 207.1623     8.2092  25.235  &lt; 2e-16 ***</span></span>
+<span><span class="co">#&gt; b1   5.7615     0.6749   8.537 1.58e-14 ***</span></span>
+<span><span class="co">#&gt; b2   0.9545     0.1151   8.292 6.48e-14 ***</span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residual standard error: 25.4 on 147 degrees of freedom</span></span>
+<span><span class="co">#&gt; Residual standard error: 30.74 on 147 degrees of freedom</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Number of iterations to convergence: 6 </span></span>
-<span><span class="co">#&gt; Achieved convergence tolerance: 2.96e-06</span></span></code></pre></div>
+<span><span class="co">#&gt; Number of iterations to convergence: 7 </span></span>
+<span><span class="co">#&gt; Achieved convergence tolerance: 1.979e-06</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="asymptotic-linear">Asymptotic-linear<a class="anchor" aria-label="anchor" href="#asymptotic-linear"></a>
@@ -965,7 +1050,7 @@ the displacement constant and b2 is the growth rate. This function also
 allows other parameters to access the equation
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>b</mi><mn>1</mn></msub><mo>−</mo><msub><mi>x</mi><mn>1</mn></msub><mo>+</mo><msubsup><mo>∑</mo><mrow><mi>p</mi><mo>=</mo><mn>4</mn></mrow><mi>P</mi></msubsup><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>b</mi><mi>p</mi></msub><mo>⋅</mo><msub><mi>x</mi><mn>2</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">b_1-x_1+\sum_{p=4}^P( b_p \cdot x_2)</annotation></semantics></math>
 similar to the sigmoidal equation, but has the same curse.</p>
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Model parameters</span></span>
 <span><span class="va">b0</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
@@ -991,7 +1076,7 @@ similar to the sigmoidal equation, but has the same curse.</p>
 <span>            col<span class="op">=</span><span class="st">"dodgerblue3"</span>, lwd<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/asymptotic_linear-1.png" class="r-plt" alt="" width="768"></p>
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Fit model</span></span>
 <span><span class="va">asymptotic_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nls.html" class="external-link">nls</a></span><span class="op">(</span></span>
@@ -1007,17 +1092,17 @@ similar to the sigmoidal equation, but has the same curse.</p>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Parameters:</span></span>
 <span><span class="co">#&gt;     Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; b0  99.54370    1.95759  50.850  &lt; 2e-16 ***</span></span>
-<span><span class="co">#&gt; b1 127.46817   14.99165   8.503 2.07e-14 ***</span></span>
-<span><span class="co">#&gt; b2   0.09164    0.01452   6.310 3.19e-09 ***</span></span>
+<span><span class="co">#&gt; b0  98.02897    2.01486  48.653  &lt; 2e-16 ***</span></span>
+<span><span class="co">#&gt; b1 120.99778   17.36333   6.969 1.02e-10 ***</span></span>
+<span><span class="co">#&gt; b2   0.10217    0.01936   5.276 4.67e-07 ***</span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residual standard error: 18.45 on 145 degrees of freedom</span></span>
+<span><span class="co">#&gt; Residual standard error: 19.59 on 146 degrees of freedom</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Number of iterations to convergence: 4 </span></span>
-<span><span class="co">#&gt; Achieved convergence tolerance: 5.18e-06</span></span>
-<span><span class="co">#&gt;   (2 observations deleted due to missingness)</span></span></code></pre></div>
+<span><span class="co">#&gt; Number of iterations to convergence: 5 </span></span>
+<span><span class="co">#&gt; Achieved convergence tolerance: 5.236e-06</span></span>
+<span><span class="co">#&gt;   (1 observation deleted due to missingness)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="gaussian-equation">Gaussian equation<a class="anchor" aria-label="anchor" href="#gaussian-equation"></a>
@@ -1028,7 +1113,7 @@ deviation.</p>
 <p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>x</mi><mi>c</mi></msub><mo>=</mo><msub><mi>b</mi><mn>0</mn></msub><mo>⋅</mo><mi>e</mi><mi>x</mi><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>−</mi><mn>0.5</mn><mo>⋅</mo><msup><mrow><mo stretchy="true" form="prefix">(</mo><mfrac><mrow><mo stretchy="true" form="prefix">(</mo><mi>x</mi><mo>−</mo><msub><mi>b</mi><mn>1</mn></msub><mo stretchy="true" form="postfix">)</mo></mrow><msub><mi>b</mi><mn>2</mn></msub></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
 x_c = b_0 \cdot exp(-0.5 \cdot (\frac{(x - b_1)}{b_2})^2)
 </annotation></semantics></math></p>
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Model parameters</span></span>
 <span><span class="va">b0</span> <span class="op">&lt;-</span> <span class="fl">200</span></span>
@@ -1054,7 +1139,7 @@ x_c = b_0 \cdot exp(-0.5 \cdot (\frac{(x - b_1)}{b_2})^2)
 <span>            col<span class="op">=</span><span class="st">"dodgerblue3"</span>, lwd<span class="op">=</span><span class="fl">1.2</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_classic</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="ppmn_files/figure-html/gaussian_model_fit-1.png" class="r-plt" alt="" width="768"></p>
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Fit model</span></span>
 <span><span class="va">gaussian_mod</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/nls.html" class="external-link">nls</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">b0</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">exp</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="op">(</span><span class="va">x</span> <span class="op">-</span> <span class="va">b1</span><span class="op">)</span><span class="op">/</span><span class="va">b2</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>,</span>
@@ -1069,16 +1154,16 @@ x_c = b_0 \cdot exp(-0.5 \cdot (\frac{(x - b_1)}{b_2})^2)
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Parameters:</span></span>
 <span><span class="co">#&gt;     Estimate Std. Error t value Pr(&gt;|t|)    </span></span>
-<span><span class="co">#&gt; b0 187.57963    4.26075   44.02   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; b1   5.95873    0.03088  192.96   &lt;2e-16 ***</span></span>
-<span><span class="co">#&gt; b2   1.02321    0.03020   33.88   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; b0 207.29932    5.35720    38.7   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; b1   6.01515    0.02854   210.8   &lt;2e-16 ***</span></span>
+<span><span class="co">#&gt; b2   0.97195    0.02893    33.6   &lt;2e-16 ***</span></span>
 <span><span class="co">#&gt; ---</span></span>
 <span><span class="co">#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Residual standard error: 22.01 on 147 degrees of freedom</span></span>
+<span><span class="co">#&gt; Residual standard error: 24.96 on 147 degrees of freedom</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Number of iterations to convergence: 5 </span></span>
-<span><span class="co">#&gt; Achieved convergence tolerance: 1.43e-06</span></span></code></pre></div>
+<span><span class="co">#&gt; Number of iterations to convergence: 4 </span></span>
+<span><span class="co">#&gt; Achieved convergence tolerance: 4.778e-06</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="bayesian-classifier">Bayesian classifier<a class="anchor" aria-label="anchor" href="#bayesian-classifier"></a>
@@ -1093,7 +1178,7 @@ deviation of group 2. b5 is the proportion of group 1.</p>
 x_c = Log(\frac{N(x_p | b_0, b_1)}{N(x_p | b_2, b_3)})\cdot Log(\frac{b_4}{1-b_4})
 </annotation></semantics></math></p>
 <p>For the sake of displaying the pattern.</p>
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span></span>
 <span><span class="co">#Model parameters</span></span>
 <span><span class="va">b0</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>

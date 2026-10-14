@@ -27,14 +27,14 @@ subsequent updating of a PPMN.
 ``` r
 data(example6)
 head(example6)
-#> # A tibble: 6 × 9
-#>   Source      Authors Comment `function` transformation edge  parameter estimate
-#>   <chr>       <chr>   <chr>   <chr>      <chr>          <chr> <chr>        <dbl>
-#> 1 Charophyte… Kolada… NA      class      NA             Char… b0           9.5  
-#> 2 Charophyte… Kolada… NA      class      NA             Char… b1          13.4  
-#> 3 Charophyte… Kolada… NA      class      NA             Char… b2          37.7  
-#> 4 Charophyte… Kolada… NA      class      NA             Char… b3          38.7  
-#> 5 Charophyte… Kolada… NA      class      NA             Char… b4           0.530
-#> 6 Macrophyte… Kaijse… NA      class      NA             Char… b0          14.3  
-#> # ℹ 1 more variable: error <dbl>
+#> # A tibble: 6 × 10
+#>   Source         Authors Type  Comment `function` transformation edge  parameter
+#>   <chr>          <chr>   <chr> <chr>   <chr>      <chr>          <chr> <chr>    
+#> 1 Contribution … Algest… Tabl… NA      log        log            DOC~… b0       
+#> 2 Contribution … Algest… Tabl… NA      log        log            DOC~… b1       
+#> 3 Short-term su… Arthau… Figu… NA      log        log            Macr… b0       
+#> 4 Short-term su… Arthau… Figu… NA      log        log            Macr… b1       
+#> 5 Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  NA             HCO3… b0       
+#> 6 Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  NA             HCO3… b1       
+#> # ℹ 2 more variables: estimate <dbl>, error <dbl>
 ```
