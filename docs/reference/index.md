@@ -19,8 +19,6 @@ Posterior Predictive Meta-analytic Networks.
   : Predictive fit function to assess performance
 - [`disp_ppmn()`](https://snwikaij.github.io/HeMiE/reference/disp_ppmn.md)
   : Displacement test for PPMN
-- [`root_est_ppmn()`](https://snwikaij.github.io/HeMiE/reference/root_est_ppmn.md)
-  : Root estimation function
 
 ## Example data
 

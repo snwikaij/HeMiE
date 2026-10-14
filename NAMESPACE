@@ -4,14 +4,12 @@ S3method(print,ppmn)
 S3method(print,ppmn_disp)
 S3method(print,ppmn_pred_fit)
 S3method(print,ppmn_prediction)
-S3method(print,ppmn_root_estimation)
 export(.ppmn_predict_edge)
 export(build_ppmn)
 export(disp_ppmn)
 export(marginal_ppmn)
 export(pred_fit_ppmn)
 export(predict_ppmn)
-export(root_est_ppmn)
 export(update_ppmn)
 importFrom(ggforce,geom_ellipse)
 importFrom(ggplot2,
@@ -27,7 +25,6 @@ importFrom(ggplot2,
   geom_ribbon,
   ggplot,
   ggplot_build,
-  labs,
   theme,
   theme_classic,
   xlab,

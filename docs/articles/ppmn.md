@@ -585,7 +585,7 @@ foundational_ppmn$FunctionWeights$Chl
 #update weights for the multi-edge function
 updated_ppmn$FunctionWeights$Chl
 #>        ef1        ef2 
-#> 0.93281624 0.06718376
+#> 0.96588132 0.03411868
 
 #what is the id of ef1 (edge function1) and ef2 (edge function2) 
 updated_ppmn$EdgeFunctions
@@ -737,113 +737,6 @@ Having assessed on the validation data we could accepted the
 discrepancies and notate them or update on another data, or reconstruct
 the PPMN.
 
-## Root estimation
-
-The root estimation allows a user to estimate value at the vertices that
-are roots based on values in the leafs. For this we need to set
-plausible values that might inform us about conditions in the roots. For
-example I would like to know what the TP or Temperature concentrations
-are if I observe 15 or 1 macrophytes in the leafs.
-
-I would need to generate monte carlo sampels for TP and Temperature that
-represent the priors.
-
-``` r
-
-#Set priors for TP and Temp
-prior        <- data.frame(TP = rgamma(3000, 80^2/100^2, 80/100^2),
-                           Temp = c(rbeta(3000, 1.5, 3.5)*40))
-prior$Temp   <- prior$Temp+(1-(prior$Temp/40))*4
-
-#Display the prior distributions
-cowplot::plot_grid(
-
-ggplot(prior, aes(TP))+
-  geom_histogram(col="black", fill="grey80", alph=0.3, bins=15)+
-  theme_classic(),
-
-ggplot(prior, aes(Temp))+
-  geom_histogram(col="black", fill="grey80", alph=0.3, bins=15)+
-  theme_classic(),
-
-ncol=2)
-```
-
-![](ppmn_files/figure-html/root_estimation_monte_carlo_priors-1.png)
-
-The root estimation needs to be initiated by setting the targeted vertex
-that is observed (child). In this example this is `Macrophytes`.
-Standard display of the prior and posterior uses a standard Gaussian
-kernel density. However, using the Gaussian the visualization might
-reach negative values.
-
-``` r
-
-#run estimation for 15 macrophytes
-mac_15 <-  root_est_ppmn(updated_ppmn, child = "Macrophytes",
-                        kde_method = "Gamma",
-                        target_value = 15,
-                        lab_x = 0.2,
-                        prior = prior)
-
-#run estimation for 1 macrophyte
-mac_1 <-  root_est_ppmn(updated_ppmn, child = "Macrophytes",
-                        kde_method = "Gamma",
-                        target_value = 1,
-                        lab_x = 0.2,
-                        prior = prior)
-```
-
-For 15 macrophyte species the expected values for TP and temperature are
-displayed as below.
-
-``` r
-
-#Plot results for 15 macrophytes
-cowplot::plot_grid(mac_15$plots$TP, 
-                   mac_15$plots$Temp, 
-                   ncol=2, labels="AUTO")
-```
-
-![](ppmn_files/figure-html/figure_15_macrophytes-1.png)
-
-``` r
-
-#The summary of the results
-mac_15$summary
-#>      root       mu      med       se        ll       ul
-#> TP     TP 22.33897 21.67684 6.498195 11.107759 30.87724
-#> Temp Temp 15.51616 13.83952 6.716441  5.029176 24.93666
-```
-
-For 1 macrophyte species the expected valuss for TP and temperature are
-displayed as below.
-
-``` r
-
-#Plot results for 1 macrophyte
-cowplot::plot_grid(mac_1$plots$TP, 
-                   mac_1$plots$Temp, 
-                   ncol=2, labels="AUTO")
-```
-
-![](ppmn_files/figure-html/figure_1_macrophyte-1.png)
-
-``` r
-
-#The summary of the results
-mac_1$summary
-#>      root        mu        med         se        ll         ul
-#> TP     TP 332.22279 273.048192 221.343236 84.409853 530.382891
-#> Temp Temp   6.41294   5.727844   2.223142  4.079066   9.052005
-```
-
-Clearly the observed variance of the expected value is much smaller for
-15 macrophyte species than for 1 macrophyte species. From this we can
-infer that the information 15 species provides more information about
-the environmental conditions than 1. That does not mean that if we would
-focus on the identity of species we could not learn much more.
-
 ## Edge functions
 
 There are different functions that can be used in the PPMN. These are
@@ -954,16 +847,16 @@ summary(sigmoidal_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 199.76243    3.17739   62.87   <2e-16 ***
-#> b1   6.02532    0.04557  132.22   <2e-16 ***
-#> b2   0.41665    0.03878   10.74   <2e-16 ***
+#> b0 199.24314    3.66662  54.340   <2e-16 ***
+#> b1   6.04401    0.05194 116.374   <2e-16 ***
+#> b2   0.46036    0.04670   9.858   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 23.86 on 147 degrees of freedom
+#> Residual standard error: 26.7 on 147 degrees of freedom
 #> 
 #> Number of iterations to convergence: 6 
-#> Achieved convergence tolerance: 2.765e-06
+#> Achieved convergence tolerance: 6.803e-06
 ```
 
 ### Gompertz equation
@@ -1023,17 +916,17 @@ summary(gompertz_mod)
 #> Formula: y ~ b0 * exp(-exp(b1 - b2 * x))
 #> 
 #> Parameters:
-#>    Estimate Std. Error t value Pr(>|t|)    
-#> b0 207.1623     8.2092  25.235  < 2e-16 ***
-#> b1   5.7615     0.6749   8.537 1.58e-14 ***
-#> b2   0.9545     0.1151   8.292 6.48e-14 ***
+#>     Estimate Std. Error t value Pr(>|t|)    
+#> b0 219.38564   11.73730  18.691  < 2e-16 ***
+#> b1   4.64231    0.53432   8.688 6.57e-15 ***
+#> b2   0.74221    0.09401   7.895 6.17e-13 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 30.74 on 147 degrees of freedom
+#> Residual standard error: 27.5 on 147 degrees of freedom
 #> 
 #> Number of iterations to convergence: 7 
-#> Achieved convergence tolerance: 1.979e-06
+#> Achieved convergence tolerance: 4.676e-06
 ```
 
 ### Asymptotic-linear
@@ -1089,17 +982,17 @@ summary(asymptotic_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0  98.02897    2.01486  48.653  < 2e-16 ***
-#> b1 120.99778   17.36333   6.969 1.02e-10 ***
-#> b2   0.10217    0.01936   5.276 4.67e-07 ***
+#> b0 102.76209    2.68658  38.250  < 2e-16 ***
+#> b1  84.07234   13.95140   6.026 1.32e-08 ***
+#> b2   0.06816    0.01557   4.378 2.28e-05 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 19.59 on 146 degrees of freedom
+#> Residual standard error: 21.35 on 145 degrees of freedom
 #> 
-#> Number of iterations to convergence: 5 
-#> Achieved convergence tolerance: 5.236e-06
-#>   (1 observation deleted due to missingness)
+#> Number of iterations to convergence: 6 
+#> Achieved convergence tolerance: 5.292e-06
+#>   (2 observations deleted due to missingness)
 ```
 
 ### Gaussian equation
@@ -1156,16 +1049,16 @@ summary(gaussian_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 207.29932    5.35720    38.7   <2e-16 ***
-#> b1   6.01515    0.02854   210.8   <2e-16 ***
-#> b2   0.97195    0.02893    33.6   <2e-16 ***
+#> b0 209.96630    3.54404   59.24   <2e-16 ***
+#> b1   6.00081    0.02105  285.04   <2e-16 ***
+#> b2   0.96386    0.02154   44.75   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 24.96 on 147 degrees of freedom
+#> Residual standard error: 18.48 on 147 degrees of freedom
 #> 
-#> Number of iterations to convergence: 4 
-#> Achieved convergence tolerance: 4.778e-06
+#> Number of iterations to convergence: 5 
+#> Achieved convergence tolerance: 7.504e-06
 ```
 
 ### Bayesian classifier

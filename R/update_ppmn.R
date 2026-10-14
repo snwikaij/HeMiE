@@ -5,11 +5,10 @@
 #' @param nsim Number of simulations used for updating.
 #' @param level Generalized credibility level (default level = 0.9).
 #' @param method The method being used to set the updating strength of the model. The default
-#' method is 'kernel', The other method 'manual' uses the Kullenback-Leibler divergence applied
-#' over the number of simulations to express the concentration strength relative to no change relative to the prior.
-#' Here the default of the update strength is 95%.
-#' @param up_chararacter The fraction of information that is allowed to concentrate in the generalized posterior
-#'  when using the method 'manual'.
+#' method is 'oob', The other method 'manual' concentrates by selecting the best x% of the simulations and 'oob' is a version
+#' that looks similair to SafeBayes.
+#' @param up_chararacter An statement that defines properties of the updating methods. The default values for the number of repetitions
+#' for the oob method is 20.
 #' @param max_lambda Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).
 #' @param diagnostics If residual diagnostics should be returned (default diagnostics = T).
 #' @param covar Covariance matrix that is calculated between model parameters (default covar = T).
@@ -25,7 +24,7 @@
 #'
 #' @export
 update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
-                        method="oob_fast", up_character=NULL, max_lambda=1000,
+                        method="oob", up_character=NULL, max_lambda=200,
                         diagnostics=T, covar=T, seed=123){
 
   if(nsim<1){stop("number of simulations cannot be smaller than 1.")}
@@ -33,8 +32,9 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   if(level<0.00001){stop("level cannot be smaller than .00001.")}
 
   if(method=="oob"){
-    if(is.null(up_character) || up_character<1){
-      stop("The update character for method 'oob' is the sequence length and cannot be smaller than 1.")}}
+    if(is.null(up_character)){up_character <- 20}
+    if(up_character<1){
+      stop("The update character for the method 'oob' is the number of repetitions length and cannot be smaller than 1.")}}
   if(method=="manual"){
     if(is.null(up_character) || up_character>1 || up_character<0){
       stop("The update character for method 'manual' is the best percentage of particles and cannot be smaller than 0 or larger than 1.")}}
@@ -88,28 +88,22 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
     z <- z[is.finite(z)]
     if(length(z)==0){NA}else{median(z)}})
 
-
   if(method=="manual"){
 
     lambda        <- .ppmn_lambda_level(loss, best_frac=up_character, max_lambda=max_lambda)
 
-  }else if(method=="oob_fast"){
-
-    lambda        <- .ppmn_lambda_fast(lossandresid$loss1, max_lambda=max_lambda)
-
   }else if(method=="oob"){
 
-    lambda        <- .ppmn_oob_lambda_pred(obs_mat, lossandresid$loss1, max_lambda, seed,
-                                           seq_len=update_character, n_boot=1000)
+    lambda        <- .ppmn_lambda_fast(lossandresid$loss1, n_rep=up_character, max_lambda=max_lambda)
 
-  }else{stop("Method should be 'manual', 'oob_fast' or 'oob'.")}
+  }else{stop("Method should be 'manual' or 'oob'.")}
 
   weights                   <- .ppmn_stable_weights(loss, lambda)
   ESS                       <- 1/sum(weights^2)
   function_particle_weights <- list()
 
   if(lambda>max_lambda){warning("Lambda exceeds max_lambda, consider increasing max_lambda.")}
-  if(ESS<5){warning("The ESS is smaller than 5, indicating the posterior concentration may be too strong.")}
+  if((nsim*0.05)<ESS){warning("The ESS is smaller than 5% of the simulations, indicating the posterior concentration may be too strong.")}
 
 ############################################
 #nodes that contribute to observed vertices#
@@ -251,7 +245,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
     child_par   <- edge_info$child[match(fun_par, edge_info$id)]
 
     #parameter active or inactive within each simulation
-    active_par <- matrix(F,nrow=nsim,ncol=ncol(params))
+    active_par <- matrix(F, nrow=nsim, ncol=ncol(params))
 
     for(k in seq_len(ncol(params))){
 
@@ -268,7 +262,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
       diff_mu_par[!active_par]               <- 0
       diff_mu_par[!is.finite(diff_mu_par)]   <- 0
 
-      sigma_weighted <- t(diff_mu_par) %*% sweep(diff_mu_par, 1, weights, "*")
+      sigma_weighted <- t(diff_mu_par) %*% diag(weights) %*% diff_mu_par
       sigma_weighted <- sigma_weighted+diag(eps,ncol(sigma_weighted))}
 
 ##########################

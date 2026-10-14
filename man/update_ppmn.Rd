@@ -9,9 +9,9 @@ update_ppmn(
   new_data,
   nsim = 3000,
   level = 0.9,
-  method = "oob_fast",
+  method = "oob",
   up_character = NULL,
-  max_lambda = 1000,
+  max_lambda = 200,
   diagnostics = T,
   covar = T,
   seed = 123
@@ -27,9 +27,8 @@ update_ppmn(
 \item{level}{Generalized credibility level (default level = 0.9).}
 
 \item{method}{The method being used to set the updating strength of the model. The default
-method is 'kernel', The other method 'manual' uses the Kullenback-Leibler divergence applied
-over the number of simulations to express the concentration strength relative to no change relative to the prior.
-Here the default of the update strength is 95\%.}
+method is 'oob', The other method 'manual' concentrates by selecting the best x\% of the simulations and 'oob' is a version
+that looks similair to SafeBayes.}
 
 \item{max_lambda}{Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).}
 
@@ -39,8 +38,8 @@ Here the default of the update strength is 95\%.}
 
 \item{seed}{Seed value 123.}
 
-\item{up_chararacter}{The fraction of information that is allowed to concentrate in the generalized posterior
-when using the method 'manual'.}
+\item{up_chararacter}{An statement that defines properties of the updating methods. The default values for the number of repetitions
+for the oob method is 20.}
 }
 \description{
 The updating function uses loss-based Generalized Bayesian Updating (GBU) to update the prior to a generalized

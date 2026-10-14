@@ -40,7 +40,6 @@ reference:
   - marginal_ppmn
   - pred_fit_ppmn
   - disp_ppmn
-  - root_est_ppmn
 
 - title: "Example data"
   desc: >

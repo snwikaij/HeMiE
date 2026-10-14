@@ -10,7 +10,7 @@
 #' @keywords internal
 #'
 .ppmn_lambda_fast <- function(loss_array,  max_lambda,
-                              n_boot=20, n_lambda=100, ess_frac=0.1){
+                              n_rep, n_lambda=200, ess_frac=0.05){
 
   #loss per per [i,s]
   loss_is <- apply(loss_array, c(1,3), function(x){
@@ -36,9 +36,9 @@
   lambda_seq <- seq(0, max_lambda, length.out=n_lambda)
 
   #for each bootstrap derive a lambda
-  score <- matrix(NA, nrow=n_boot, ncol=n_lambda)
+  score <- matrix(NA, nrow=n_rep, ncol=n_lambda)
 
-  for(b in seq_len(n_boot)){
+  for(b in seq_len(n_rep)){
 
     #subset
     inb_data   <- sample.int(nrow(loss_is), floor(0.8*nrow(loss_is)))

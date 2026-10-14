@@ -8,9 +8,9 @@ Helper function oob fast
 .ppmn_lambda_fast(
   loss_array,
   max_lambda,
-  n_boot = 20,
-  n_lambda = 100,
-  ess_frac = 0.1
+  n_rep,
+  n_lambda = 200,
+  ess_frac = 0.05
 )
 ```
 

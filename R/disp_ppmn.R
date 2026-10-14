@@ -1,17 +1,24 @@
 #' Displacement test for PPMN
 #'
-#' @param object A foundational or updated PPMN
-#' @param new_data New dataset with all root nodes and least one child node present
-#' @param nsim Number of simulations needed for updating
-#' @param level Credibility level (default level = 0.9)
-#' @param gd_display Display the Generalized Displacement (GD) in the name
+#' @param object A foundational or updated PPMN.
+#' @param new_data New dataset with all root nodes and least one child node present.
+#' @param nsim Number of simulations used to construct the intervals.
+#' @param level Credibility level (default level = 0.9).
 #' @param seed Seed value 123.
 #'
+#' @description
+#' The displacement (D) quantifies the extent to which the parameters of current PPMN must change in order
+#' to maximally align with the new data. The learning rate  is set sufficiently high so the centrality of the generalized
+#' posterior is shifted fully dominated by the data. In comparison, the model predictions prior to the update 'behave' as not having
+#' learned from the new data. The displacement measures how much information the data provides to shift the expected value relative
+#' to the prediction and spread of the current PPMN. A value close to 0 indicates the data provides relatively limited information
+#' that would result in the displacement of the expected value.
+#'
 #' @export
-disp_ppmn <- function(object, new_data, nsim=3000, level=0.9, gd_display=F, seed=123){
+disp_ppmn <- function(object, new_data, nsim=3000, level=0.9, seed=123){
 
   pred1    <- predict_ppmn(object, new_data, nsim = nsim)
-  ppmn_100 <- suppressWarnings(update_ppmn(object, up_character = 0, new_data=new_data, method="best_frac", nsim=nsim))
+  ppmn_100 <- suppressWarnings(update_ppmn(object, up_character = 0, new_data=new_data, method="manual", nsim=nsim))
   pred_100 <- predict_ppmn(ppmn_100, new_data, nsim = nsim)
 
   #set seed
