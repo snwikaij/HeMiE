@@ -5,7 +5,7 @@ Helper function finding fraction of loss
 ## Usage
 
 ``` r
-.ppmn_lambda_level(loss, best_frac, max_lambda)
+.ppmn_lambda_level(loss, ess_frac, max_lambda)
 ```
 
 ## Arguments

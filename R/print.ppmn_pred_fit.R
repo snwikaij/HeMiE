@@ -9,18 +9,10 @@ print.ppmn_pred_fit <- function(x, ...){
 
   print_tab <- function(tab){
 
-    tab <- data.frame(
-      Variable = rownames(tab),
-      tab,
-      row.names = NULL,
-      check.names = FALSE
-    )
+    tab <- data.frame(Variable = rownames(tab), tab,
+      row.names = NULL, check.names = FALSE)
 
-    print(
-      tab,
-      row.names = FALSE
-    )
-  }
+    print(tab, row.names = FALSE)}
 
   cat("\nPPMN predictive fit\n")
   cat("-------------------\n")
@@ -37,5 +29,4 @@ print.ppmn_pred_fit <- function(x, ...){
   cat("---------------------------\n")
   print_tab(x$Stdz)
 
-  invisible(x)
-}
+  invisible(x)}

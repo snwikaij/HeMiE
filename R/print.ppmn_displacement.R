@@ -16,9 +16,8 @@ print.ppmn_disp <- function(x, ...){
   num_cols <- c("median","map","mu","ll","ul")
   num_cols <- intersect(num_cols, names(tab))
 
-  tab[num_cols] <- lapply(
-    tab[num_cols], function(z){round(as.numeric(z),3)})
+  tab[num_cols] <- lapply(tab[num_cols], function(z){round(as.numeric(z),3)})
 
   print(tab, row.names=F)
 
-  invisible(x)}
+invisible(x)}

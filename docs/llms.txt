@@ -77,6 +77,10 @@ Posterior Predictive Meta-analytic Networks.
   : Predictive fit function to assess performance
 - [`disp_ppmn()`](https://snwikaij.github.io/HeMiE/reference/disp_ppmn.md)
   : Displacement test for PPMN
+- [`extract_covar_ppmn()`](https://snwikaij.github.io/HeMiE/reference/extract_covar_ppmn.md)
+  : PPMN correlation matrix extraction
+- [`extract_param_ppmn()`](https://snwikaij.github.io/HeMiE/reference/extract_param_ppmn.md)
+  : Extract parameters from object
 
 ## Example data
 

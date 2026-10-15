@@ -80,59 +80,99 @@ these components are defined in the package.
 
 ## Specifying network structure
 
-We begin by defining each variable ($`X = \{ x_1, ..., x_n \}`$) that
-constitute the network and the directed dependencies among them. Each
-non-root vertex must be associated with a edge-function that maps its
-parent variable $`x_p`$ to a child vertex $`x_c`$. A edge-function is
-expressed as
+We begin by defining the set of variables
+($`X = \{ x_1, \ldots, x_n \}`$) that constitute the network and
+specifying the directed relationships among them. Each non-root vertex
+must be associated with at least one edge function that maps its parent
+variable(s) ($`x_p`$) to a child vertex ($`x_c`$). An edge function is
+expressed as:
 
 ``` math
-x_c=f_{c|p}(x_p, \theta_{c|p})
+
+x_c = f_{c|p}(x_p, \theta_{c|p})
 ```
-with it corresponding parameter $`\theta_{c|p}`$. An example could be
-the relations between Total Phosphorus (TP) to Chlorophyll-a (Chl). We
-fitted for example three models A-D and found one intercept (b0) and
-slope (b1) in two separated studies (this is given in `example4` below).
-The function is formally expressed as.
+
+where (f\_{c\|p}) represents the mathematical relationship between the
+parent and child variables, and (\_{c\|p}) denotes the corresponding set
+of model parameters.
+
+As an example, consider the relationship between Total Phosphorus (TP)
+and Chlorophyll-a (Chl). In the example dataset (example4), models
+fitted to data from different studies provide estimates for two
+parameters: the intercept (b0, (\_0)) and slope (b1, (\_1)). These
+estimates can subsequently be synthesized through meta-analysis to
+inform a single edge function connecting TP to Chl. The mathematical
+relationship is expressed as follows:
+
 ``` math
 
 x_{Chl}=f_{Chl|TP}(x_{TP}, \theta_{Chl|TP}) 
 ```
-However, the actual function is a linear equation where both the
-dependent and independent variable are log transformed. The expression
-of the function is to describe its relation and content. However, to the
-observant reader the fitted model is actually $`log(y)=b0+b1*log(x)`$
-and describes the *deterministic* part of a GLM with log-link where the
-independent variable is log-transformed. Therefore, the expression above
-would in its predictive form be expressed as given below.
+The expression above describes the relationship between the dependent
+and independent variables and identifies the functional form used in the
+PPMN. However, it does not explicitly show the complete mathematical
+equation. The observant reader may recognize that the fitted model is
+essentially a linear equation on the logarithmic scale, where the
+dependent variable is modeled using a log-link function and the
+independent variable is log-transformed. The deterministic component of
+this GLM is therefore expressed as
+($`\log(\mu_y) = \beta_0 + \beta_1 \cdot \log(x)`$), where ($`\mu_y`$)
+represents the expected response. To obtain predictions on the original
+response scale, we apply the inverse link function. The resulting
+predictive equation is presented below.
+
+A side note: A GLM with a log-link models $`\log(E[Y\mid x])`$, whereas
+an ordinary linear regression fitted to $`\log(y)`$ models
+$`E[\log(Y)\mid x]`$. These are not generally equivalent, and
+exponentiating predictions from the latter does not automatically
+recover the arithmetic mean of $`Y`$. Nonetheless it often provides a
+decent approximation to the underlying pattern.
+
 ``` math
 
 x_{Chl}=f_{Chl|TP}(x_{TP}, \theta_{Chl|TP}) = exp\{\beta_0 + \beta_1 \cdot Log(x_{TP})\}
 ```
-We only needs to fit models to collect the `estimate` and `error` and
-indicate the functional relation between the dependent and independent
-variable(s) and how the independent variables have been transformed. As
-an example see the data frame (`example4`) with the following columns
-below. In this data frame the columns `function`, `transformation`,
-`edge` `parameter`, `estimate` and `error` are required. The column
-`estimate` contains all numeric values of all intercept and slopes and
-the column `error` its corresponding standard error. We need to indicate
-to what `parameter` the `estimate` and `error` belong to. The parameter
-are b0 = $`\beta_0`$ and b1 = $`\beta_1`$, which in layman terms are
-called the intercept and slope, respectively. The column `edge`
-indicates the formula you would use in a standard `lm` or `glm` and is
-used to connect the dependent and independent variables. The column
-`transformation` indicates how all independent variables are
-transformed. It is applied to all independent variable and cannot be
-applied to one. The column `function` is important, it tells the code
-how we want to connect (what type of shape) the dependent and
-independent variables. The PPMN can apply different functions and used
-different types of parameters, that are not only intercepts or slopes
-and there can be functions added. Later we will come back to the
-functions currently available in the library. In the `example4` the
-columns `Source`, `Authors`, `Comment` could be omitted, but are
-displayed to show a table we would standard compile during a
-meta-analysis.
+To construct a PPMN, we first need to fit models to the available data
+and extract their parameter estimates (`estimate`) and corresponding
+standard errors (`error`). Additionally, we must specify the functional
+relationship between the dependent and independent variables, including
+any transformations applied to the independent variables.
+
+The example data frame (`example4`), displayed below, illustrates how
+this information should be organized. Six columns are required:
+`function`, `transformation`, `edge`, `parameter`, `estimate`, and
+`error`.
+
+The estimate column contains the numerical estimates of the model
+parameters, while error contains their corresponding standard errors.
+The parameter column identifies which parameter each estimate and
+standard error belong to. For a simple linear model, these are b0
+($`\beta_0`$) and b1 ($`\beta_1`$), commonly referred to as the
+intercept and slope, respectively.
+
+The edge column specifies the relationship between the dependent and
+independent variables using the conventional formula notation of
+[`lm()`](https://rdrr.io/r/stats/lm.html) or
+[`glm()`](https://rdrr.io/r/stats/glm.html), such as `Chl ~ TP`. The
+transformation column indicates whether the independent variables have
+been transformed. Importantly, the specified transformation is applied
+to all independent variables within an edge function; individual
+transformations for separate predictors are not currently supported.
+
+The function column defines the mathematical form of the relationship
+between the dependent and independent variables. The PPMN supports
+different functional forms, each potentially requiring different types
+and numbers of parameters. Consequently, parameters are not necessarily
+restricted to intercepts and slopes. Additional functions can also be
+incorporated into the library. We will return to the currently available
+functions later.
+
+Finally, `example4` includes the optional columns `Source`, `Authors`,
+and `Comment`. Although these are not required to construct the PPMN,
+they illustrate the additional information typically recorded during a
+meta-analysis. Retaining such information is useful for documenting the
+origin of parameter estimates and maintaining transparency and
+traceability throughout the synthesis process.
 
 ``` r
 
@@ -153,29 +193,40 @@ head(example4)
 #> # ℹ 1 more variable: error <dbl>
 ```
 
-Each of the fitted models (`Source` = `A, B, C, D, E`) was a GLM, with
-log-link and log-transformed independent variable. It is also possible
-to only include an intercept or slope. To indicated the type of
-*deterministic* part of the GLM was used, the column `function` is
-indicated as *log*. Since the independent variable was log-transformed
-we denote *log* in the column `transformed`. If a log-transformation was
-not possible a square-root transformation *sqrt* can be used. If no
-transformation has been applied then the cell should remain empty. Other
-transformations can be added to the library on request.
+Each of the fitted models (Source = A, B, C, D, E) was a Generalized
+Linear Model (GLM) with a log-link function and a log-transformed
+independent variable. The meta-analytic data frame can contain estimates
+of both the intercept and slope, although it is also possible to provide
+estimates for only one of these parameters.
+
+To identify the deterministic component of the GLM, the function column
+is set to `"log"`, indicating the use of a log-link function. Since the
+independent variable was also log-transformed, the transformed column is
+set to `"log"`. Alternatively, a square-root transformation (`"sqrt"`)
+can be specified where appropriate. If no transformation was applied to
+the independent variable, the corresponding cell should be left empty.
+
+Additional transformations can be incorporated into the HeMiE library
+upon request.
 
 ## Build PPMN function
 
-We have a meta-analytic data frame (`example4`) with all columns and
-want to synthesize everything into a PPMN (which is at the moment only a
-single edge). We need to connect the data frame with information to the
-desired network structure and for this the `build_ppmn` function is
-used. This function builds the network structure and performs
-meta-analysis by connecting the columns `function`, `edge`
-`transformation` in the data frame (`example4`) to this structure. To
-specify each unique link we need to create a formula as given below.
-That formula should indicates the function `fun` *log* and the `edge`
-*Chl~TP* and type of transformation `trans` *log*. If no transformation
-is applied the argument `trans` can be omitted from the formula.
+We now have a meta-analytic data frame (`example4`) containing the
+information needed to synthesize the foundational PPMN, which, at this
+stage, consists of a single edge function. To connect this information
+to the desired network structure, we use the
+[`build_ppmn()`](https://snwikaij.github.io/HeMiE/reference/build_ppmn.md)
+function. This function constructs the network and performs the
+meta-analysis by matching the function, edge, and transformation columns
+in the data frame to the corresponding edge-function specifications.
+
+To establish these connections, we first define a formula that uniquely
+identifies each edge function, as demonstrated below. In this example,
+the formula specifies the functional form using `fun = "log"`, the
+relationship between the dependent and independent variables using
+`edge = "Chl~TP"`, and the transformation using `trans = "log"`. If no
+transformation is required, the trans argument can simply be omitted
+from the formula.
 
 ``` r
 
@@ -183,20 +234,31 @@ is applied the argument `trans` can be omitted from the formula.
 formula=list(c(fun="log", edge="Chl~TP", trans="log"))
 ```
 
-The PPMN however aims at maximizing information use. Therefore it uses a
-(empirical) Bayesian Meta-analysis in which the priors maximize the
-information to which a model cannot be fitted. Both the likelihood and
-prior in this model are assumed to approximate a Gaussian behavior.
-Therefore, the estimated parameters are specified via the mean `mu`
-($`\mu`$) and standard error `se`. The prior for `mu` of each parameter
-b0, b1, b…, bn in an edge-function need tos be indicated with
-`prior_mu_b...` the prior for the `se` needs to be indicated with
-`prior_se_b...`. If no prior is given the `mu` this defaults to 0 and if
-no prior is given for the `se` this defaults to 1000. Additionally, it
-is possible to truncate (cutoff) the distribution, restricting the
-outcome to only a part of the parameter space. For this we the lower
-truncation is indicated by `trunc_a_b...` and upper truncation \>
-`trunc_b_b...`.
+The PPMN aims to make combine all potential available information. To
+achieve this, it employs an empirical Bayesian meta-analysis that
+combines parameter estimates obtained from published studies with prior
+information that cannot be directly incorporated through model fitting,
+such as expert opinion or theoretical expectations.
+
+Both the prior distributions and the sampling distributions of the
+estimated parameters are assumed to follow a Gaussian distribution.
+Consequently, each parameter is characterized by its mean (mu, $`\mu`$)
+and standard error (se). For each parameter b_0, b_1, …, b_n within an
+edge function, the prior mean is specified using `prior_mu_b0`,
+`prior_mu_b1`, and so forth, while the corresponding prior standard
+error is specified using `prior_se_b0`, `prior_se_b1`, etc.
+
+If no prior information is provided, the prior mean defaults to 0 and
+the prior standard error to 1000, representing a weakly informative
+default prior over a broad parameter range.
+
+Additionally, prior distributions can be truncated to restrict parameter
+values to a predefined range. The lower truncation boundary is specified
+using `trunc_a_b0`, `trunc_a_b1`, etc., while the upper boundary is
+specified using `trunc_b_b0`, `trunc_b_b1`, etc. This allows ecological
+or theoretical constraints, such as requiring a parameter to be strictly
+positive or negative, to be incorporated directly into the prior
+specification.
 
 ``` r
 
@@ -205,19 +267,28 @@ formula=list(c(fun="log", edge="Chl~TP", trans="log",
                prior_mu_b1=1, prior_se_b1=0.5, trunc_a_b1=0))
 ```
 
-In our example a prior was already know the intercept falls around
-$`-0.5`$ and within the interval range of
-$`~2.5\% = -0.5 - 2 \cdot 0.5=-1.5`$ and
-$`~97.5\% = -0.5 + 2 \cdot 0.5=0.5`$. For the slope around $`1`$ and
-within the interval range of $`~2.5\% = 1 - 2 \cdot 0.5=0`$ and
-$`~97.5\% = 1 + 2 \cdot 0.5=2`$ we also assume the slope will definitely
-be \>0 and therefore truncate the lower boundary (`trunc_a_b1`) at 0.
-This formula represents a single edge-function from TP to Chl.
+In our example, we assume that prior information about the model
+parameters is already available. For the intercept ($`\beta_0`$), we
+specify a normal prior distribution with a mean of $`−0.5`$ and a
+standard deviation of $`0.5`$. This gives an approximate 95% interval
+ranging from $`-0.5 - 2 \cdot 0.5 = -1.5`$ to
+$`-0.5 + 2 \cdot 0.5 = 0.5`$.
 
-At this moment we have all ingredients (the formula and data) to build a
-foundational PPMN. To construct the foundational PPMN, both the formula
-and data need to be introduced into the `build_ppmn` function. This is
-shown below.
+Similarly, for the slope ((\_1)), we specify a normal prior distribution
+with a mean of 1 and a standard deviation of 0.5, resulting in an
+approximate 95% interval between (1 - 2 = 0) and (1 + 2 = 2).
+Additionally, we assume that the relationship between TP and Chl must be
+positive. We therefore truncate the slope’s prior distribution at zero
+by specifying trunc_a_b1 = 0, excluding negative parameter values.
+
+Together, these prior specifications and the model formula define a
+single edge function connecting TP to Chl.
+
+At this point, we have all the necessary ingredients to construct the
+foundational PPMN: the network formula, prior information, and
+meta-data. These can now be supplied to the
+[`build_ppmn()`](https://snwikaij.github.io/HeMiE/reference/build_ppmn.md)
+function, as demonstrated below.
 
 ``` r
 
@@ -228,8 +299,10 @@ foundational_ppmn <- build_ppmn(formula = formula, data = example4,
                                 fun_height = 0.25)
 ```
 
-After building the foundational PPMN, the single edge can be display in
-a DAG,
+After constructing the foundational PPMN, the relationship represented
+by the single edge function can be visualized as a Directed Acyclic
+Graph (DAG), illustrating the direction of the association between the
+parent and child variables.
 
 ``` r
 
@@ -238,8 +311,10 @@ foundational_ppmn$PlotDAG
 
 ![](ppmn_files/figure-html/examp_1_ppmn_e-1.png)
 
-or as a Directed Bipartite Network, where the boxes represent the
-edge-functions and the variables the circles.
+Alternatively, the network can be visualized as a Directed Bipartite
+Network (DBN), in which circles represent the variables (vertices) and
+boxes represent the edge functions connecting them. The arrows indicate
+the direction of the relationships within the network.
 
 ``` r
 
@@ -248,11 +323,16 @@ foundational_ppmn$PlotDBN
 
 ![](ppmn_files/figure-html/examp_1_ppmn_f-1.png)
 
-A slightly more complex example would introduce use to a more complex
-edge-function and network. For example, we wish to regress *Chl~TN+TP*
-and use Chl to predict phytoplankton taxa richness of *Taxa~Chl*. To
-bring a last formal expression of this network both edge-functions are
-described below.
+A slightly more complex example illustrates how multiple predictors can
+be incorporated into an edge function and how successive edge functions
+can be connected within a network. Suppose we wish to predict
+chlorophyll-a (Chl) concentrations from total nitrogen (TN) and total
+phosphorus (TP), expressed as *Chl ~ TN + TP*. The predicted
+chlorophyll-a concentration is then used to estimate phytoplankton taxa
+richness (*Taxa ~ Chl*). Together, these two edge functions form a
+network in which TN and TP are connected to taxa richness through Chl.
+The mathematical expressions defining both edge functions are provided
+below.
 
 ``` math
 
@@ -265,21 +345,27 @@ and
 f_{Taxa|Chl}(.)=f_{Taxa|Chl}(x_{Chl}, \theta_{Taxa|Chl})=exp(\beta_0 + \beta_1 \cdot Log(x_{Chl}))
 ```
 
-Both edge function are then combined to form a network expressed as
-below
+Both edge functions are then combined into a single network, as
+illustrated below.
 
 ``` math
 
 f_{Taxa|Chl}(f_{Chl|TN, TP}(x_{TN}, x_{TP}, \theta_{Chl|TN,TP,1},  \theta_{Chl|TN,TP,2}), \theta_{Taxa|Chl})
 ```
 
-The formula should then be specified as below. A minor addition is the
-inclusion of two priors for the edge *Taxa~Chl*. Assume there are two
-individuals authors/managers or methods to produce the priors then both
-sources of information are sources of uncertainty may be both be added.
-The meta-analysis incorporates this via Bayesian Model Averaging (BMA).
-Directly after building the foundational PPMN we choose to display the
-graphical representation as DBN.
+The network formula is specified below. One additional feature is the
+inclusion of two alternative priors for the edge function *Taxa ~ Chl*.
+Suppose two independent researchers, managers, or estimation methods
+provide different prior expectations for the same model parameters.
+Rather than selecting one source a priori, both can be incorporated to
+represent uncertainty arising from alternative sources of information.
+The meta-analytic component of the PPMN combines these alternative prior
+specifications through Bayesian Model Averaging (BMA), allowing each to
+contribute to the synthesized parameter estimates.
+
+After constructing the foundational PPMN, we visualize its structure as
+a DBN, providing a graphical overview of the variables and their
+relationships.
 
 ``` r
 
@@ -320,13 +406,15 @@ foundational_ppmn$PlotDBN
 
 ![](ppmn_files/figure-html/examp_2_ppmn_a-1.png)
 
-We can also inspect the structure of the synthesized network by printing
-a summary of the model in tabular form. The summary reports the number
-of vertices, the number of synthesized parameters in the network, and
-the number of parameter estimates provided in the meta-data. This is
-followed by a table describing each individual edge function, including
-the corresponding edge, function type, dependent and independent
-variables, and the additional information required to define the model.
+We can also inspect the structure of the synthesized PPMN by displaying
+a summary of the network in tabular form. The summary provides an
+overview of the number of vertices, the total number of synthesized
+parameters, and the number of parameter estimates obtained from the
+meta-data. This is followed by a detailed table describing each edge
+function, including its corresponding edge, functional form, dependent
+and independent variables, and any additional information required to
+specify the function. Together, these tables provide a structured
+overview of the network and the information used to construct it.
 
 ``` r
 
@@ -357,12 +445,14 @@ print(foundational_ppmn)
 
 ## Marginal PPMN function
 
-The network structure shows only one view of the information we
-incorporated. As with the results of Kaijser et al. (2025) we might be
-interested in viewing the association or the marginal edge-function
-itself an added variable plot. To do so an example data frame is created
-as given below. If we wish to omitted the points as we do not actually
-have real data then set the argument `alpha` to 0.
+The network structure provides only one perspective on the information
+incorporated into the PPMN. As demonstrated by Kaijser et al. (2025), we
+may also be interested in examining individual associations by
+visualizing the marginal predictions of each edge function in an added
+variable plot. To illustrate this, we first create an example data
+frame, as shown below. If no observed data are available, or if we wish
+to display only the model predictions, the data points can be hidden by
+setting the argument `alpha = 0`.
 
 ``` r
 
@@ -386,47 +476,62 @@ cowplot::plot_grid(marginal_fig_Chl[[1]], #First object is TN
 
 ## Predictive fit function
 
-The predictive fit function is used to assess the performance of the
-PPMN on new data. It return three metric to assess predictive
-performance.
+he
+[`pred_fit_ppmn()`](https://snwikaij.github.io/HeMiE/reference/pred_fit_ppmn.md)
+function evaluates the predictive performance of the PPMN on new data
+using three complementary metrics: Balance, Correlation, and
+Standardized Residual Error (SRE).
 
-The balance is given by the average fraction of positive signs and
-informs about the centrality of the model within for each prediction
-$`\hat x`$. Values close to 0.5 indicate that predictions lie
-centralized within observations, while balance close to 0 and 1 indicate
-predictions lie lower and higher than the observations.
+Balance measures the proportion of observations that exceed their
+corresponding predictions, expressed as ($`P(x > \hat{x})`$), where
+($`x`$) represents the observed value and ($`\hat{x}`$) the predicted
+value. This metric assesses whether the predictions are generally
+centered within the observed data. Values close to 0.5 indicate
+relatively balanced predictions, whereas values approaching 0 indicate
+that the model tends to overpredict the observations. Conversely, values
+approaching 1 indicate that the model tends to underpredict the
+observations.
 
 ``` math
 
 P(observed>predicted)=\frac{1}{N}\sum_{s=1}^S H(x_c > \hat x_c^{(s)})
 ```
 
-The pearson correlation correlated the the observed and predicted
-values. It provides I judges the sign and strength of the observations
-and prediction. A correlation of 0 indicates minimal correlation with
-the predictions, close to 1 a strong correlation and \< 0 an opposing
-prediction.
+measures the strength and direction of the linear relationship between
+observed and predicted values. A correlation close to 1 indicates a
+strong positive association, suggesting that predictions increase as
+observed values increase. A correlation close to 0 indicates little or
+no linear association between observations and predictions, whereas a
+negative correlation indicates that predictions tend to change in the
+opposite direction to the observations. Values approaching −1 indicate a
+strong negative linear relationship.
 
 ``` math
 
 R(observed > predicted) = \frac{Cov(x_c, \hat x_c^{(s)})}{\sqrt{Var(x_c)\cdot Var(\hat x_c^{(s)}})}
 ```
 
-The standardize residual error (SRE) is calculated using residual error
-per child vertex $`c`$ of each simulation $`s`$ divided by over its
-standard deviation. An SRE close to 0 means that the prediction of the
-model is close to the observed data. An absolute SRE of approximately 1
-indicates that the residual is equal to one estimated standard deviation
-of the residual distribution. Values of \|3\| or higher are extremely
-large.
+The standardize residual error (SRE) is calculated by dividing the
+residual error for each child vertex ($`c`$) and Monte Carlo simulation
+($`s`$) by the estimated standard deviation of the corresponding
+residual distribution. The SRE expresses the magnitude of prediction
+errors relative to the variability of the residuals. Values close to 0
+indicate that predictions closely match the observed values, whereas an
+absolute SRE of approximately 1 indicates that the prediction error is
+equivalent to one estimated standard deviation of the residual
+distribution. Absolute values of 3 or higher indicate particularly large
+deviations between observed and predicted values, require further
+investigation.
 
 ``` math
 
 SRE_c=\frac{r_c^{(s)}}{\sigma(r_c)}
 ```
 
-Below an example of the predictive fit function applied to the the
-example data given above.
+The example below demonstrates how to apply the
+[`pred_fit_ppmn()`](https://snwikaij.github.io/HeMiE/reference/pred_fit_ppmn.md)
+function to assess the predictive performance of the PPMN using the
+example data set introduced above.
 
 ``` r
 
@@ -446,9 +551,10 @@ cowplot::plot_grid(pred_performance$plots$Balance, #Predictive balance
 
 ### Specifying network structure
 
-We will build a more elaborated network following the steps that were
-explained above to update the PPMN. First we build the formula that
-defines the network structure.
+We will now construct a more elaborate PPMN by following the steps
+outlined above and subsequently update it using additional data. First,
+we define the network structure by specifying the formula that describes
+the relationships between its variables.
 
 ``` r
 
@@ -460,19 +566,19 @@ head(example6)
 #> # A tibble: 6 × 10
 #>   Source         Authors Type  Comment `function` transformation edge  parameter
 #>   <chr>          <chr>   <chr> <chr>   <chr>      <chr>          <chr> <chr>    
-#> 1 Contribution … Algest… Tabl… NA      log        log            DOC~… b0       
-#> 2 Contribution … Algest… Tabl… NA      log        log            DOC~… b1       
-#> 3 Short-term su… Arthau… Figu… NA      log        log            Macr… b0       
-#> 4 Short-term su… Arthau… Figu… NA      log        log            Macr… b1       
-#> 5 Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  NA             HCO3… b0       
-#> 6 Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  NA             HCO3… b1       
+#> 1 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b0       
+#> 2 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b1       
+#> 3 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b2       
+#> 4 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b3       
+#> 5 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b4       
+#> 6 Charophyte va… Kolada… Supp… NA      class      NA             Char… b0       
 #> # ℹ 2 more variables: estimate <dbl>, error <dbl>
 
 #Set the formula of the full network
 formula=list(c(fun="sigmoidal", edge="Chl~TP", trans="log",
-               prior_mu_b0=100, prior_se_b0=50, trunc_a_b0=0, trunc_b_b0=10000,
-               prior_mu_b1=6.2, prior_se_b1=1.6, trunc_a_b1=0,
-               prior_mu_b2=0, prior_se_b2=1, trunc_a_b2=0),
+               prior_mu_b0=100, prior_se_b0=50, trunc_a_b0=0,
+               prior_mu_b1=6.2, prior_se_b1=1.6,
+               prior_mu_b2=0.15, prior_se_b2=1, trunc_a_b2=0),
 
              c(fun="log10", edge="Chl~TP", trans="log10"),
 
@@ -493,7 +599,7 @@ formula=list(c(fun="sigmoidal", edge="Chl~TP", trans="log",
              c(fun="sigmoidal", edge="HCO3~pH"))
 
 #Build the PPMN and define size of the vertices
-foundational_ppmn <- build_ppmn(formula = formula, data = example6, txt_size = 3, vertex_height = 0.4, vertex_width = 0.48, arrow_offset = 4)
+foundational_ppmn <- build_ppmn(formula = formula, data = example6, txt_size = 3, vertex_height = 0.3, vertex_width = 0.30, arrow_offset = 5)
 
 #Display graph as directed bipartite network
 foundational_ppmn$PlotDBN
@@ -501,12 +607,17 @@ foundational_ppmn$PlotDBN
 
 ![](ppmn_files/figure-html/updating_example_large_network-1.png)
 
-The full foundational PPMN has now been build and all previous function
-can be applied. However, we are interested in updating the PPMN so that
-it can learn the constrains of the data if only the roots give provide
-information. For this the `update_ppmn` function can be use under
-default with the additionally data from which it can learn the
-multivariate constrains.
+The complete foundational PPMN has now been constructed, and all
+previously introduced functions can be applied. However, we are
+particularly interested in updating the PPMN so that it can learn the
+joint multivariate constraints present in new data. This allows the
+network to improve its predictions even when only information about the
+root variables is provided. To achieve this, the update_ppmn() function
+can be applied using its default settings and an additional data set.
+Through Generalized Bayesian Updating, the PPMN adjusts its parameter
+distributions to better reflect the multivariate relationships observed
+in the new data, while retaining information synthesized in the
+foundational network.
 
 ### Default training mode
 
@@ -536,12 +647,16 @@ updated_ppmn$Residuals$resid_boxplot
 
 ![](ppmn_files/figure-html/upload_training_data-1.png)
 
-Eye-balling the residuals the model has decently centralized the fit as
-the majority as the center of the residuals fall within the 2th (25%)
-and 4th (75%) quantiles, with exception of DOC and HCO3. The deviation
-is of DOC and HCO3 is not very extreme as the 1th (5%) and 5th (90%)
-quantiles are still contain the center of the residuals. However, it
-worth to check the marginal fit of these variables.
+Eye-balling the residual distributions suggests that the PPMN generally
+produces reasonably centered predictions. For most variables, zero falls
+within the interquartile range (25th–75th percentiles), indicating
+relatively limited systematic deviation between observed and predicted
+values. DOC and HCO3 are notable exceptions, showing a greater
+displacement from zero. However, these deviations are not particularly
+extreme, as zero still falls within the wider interval defined by the
+5th and 95th percentiles. Nevertheless, these discrepancies warrant
+further investigation by examining the marginal predictions of both
+variables.
 
 ``` r
 
@@ -554,26 +669,47 @@ pl_hco3 <- marginal_ppmn(updated_ppmn, data = train_data, child = "HCO3")
 cowplot::plot_grid(pl_doc[[1]], pl_hco3[[1]], labels = "AUTO")
 ```
 
-![](ppmn_files/figure-html/marginal_check-1.png) The marginal
-predictions of the model follow the data. However, model optimizes the
-predictive loss over a the total network. Due to the sparse data
-(missing values) the actual loss produced by these predictions is
-minimal. Furthermore, the model predictions are based on many studies,
-while the data provided only presents one study, should the model ignore
-all previous “evidence” and aim to perfectly fit the newly provided
-data?
+![](ppmn_files/figure-html/marginal_check-1.png) Although the marginal
+predictions of the PPMN generally follow the observed data, the updating
+procedure optimizes predictive loss across the entire network rather
+than fitting each edge function independently. Because the new dataset
+is relatively sparse, with many missing observations, the information
+available to constrain individual relationships is limited.
+Consequently, discrepancies in particular marginal predictions may have
+relatively little influence on the overall update.
+
+Furthermore, the foundational PPMN synthesizes information from numerous
+published studies, whereas the newly provided data set represents only a
+single additional study. This raises a question: should the model
+disregard all previously accumulated information to achieve a near
+perfect fit to the new observations? Arguably not. The purpose of
+Generalized Bayesian Updating is not to replace previous information
+with each new data set, but to integrate new information with existing
+expectations. Disagreement between the model and new observations should
+therefore be evaluated critically, rather than automatically forcing the
+model to conform to the latest data.
 
 ### Multi-edge function
 
-The PPMN can fit multiple-edge functions predicting one child. In the
-DBN provided above the historical
-$`log_10(Chl) = \beta_{0} +\beta_{1} \cdot log_{10}(TP)`$ competing with
-a sigmoidal function. The initial weights that determine the
-contribution to the predictions is
-$`0.5=1/(number \:of \:edge \:functions)=1/2`$. Each weight is uniformly
-distributed at the start and the more edge functions are included the
-lower the weight per function. After seeing new data the best predicting
-function will receive more weight according to its prediction capacity.
+The PPMN allows multiple competing edge functions to predict the same
+child variable. In the network presented above, for example, the
+historical log-linear relationship,
+($`\log_{10}(Chl) = \beta_0 + \beta_1 \cdot \log_{10}(TP)`$), competes
+with a sigmoidal function describing the same relationship.
+
+Initially, all competing edge functions are assigned equal weights,
+calculated as (1/M), where (M) is the number of competing functions. In
+this example, both functions therefore receive an initial weight of (1/2
+= 0.5). As more competing edge functions are introduced, their
+individual initial weights decrease accordingly.
+
+When new data become available, these weights are updated according to
+the relative predictive performance of the competing functions.
+Functions that better predict the observed data receive greater weights,
+increasing their contribution to subsequent predictions. In this way,
+the PPMN can learn which functional relationships are better supported
+by the available data without requiring a single edge function to be
+selected a priori.
 
 ``` r
 
@@ -585,7 +721,7 @@ foundational_ppmn$FunctionWeights$Chl
 #update weights for the multi-edge function
 updated_ppmn$FunctionWeights$Chl
 #>        ef1        ef2 
-#> 0.96588132 0.03411868
+#> 0.97179641 0.02820359
 
 #what is the id of ef1 (edge function1) and ef2 (edge function2) 
 updated_ppmn$EdgeFunctions
@@ -613,22 +749,52 @@ updated_ppmn$EdgeFunctions
 #> 10                   pH
 ```
 
-The sigmoidal function increased from 50% to 93%, while the log10 linear
-decreased from 50% to 7%. These are substantial shifts in weights. If
-our ‘hypothesis’ was either is equally plausible then now clearly 93% in
-favor of the sigmoidal function to be be explanation the observed data.
-By using an abuse of words we can suggest the loss-based
-psuedo-BayesFactor is (0.93/0.07)/(0.5/0.5) because
-$`\frac{P(f_{Chl\mid TP, \:sigmoidal}\mid x)}{P(f_{Chl\mid TP, \:log_{10}} \mid x)}=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}\cdot \frac{P(f_{Chl\mid TP, \:sigmoidal})}{P(f_{Chl\mid TP, \:log_{10}})}`$
-which in this case is
-$`\frac{0.97}{0.03}=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}\cdot \frac{0.5}{0.5}`$
-of which the unknown ratio between both models is the
-$`BayesFactor=\frac{P(x \mid f_{Chl\mid TP, \:sigmoidal})}{P(x \mid f_{Chl\mid TP, \:log_{10}})}`$,
-therefore
-$`loss-based \:psuedo-BayesFactor=\frac{\frac{0.93}{0.07}}{\frac{0.5}{0.5}} \approx 14`$.
-However a loss-based psuedo-BayesFactor because the method (Generalized
-Bayesian Updating) does not contain a likelihood and updates based on
-loss functions.
+Following Generalized Bayesian Updating (GBU), the weight assigned to
+the sigmoidal function increased from 50% to 93%, whereas the weight of
+the log10-log10-linear function decreased from 50% to 7%. These
+substantial shifts indicate that the observed data are better predicted
+by the sigmoidal function.
+
+Initially, both functions were considered equally plausible, with
+weights of 0.5 each. After updating, the sigmoidal function accounts for
+93% of the combined model weight. We can express this change in relative
+support using a quantity analogous to a Bayes factor.
+
+Under conventional Bayesian model comparison, the posterior odds between
+two competing hypotheses are given by:
+``` math
+
+\frac{P(f_{\mathrm{sigmoidal}}\mid x)}{P(f_{\mathrm{log_{10}}}\mid x)}
+=
+\underbrace{
+\frac{P(x\mid f_{\mathrm{sigmoidal}})}{P(x\mid f_{\mathrm{log_{10}}})}
+}_{\text{Bayes factor}}
+\cdot
+\frac{P(f_{\mathrm{sig}})}{P(f_{\mathrm{log_{10}}})}
+```
+The Bayes factor therefore describes how much the observed data change
+the relative support for competing models. By analogy, we can calculate
+a loss-based pseudo-Bayes factor from the ratio of updated to initial
+model odds:
+
+``` math
+
+\frac{0.93/0.07}{0.50/0.50}
+\approx 13.3
+```
+Thus, the relative support for the sigmoidal function has increased
+approximately 13-fold compared with the log10-log10-linear function.
+
+Importantly, this quantity is not a conventional Bayes factor. The PPMN
+uses Generalized Bayesian Updating, which updates parameter and model
+weights through loss functions rather than an explicitly specified
+likelihood. Consequently, the resulting pseudo-Bayes factor should be
+interpreted as a measure of the change in relative model support under
+the chosen loss function and learning rate, rather than as a ratio of
+marginal likelihoods.
+
+Nevertheless, it provides an intuitive way to quantify how strongly the
+available data favor one competing edge function over another.
 
 ``` r
 
@@ -645,12 +811,16 @@ cowplot::plot_grid(pl_chl1[[3]], pl_chl2[[3]], labels = "AUTO")
 
 ### Fixed information gain training
 
-It is also possible to influence the update strength and manually define
-how strongly the posterior is allowed to concentrate. The update
-strength is then indirectly determined via the best fraction of the
-weights attached to the particles. This is performed by setting the
-`method` to `manual` and defining `up_character` as a proportion of the
-concentration between 0 and 1.
+It is also possible to manually control the strength of Generalized
+Bayesian Updating (GBU), thereby influencing how strongly the
+generalized posterior concentrates around the best performing parameter
+combinations. This is achieved by setting `method = "manual"` and
+specifying up_character as a proportion between 0 and 1. The learning
+rate ($`\lambda`$) is then determined indirectly from the fraction of
+particles with the lowest predictive loss, assigning greater weight to
+better performing parameter combinations. This allows the user to
+control posterior concentration rather than relying on the default
+hold-out calibration.
 
 ``` r
 
@@ -676,14 +846,21 @@ cowplot::plot_grid(
 
 ![](ppmn_files/figure-html/updating_manual-1.png)
 
-The text below the box plots show the median and mu (mean) which
-indicate the center of the residuals. The residuals of the Characeae are
-standardized. However, Characeae is a binary response variable, and
-while standardization via the pearson residuals is correct
-$`\sqrt{p\cdot (1-p)}`$there remains a gap especially because the data
-is dominated by presences. The majority of the residuals seem well
-centered with exception of DOC and HCO3; which was previously
-investigated looking at the marginal predictions.
+The text below each boxplot provides the median and mean (mu) of the
+residuals, indicating how well they are centered around zero. For
+Characeae, which is a binary response variable, the residuals are
+standardized using Pearson residuals, dividing the difference between
+observed and predicted values by the expected standard deviation,
+$`\sqrt{p\cdot (1-p)}`$. Although this standardization is appropriate
+for binary data, the residual distribution remains discrete and
+potentially asymmetric, particularly because the observations are
+dominated by presences. This explains the visible gap in the
+distribution of residuals for Characeae.
+
+Overall, the residuals of most variables appear reasonably well centered
+around zero, with the notable exceptions of DOC and HCO3. These
+deviations are consistent with the discrepancies identified earlier when
+examining the marginal predictions of the PPMN.
 
 ### Display marginal trends
 
@@ -701,17 +878,26 @@ cowplot::plot_grid(marginal_fig_HCO3[[1]],
 
 ![](ppmn_files/figure-html/marginal_update_plots-1.png)
 
-Investigating these figures it is relatively clear why the residuals of
-HCO3 are shifted. The PPMN over predicts the new data. For DOC this is
-also obvious, the whole log-linear function for DOC is in mismatch with
-the actual data. There are three obvious reasons that should be
-considered:
+Examining these figures provides a clearer understanding of why the
+residuals for HCO3 are shifted: the PPMN systematically over or under
+predicts the observed values. For DOC, the discrepancy is even more
+apparent, as the log-linear edge function appears not to represent the
+pattern observed in the new data.
 
-(1.) The edge function is not the right function.(2.) Literature does
-not provide the ‘right’ information. (3.) The data itself is not of the
-right quality. Which one is a discussion point. It is not a failure to
-establish this, we might not like it, but we cannot suppress what we do
-not like. It is a learning opportunity.
+There are at least three plausible explanations for these discrepancies:
+(1) the selected edge function does not adequately describe the
+underlying relationship; (2) the information obtained from the
+literature is insufficient (not enough samples) or does not accurately
+represent the relationship; or (3) the new data are of insufficient
+quality or are not representative of the conditions the model is
+intended to describe.
+
+Determining which explanation is most plausible requires further
+investigation and discussion. Importantly, identifying disagreement
+between the model and the data should not be regarded as a failure. Such
+discrepancies may be inconvenient or contradict our expectations, but
+they should not be ignored simply because they are undesirable. Instead,
+they provide an learning opportunity.
 
 ### Apply predictive fit to validation data
 
@@ -730,12 +916,159 @@ cowplot::plot_grid(pred_fit_val$plots$Balance,
 ![](ppmn_files/figure-html/apply_updated_ppmn_to_validation_data-1.png)
 
 Also here we see that HCO3 and DOC deviate. Based on this I accept the
-deviation of HCO3. I have another dataset that only contains HCO3~pH
+deviation of HCO3. I have another data set that only contains HCO3~pH
 containing which shows a ‘perfect’ fit. However, DOC~Chl I can not
 explain properly. This would need further explanation from literature.
 Having assessed on the validation data we could accepted the
 discrepancies and notate them or update on another data, or reconstruct
 the PPMN.
+
+### Displacement test
+
+The displacement test evaluates how much the PPMN’s predictions would
+need to shift to best align its central predictions with a new dataset.
+To assess this, we compare the predictions obtained from a
+data-dominated update with those of the original PPMN. If the
+best-fitting predictions fall substantially outside the range of prior
+predictions, this indicates disagreement between the model’s
+expectations and the observed data. Conversely, if little or no
+displacement is required, the original predictions are already well
+aligned with the data.
+
+The table below shows that DOC is the only variable exhibiting
+substantial disagreement with the model. The accompanying forest plot
+illustrates the magnitude and direction of displacement for each
+variable. Importantly, displacement does not tell us whether the
+discrepancy originates from the model or the data. It simply identifies
+where the observations and the model’s prior expectations disagree.
+
+``` r
+
+disp_test  <- disp_ppmn(updated_ppmn, val_data)
+
+print(disp_test)
+#> 
+#> Displacement
+#> -----------------
+#> 
+#>     Variable median    map     mu     ll     ul
+#>          Chl -0.107 -0.095 -0.055 -0.505  0.646
+#>           pH  0.262  0.283  0.230 -0.622  0.956
+#>         HCO3  0.129  0.136  0.122 -0.801  0.999
+#>           DO -0.808 -1.005 -0.766 -1.891  0.477
+#>    Characeae  0.195  0.236 -0.016 -1.270  0.476
+#>  Macrophytes -0.388 -0.457 -0.307 -1.131  0.744
+#>  CO2onlyuser  0.377  0.360  0.440 -0.517  1.729
+#>          DOC -2.268 -2.213 -2.212 -3.327 -0.912
+
+disp_test$plot
+```
+
+![](ppmn_files/figure-html/apply_updated_ppmn_disp_test-1.png)
+
+### Correlation matrix and parameter extraction
+
+Although the parameter estimates and correlation matrix can be extracted
+directly from the PPMN object, the HeMiE package provides two
+convenience functions,
+[`extract_covar_ppmn()`](https://snwikaij.github.io/HeMiE/reference/extract_covar_ppmn.md)
+and
+[`extract_param_ppmn()`](https://snwikaij.github.io/HeMiE/reference/extract_param_ppmn.md),
+to simplify this process. These functions allow users to inspect the
+synthesized parameter estimates and the correlation structure between
+parameters without manually extracting and organizing the information.
+An example demonstrating their use is provided below.
+
+``` r
+
+cor_mat <- extract_covar_ppmn(updated_ppmn)
+
+cor_mat$corplot
+```
+
+![](ppmn_files/figure-html/extraction_covar-1.png)
+
+The following function can be used to extract the parameter estimates
+from the PPMN, providing both the prior and generalized posterior
+estimates for comparison.
+
+``` r
+
+params <- extract_param_ppmn(updated_ppmn)
+
+print(params)
+#> 
+#> PPMN parameter estimates
+#> ------------------------
+#> 
+#> Prior parameters
+#> ----------------
+#>    ef parameter      mu      ll      ul
+#>   ef1        b0  71.534  49.350  93.719
+#>   ef1        b1   4.651   4.183   5.119
+#>   ef1        b2   0.616   0.471   0.762
+#>   ef2        b0  -0.812  -1.004  -0.620
+#>   ef2        b1   1.198   1.086   1.309
+#>   ef3        b0   2.621   2.164   3.078
+#>   ef3        b1  -0.310  -0.398  -0.221
+#>   ef3        b2   0.079  -0.417   0.575
+#>   ef3        b3  -0.338  -0.389  -0.286
+#>   ef4        b0  11.739   7.777  15.700
+#>   ef4        b1  13.204  12.360  14.047
+#>   ef4        b2  38.497  34.840  42.154
+#>   ef4        b3  38.634  36.040  41.228
+#>   ef4        b4   0.525   0.495   0.556
+#>   ef5        b0   8.830   8.216   9.444
+#>   ef5        b1  -6.376  -9.697  -3.055
+#>   ef5        b2   5.717   3.071   8.363
+#>   ef6        b0  60.027  17.379 102.675
+#>   ef6        b1   6.775   5.805   7.744
+#>   ef6        b2  -0.350  -0.515  -0.184
+#>   ef7        b0   2.771   2.582   2.960
+#>   ef7        b1  -0.742  -0.790  -0.694
+#>   ef8        b0   1.290   0.969   1.611
+#>   ef8        b1   0.170   0.096   0.243
+#>   ef9        b0   2.890   2.803   2.977
+#>   ef9        b1  -0.039  -0.078   0.001
+#>   ef9        b2  -0.232  -0.276  -0.187
+#>  ef10        b0 141.637 117.310 165.964
+#>  ef10        b1   7.102   6.869   7.336
+#>  ef10        b2   0.477   0.342   0.612
+#> 
+#> Generalized posterior parameters
+#> --------------------------------
+#>    ef parameter      mu      ll      ul
+#>   ef1        b0  69.578  51.046  91.045
+#>   ef1        b1   4.602   4.242   4.967
+#>   ef1        b2   0.670   0.543   0.796
+#>   ef2        b0  -0.916  -1.080  -0.766
+#>   ef2        b1   1.108   1.026   1.174
+#>   ef3        b0   2.549   2.152   2.961
+#>   ef3        b1  -0.284  -0.372  -0.188
+#>   ef3        b2  -0.031  -0.266   0.181
+#>   ef3        b3  -0.339  -0.392  -0.283
+#>   ef4        b0  11.565   7.141  16.049
+#>   ef4        b1  13.223  12.451  13.909
+#>   ef4        b2  38.689  35.104  42.757
+#>   ef4        b3  38.591  35.730  41.166
+#>   ef4        b4   0.523   0.495   0.553
+#>   ef5        b0   8.705   8.238   9.167
+#>   ef5        b1  -5.863  -9.290  -3.023
+#>   ef5        b2   6.321   4.067   9.056
+#>   ef6        b0  60.027  17.379 102.675
+#>   ef6        b1   6.775   5.805   7.744
+#>   ef6        b2  -0.350  -0.515  -0.184
+#>   ef7        b0   2.766   2.578   2.954
+#>   ef7        b1  -0.744  -0.792  -0.701
+#>   ef8        b0   1.327   0.969   1.647
+#>   ef8        b1   0.179   0.109   0.249
+#>   ef9        b0   2.893   2.821   2.984
+#>   ef9        b1  -0.037  -0.076   0.011
+#>   ef9        b2  -0.227  -0.269  -0.189
+#>  ef10        b0 141.099 117.259 163.183
+#>  ef10        b1   7.118   6.881   7.331
+#>  ef10        b2   0.471   0.335   0.599
+```
 
 ## Edge functions
 
@@ -847,16 +1180,16 @@ summary(sigmoidal_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 199.24314    3.66662  54.340   <2e-16 ***
-#> b1   6.04401    0.05194 116.374   <2e-16 ***
-#> b2   0.46036    0.04670   9.858   <2e-16 ***
+#> b0 199.37603    4.89895  40.698  < 2e-16 ***
+#> b1   5.94509    0.06874  86.483  < 2e-16 ***
+#> b2   0.45420    0.06073   7.478 6.29e-12 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 26.7 on 147 degrees of freedom
+#> Residual standard error: 36.76 on 147 degrees of freedom
 #> 
-#> Number of iterations to convergence: 6 
-#> Achieved convergence tolerance: 6.803e-06
+#> Number of iterations to convergence: 7 
+#> Achieved convergence tolerance: 2.376e-06
 ```
 
 ### Gompertz equation
@@ -916,17 +1249,17 @@ summary(gompertz_mod)
 #> Formula: y ~ b0 * exp(-exp(b1 - b2 * x))
 #> 
 #> Parameters:
-#>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 219.38564   11.73730  18.691  < 2e-16 ***
-#> b1   4.64231    0.53432   8.688 6.57e-15 ***
-#> b2   0.74221    0.09401   7.895 6.17e-13 ***
+#>    Estimate Std. Error t value Pr(>|t|)    
+#> b0 194.1627     5.5125  35.222   <2e-16 ***
+#> b1   6.0553     0.6131   9.877   <2e-16 ***
+#> b2   1.0028     0.1028   9.752   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 27.5 on 147 degrees of freedom
+#> Residual standard error: 23.17 on 147 degrees of freedom
 #> 
-#> Number of iterations to convergence: 7 
-#> Achieved convergence tolerance: 4.676e-06
+#> Number of iterations to convergence: 6 
+#> Achieved convergence tolerance: 2.968e-06
 ```
 
 ### Asymptotic-linear
@@ -981,18 +1314,18 @@ summary(asymptotic_mod)
 #> Formula: y ~ b0 - b1 * exp(-b2 * x)
 #> 
 #> Parameters:
-#>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 102.76209    2.68658  38.250  < 2e-16 ***
-#> b1  84.07234   13.95140   6.026 1.32e-08 ***
-#> b2   0.06816    0.01557   4.378 2.28e-05 ***
+#>    Estimate Std. Error t value Pr(>|t|)    
+#> b0 99.94790    3.03751  32.905  < 2e-16 ***
+#> b1 73.36539   13.89744   5.279 4.69e-07 ***
+#> b2  0.06485    0.01898   3.417 0.000822 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 21.35 on 145 degrees of freedom
+#> Residual standard error: 21.94 on 144 degrees of freedom
 #> 
-#> Number of iterations to convergence: 6 
-#> Achieved convergence tolerance: 5.292e-06
-#>   (2 observations deleted due to missingness)
+#> Number of iterations to convergence: 15 
+#> Achieved convergence tolerance: 4.891e-06
+#>   (3 observations deleted due to missingness)
 ```
 
 ### Gaussian equation
@@ -1049,16 +1382,16 @@ summary(gaussian_mod)
 #> 
 #> Parameters:
 #>     Estimate Std. Error t value Pr(>|t|)    
-#> b0 209.96630    3.54404   59.24   <2e-16 ***
-#> b1   6.00081    0.02105  285.04   <2e-16 ***
-#> b2   0.96386    0.02154   44.75   <2e-16 ***
+#> b0 195.79702    4.78229   40.94   <2e-16 ***
+#> b1   6.02269    0.03004  200.49   <2e-16 ***
+#> b2   1.03777    0.02843   36.51   <2e-16 ***
 #> ---
 #> Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 #> 
-#> Residual standard error: 18.48 on 147 degrees of freedom
+#> Residual standard error: 23.45 on 147 degrees of freedom
 #> 
-#> Number of iterations to convergence: 5 
-#> Achieved convergence tolerance: 7.504e-06
+#> Number of iterations to convergence: 4 
+#> Achieved convergence tolerance: 4.095e-07
 ```
 
 ### Bayesian classifier

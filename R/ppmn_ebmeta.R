@@ -67,20 +67,21 @@
       if(Z <= .Machine$double.eps){
         stop("Truncated posterior has negligible density within a and b.")
       }else{
-        phi_a <- dnorm(alpha)
-        phi_b <- dnorm(beta)
+        phi_a      <- dnorm(alpha)
+        phi_b      <- dnorm(beta)
 
-        mu_trunc  <- post_mu+post_sigma*(phi_a-phi_b)/Z
-        var_trunc <- post_sigma^2*(1 +
-                                       if(is.finite(alpha)) alpha * phi_a / Z else 0 -
-                                       if(is.finite(beta))  beta * phi_b / Z else 0 -
-                                       ((phi_a - phi_b)/Z)^2)
+        delta      <- (phi_a - phi_b)/Z
+
+        a_term     <- if(is.finite(alpha)){alpha*phi_a/Z}else{0}
+        b_term     <- if(is.finite(beta)){beta*phi_b/Z}else{0}
+
+        mu_trunc   <- post_mu+post_sigma*delta
+        var_trunc  <- post_sigma^2*(1+a_term-b_term-delta^2)
+
         post_mu    <- mu_trunc
-        post_sigma <- sqrt(var_trunc)
-      }
-    }
+        post_sigma <- sqrt(var_trunc)}}
 
-    return(c(mu = post_mu, sigma = post_sigma))
+    return(c(mu=post_mu, sigma=post_sigma))
   }
 
   #Loop over all priors

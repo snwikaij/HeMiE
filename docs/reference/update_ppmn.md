@@ -51,6 +51,12 @@ update_ppmn(
   selecting the best x% of the simulations and 'oob' is a version that
   looks similair to SafeBayes.
 
+- up_character:
+
+  A parameter controlling the updating method. For method "oob", it
+  specifies the number of repetitions (default = 20). For method
+  "manual", it specifies the fraction of best-performing simulations.
+
 - max_lambda:
 
   Maximum lambda that can be set for Generalized Bayesian Updating
@@ -68,8 +74,3 @@ update_ppmn(
 - seed:
 
   Seed value 123.
-
-- up_chararacter:
-
-  An statement that defines properties of the updating methods. The
-  default values for the number of repetitions for the oob method is 20.

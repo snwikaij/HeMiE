@@ -17,65 +17,40 @@
     edge    <- names(param_est)[i]
 
     #independent variables from edge
-    indep <- strsplit(
-      strsplit(edge, "~", fixed = TRUE)[[1]][2],
-      "+",
-      fixed = TRUE
-    )[[1]]
+    indep <- strsplit(strsplit(edge, "~", fixed = TRUE)[[1]][2], "+", fixed = TRUE)[[1]]
 
     #match independent variables to parameters
     if(e_fun[[i]] %in%
        c("asymptotic", "sigmoidal", "mvlogistic",
          "gompertz", "gaussian")){
 
-      indep <- c(NA_character_, NA_character_, indep)
+      indep <- c(NA, NA, indep)
 
     }else if(e_fun[[i]] == "class"){
 
-      indep <- c(
-        NA_character_,
-        indep,
-        NA_character_,
-        indep,
-        NA_character_
-      )
+      indep <- c(NA, indep, NA, indep, NA)
 
     }else{
 
-      indep <- c(NA_character_, indep)
+      indep <- c(NA, indep)
     }
 
     #parameter estimates
-    estimates <- as.data.frame(
-      do.call(rbind, sub_par)
-    )
+    estimates <- as.data.frame(do.call(rbind, sub_par))
 
     #check dimensions
     if(length(indep) != nrow(estimates)){
-      stop(
-        "Number of parameters and independent-variable labels ",
-        "do not match for edge: ", edge
-      )
-    }
+      stop("Number of parameters and independent-variable labels ",
+        "do not match for edge: ", edge)}
 
     #combine
-    data.frame(
-      edge = edge,
-      `edge function` = e_fun[[i]],
-      dependent = dependent_vars[i],
-      independent = indep,
-      parameters = names(sub_par),
-      estimates,
-      check.names = FALSE,
-      row.names = NULL
-    )
-  })
+    data.frame( edge = edge, `edge function` = e_fun[[i]],
+      dependent = dependent_vars[i], independent = indep,
+      parameters = names(sub_par), estimates,
+      check.names = FALSE, row.names = NULL)})
 
   #combine edges
-  full_table <- do.call(
-    rbind,
-    par_tab
-  )
+  full_table <- do.call(rbind, par_tab)
 
   rownames(full_table) <- NULL
 

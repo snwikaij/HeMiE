@@ -30,6 +30,10 @@ update_ppmn(
 method is 'oob', The other method 'manual' concentrates by selecting the best x\% of the simulations and 'oob' is a version
 that looks similair to SafeBayes.}
 
+\item{up_character}{A parameter controlling the updating method.
+For method "oob", it specifies the number of repetitions (default = 20).
+For method "manual", it specifies the fraction of best-performing simulations.}
+
 \item{max_lambda}{Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).}
 
 \item{diagnostics}{If residual diagnostics should be returned (default diagnostics = T).}
@@ -37,9 +41,6 @@ that looks similair to SafeBayes.}
 \item{covar}{Covariance matrix that is calculated between model parameters (default covar = T).}
 
 \item{seed}{Seed value 123.}
-
-\item{up_chararacter}{An statement that defines properties of the updating methods. The default values for the number of repetitions
-for the oob method is 20.}
 }
 \description{
 The updating function uses loss-based Generalized Bayesian Updating (GBU) to update the prior to a generalized

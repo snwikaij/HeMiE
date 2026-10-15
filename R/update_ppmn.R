@@ -7,8 +7,9 @@
 #' @param method The method being used to set the updating strength of the model. The default
 #' method is 'oob', The other method 'manual' concentrates by selecting the best x% of the simulations and 'oob' is a version
 #' that looks similair to SafeBayes.
-#' @param up_chararacter An statement that defines properties of the updating methods. The default values for the number of repetitions
-#' for the oob method is 20.
+#' @param up_character A parameter controlling the updating method.
+#' For method "oob", it specifies the number of repetitions (default = 20).
+#' For method "manual", it specifies the fraction of best-performing simulations.
 #' @param max_lambda Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).
 #' @param diagnostics If residual diagnostics should be returned (default diagnostics = T).
 #' @param covar Covariance matrix that is calculated between model parameters (default covar = T).
@@ -90,7 +91,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
 
   if(method=="manual"){
 
-    lambda        <- .ppmn_lambda_level(loss, best_frac=up_character, max_lambda=max_lambda)
+    lambda        <- .ppmn_lambda_level(loss, ess_frac=up_character, max_lambda=max_lambda)
 
   }else if(method=="oob"){
 
@@ -103,7 +104,7 @@ update_ppmn <- function(object, new_data, nsim=3000, level=0.9,
   function_particle_weights <- list()
 
   if(lambda>max_lambda){warning("Lambda exceeds max_lambda, consider increasing max_lambda.")}
-  if((nsim*0.05)<ESS){warning("The ESS is smaller than 5% of the simulations, indicating the posterior concentration may be too strong.")}
+  if(ESS<(nsim*0.05)){warning("The ESS is smaller than 5% of the simulations, indicating the posterior concentration may be too strong.")}
 
 ############################################
 #nodes that contribute to observed vertices#

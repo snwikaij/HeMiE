@@ -21,7 +21,7 @@
       x[x < 0] <- NA
       x <- sqrt(x)}
   if(trans == "log10"){
-    x[x < 0] <- NA
+    x[x <= 0] <- NA
     x <- log10(x)}}
 
   #link function of standard (g)lms

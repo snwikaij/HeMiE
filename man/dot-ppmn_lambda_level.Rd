@@ -4,7 +4,7 @@
 \alias{.ppmn_lambda_level}
 \title{Helper function finding fraction of loss}
 \usage{
-.ppmn_lambda_level(loss, best_frac, max_lambda)
+.ppmn_lambda_level(loss, ess_frac, max_lambda)
 }
 \arguments{
 \item{loss}{A vector of losses.}

@@ -18,7 +18,7 @@
 disp_ppmn <- function(object, new_data, nsim=3000, level=0.9, seed=123){
 
   pred1    <- predict_ppmn(object, new_data, nsim = nsim)
-  ppmn_100 <- suppressWarnings(update_ppmn(object, up_character = 0, new_data=new_data, method="manual", nsim=nsim))
+  ppmn_100 <- suppressWarnings(update_ppmn(object, up_character=(1/nsim), new_data=new_data, method="manual", nsim=nsim))
   pred_100 <- predict_ppmn(ppmn_100, new_data, nsim = nsim)
 
   #set seed
@@ -63,14 +63,14 @@ disp_ppmn <- function(object, new_data, nsim=3000, level=0.9, seed=123){
   rownames(forestplot) <- NULL
 
   #create final results
-  plot <- ggplot(forestplot, aes(Variable, median)) +
-    geom_hline(yintercept = 0, linetype = 2,
-               linewidth = .6, colour = "tomato3") +
-    geom_point()+
-    geom_errorbar(aes(ymin = ll, ymax = ul),
+  plot <- ggplot2::ggplot(forestplot, aes(Variable, median)) +
+    ggplot2::geom_hline(yintercept = 0, linetype = 2,
+               linewidth = .6, colour = "green4") +
+    ggplot2::geom_point()+
+    ggplot2::geom_errorbar(aes(ymin = ll, ymax = ul),
                   width = 0, linewidth = 0.5)+
-    labs(x = NULL, y = "Displacement") +
-    theme_classic()
+    ggplot2::labs(x = NULL, y = "Displacement") +
+    ggplot2::theme_classic()
 
   out <- list(plot=plot, results=forestplot)
 

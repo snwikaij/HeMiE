@@ -8,31 +8,32 @@
 #'
 #' @keywords internal
 #'
-.ppmn_lambda_level <- function(loss, best_frac, max_lambda){
+.ppmn_lambda_level <- function(loss, ess_frac, max_lambda){
 
-  #extract loss
+  #get loss and nsim
   loss <- as.numeric(loss)
-  S    <- length(loss)
+  S <- length(loss)
 
-  #single best particle
-  if(best_frac == 0){return(Inf)}
+  #t smal or full loss matrix is the whole index
+  if(S<2){return(0)}
+  if(all(loss == loss[1])){return(0)}
 
-  #no update
-  if(best_frac == 1){return(0)}
+  #if ess_frac
+  if(ess_frac == 0){return(Inf)}
+  if(ess_frac == 1){return(0)}
+  target_ess     <- ess_frac*S
 
-  #number of best particles is best_frac
-  n_best_part <- max(1, ceiling(best_frac*S))
-  best        <- order(loss)[seq_len(n_best_part)]
+  #if target_ess it too small
+  if(target_ess<= 1){return(Inf)}
 
-  #stable weight fun
-  flamb <- function(lambda){
+  #get my essy
+  get_ess <- function(lambda){
     w <- .ppmn_stable_weights(loss, lambda)
-    sum(w[best])-(1-best_frac)}
+    1/sum(w^2)}
 
-  #set upper limit
-  upper <- max_lambda
+  #if ess
+  if(get_ess(max_lambda) > target_ess){return(max_lambda)}
 
-  while(flamb(upper)<0 && upper<1e6){upper <- upper*2}
-  if(flamb(upper)<0){return(upper)}
-
-  uniroot(flamb, interval=c(0,upper))$root}
+  #find root
+  uniroot(function(lambda)get_ess(lambda)-target_ess,
+    interval = c(0, max_lambda))$root}

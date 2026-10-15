@@ -30,11 +30,11 @@ head(example6)
 #> # A tibble: 6 × 10
 #>   Source         Authors Type  Comment `function` transformation edge  parameter
 #>   <chr>          <chr>   <chr> <chr>   <chr>      <chr>          <chr> <chr>    
-#> 1 Contribution … Algest… Tabl… NA      log        log            DOC~… b0       
-#> 2 Contribution … Algest… Tabl… NA      log        log            DOC~… b1       
-#> 3 Short-term su… Arthau… Figu… NA      log        log            Macr… b0       
-#> 4 Short-term su… Arthau… Figu… NA      log        log            Macr… b1       
-#> 5 Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  NA             HCO3… b0       
-#> 6 Controls ofd1… Bade e… Tabl… HCO3 m… sigmoidal  NA             HCO3… b1       
+#> 1 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b0       
+#> 2 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b1       
+#> 3 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b2       
+#> 4 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b3       
+#> 5 Macrophyte gr… Kaijse… Raw … NA      class      NA             Char… b4       
+#> 6 Charophyte va… Kolada… Supp… NA      class      NA             Char… b0       
 #> # ℹ 2 more variables: estimate <dbl>, error <dbl>
 ```

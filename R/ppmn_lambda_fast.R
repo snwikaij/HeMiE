@@ -10,27 +10,23 @@
 #' @keywords internal
 #'
 .ppmn_lambda_fast <- function(loss_array,  max_lambda,
-                              n_rep, n_lambda=200, ess_frac=0.05){
-
-  #loss per per [i,s]
-  loss_is <- apply(loss_array, c(1,3), function(x){
-    x <- x[is.finite(x)]; if(length(x)==0){NA}else{mean(x)}})
+                              n_rep, n_lambda=200){
+  #number of samples
+  n_samp <- dim(loss_array)[1]
 
   #total loss per [s]
   loss_s <- apply(loss_array, 3, function(x){
-    x <- x[is.finite(x)]
-    if(length(x)==0){NA_real_}else{mean(x)}})
-
-  #minimum effective particle count
-  ess_min <- ceiling(ess_frac*length(is.finite(loss_s)))
+    x <- x[is.finite(x)]; if(length(x)==0){NA_real_}else{mean(x)}})
 
   #get the ESS to prevent collapse
   get_ess <- function(l){
     w <- .ppmn_stable_weights(loss_s, l)
     1/sum(w^2)}
 
-  if(get_ess(max_lambda)<ess_min){
-    max_lambda <- uniroot(function(l){get_ess(l)-ess_min}, c(0, max_lambda))$root}
+  lower_ess <- 0.05*sum(is.finite(loss_s))
+
+  if(get_ess(max_lambda)<lower_ess){
+    max_lambda <- uniroot(function(l){get_ess(l)-lower_ess}, c(0, max_lambda))$root}
 
   #A sequence of learning rates
   lambda_seq <- seq(0, max_lambda, length.out=n_lambda)
@@ -41,11 +37,16 @@
   for(b in seq_len(n_rep)){
 
     #subset
-    inb_data   <- sample.int(nrow(loss_is), floor(0.8*nrow(loss_is)))
-    oob_data   <- setdiff(seq_len(nrow(loss_is)), inb_data)
+    inb_data   <- sample.int(n_samp, floor(0.8*n_samp))
+    oob_data   <- setdiff(seq_len(n_samp), inb_data)
 
-    L_inb <- colMeans(loss_is[inb_data,,drop=F], na.rm=T)
-    L_oob <- colMeans(loss_is[oob_data,,drop=F], na.rm=T)
+    L_inb <- apply(loss_array[inb_data,,,drop=F],3,function(x){
+      x <- x[is.finite(x)]
+      if(length(x)==0){NA_real_}else{mean(x)}})
+
+    L_oob <- apply(loss_array[oob_data,,,drop=F],3,function(x){
+      x <- x[is.finite(x)]
+      if(length(x)==0){NA_real_}else{mean(x)}})
 
     ok <- (is.finite(L_inb) & is.finite(L_oob))
 
@@ -57,7 +58,6 @@
       score[b,k] <- sum(w * L_oob[ok])}}
 
   avg <- colMeans(score, na.rm=T)
-
   if(all(!is.finite(avg))){return(0)}
 
   lambda_seq[which.min(avg)]}

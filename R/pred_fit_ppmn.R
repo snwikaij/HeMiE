@@ -105,7 +105,7 @@ pred_fit_ppmn <- function(object, new_data, nsim = 1000, level=0.9,
                               ul = apply(pbal, 2, quantile, probs = 1 - (1 - level)/2, na.rm = TRUE)),2)
 
   mae_plot <- ggplot(mae_df, aes(x=rownames(mae_df), y=median))+
-    geom_hline(yintercept = 0, lty=2, lwd=0.6, col="tomato3") +
+    geom_hline(yintercept = 0, lty=2, lwd=0.6, col="green4") +
     geom_point()+xlab("Variables")+
     geom_errorbar(aes(ymin = ll, ymax = ul),
                   width = 0, linewidth = 0.5)+
@@ -114,7 +114,7 @@ pred_fit_ppmn <- function(object, new_data, nsim = 1000, level=0.9,
           axis.title.x = element_blank())
 
   bal_plot <- ggplot(pbal_df, aes(x=rownames(pbal_df), y=median))+
-    geom_hline(yintercept = 0.5, lwd=0.6, col="tomato3", lty=2)+
+    geom_hline(yintercept = 0.5, lwd=0.6, col="green4", lty=2)+
     geom_point()+
     geom_errorbar(aes(ymin = ll, ymax = ul),
                   width = 0, linewidth = 0.5)+
@@ -141,4 +141,4 @@ pred_fit_ppmn <- function(object, new_data, nsim = 1000, level=0.9,
 
        class(out) <- c("ppmn_pred_fit", "list")
 
-       return(out)}
+return(out)}

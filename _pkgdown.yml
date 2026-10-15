@@ -40,6 +40,8 @@ reference:
   - marginal_ppmn
   - pred_fit_ppmn
   - disp_ppmn
+  - extract_covar_ppmn
+  - extract_param_ppmn
 
 - title: "Example data"
   desc: >

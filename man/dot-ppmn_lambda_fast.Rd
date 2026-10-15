@@ -4,13 +4,7 @@
 \alias{.ppmn_lambda_fast}
 \title{Helper function oob fast}
 \usage{
-.ppmn_lambda_fast(
-  loss_array,
-  max_lambda,
-  n_rep,
-  n_lambda = 200,
-  ess_frac = 0.05
-)
+.ppmn_lambda_fast(loss_array, max_lambda, n_rep, n_lambda = 200)
 }
 \arguments{
 \item{loss_array}{An array fo losses.}
@@ -19,11 +13,11 @@
 
 \item{n_lambda}{Number of steps for lambda.}
 
-\item{ess_frac}{Effective sample size boundary.}
-
 \item{loss}{Compressed loss per s.}
 
 \item{n_split}{Number of repetitions.}
+
+\item{ess_frac}{Effective sample size boundary.}
 }
 \description{
 Helper function oob fast

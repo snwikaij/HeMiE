@@ -4,7 +4,10 @@ Version: 0.0.1
 Authors@R: person(given = "Willem", family = "Kaijser",
   email = "wimkaijser@outlook.com", role = c("aut", "cre"),
   comment = c(ORCID = "0000-0002-9635-5388"))
-Description: Heterodox (Bayesian) Methods in Ecology
+Description: Provides tools for constructing and evaluating Posterior
+    Predictive Meta-analytic Networks (PPMNs). The package supports
+    literature-informed parameter synthesis, simulation-based prediction,
+    generalized Bayesian updating, and predictive model evaluation.
 Config/roxygen2/version: 8.1.0
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
@@ -18,10 +21,16 @@ VignetteBuilder: knitr
 Depends: 
     R (>= 3.5)
 LazyData: true
-Imports: ggplot2 (>= 4.0.1), ggforce (>= 0.4.2),
-         igraph (>= 2.1.4), ggraph (>= 2.2.1), 
-         tidyr (>= 1.2.0), grid (>= 4.3.2),
-         tmvtnorm (>= 1.7), MASS (>= 7.3-60)
+Imports: 
+    ggplot2 (>= 4.0.1),
+    ggforce (>= 0.4.2),
+    igraph (>= 2.1.4),
+    ggraph (>= 2.2.1),
+    tidyr (>= 1.2.0),
+    grid (>= 4.3.2),
+    tmvtnorm (>= 1.7),
+    MASS (>= 7.3-60),
+    rlang
 License: GPL (>= 3)
 URL: https://snwikaij.github.io/HeMiE/,
     https://github.com/snwikaij/HeMiE
