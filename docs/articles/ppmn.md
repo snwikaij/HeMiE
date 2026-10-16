@@ -1474,4 +1474,8 @@ are satisfied, including positivity, adequate control of confounding,
 and the absence of relevant omitted confounders. Consequently, although
 a network may incorporate relationships supported by established causal
 mechanisms, it does not independently identify or if the term cause (or
-effect) are justified.
+effect) are justified. These requirements are not specific to the PPMN
+but apply generally to statistical models used for causal inference.
+Although the PPMN can incorporate relationships supported by established
+causal mechanisms, its current implementation is intended for
+exploratory and predictive purposes rather than causal attribution.
