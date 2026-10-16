@@ -1404,6 +1404,39 @@ x_c = Log(\frac{N(x_p | b_0, b_1)}{N(x_p | b_2, b_3)})\cdot Log(\frac{b_4}{1-b_4
 <p><img src="ppmn_files/figure-html/bayes_clasifier_plot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 </div>
+<div class="section level2">
+<h2 id="disclaimer-statistical-and-causal-interpretation">Disclaimer: Statistical and causal interpretation<a class="anchor" aria-label="anchor" href="#disclaimer-statistical-and-causal-interpretation"></a>
+</h2>
+<p>The updating procedure produces a generalized posterior distribution
+by combining prior information with a loss function rather than a
+formally specified likelihood. Consequently, although the resulting
+distribution provides a probabilistic representation of updated
+parameter uncertainty, it should not automatically be interpreted as a
+conventional/orthodox Bayesian posterior. In particular, generalized
+posterior probabilities and credible intervals do not necessarily
+possess the calibration properties associated with a correctly specified
+likelihood-based Bayesian model.</p>
+<p>At its current stage of development, the PPMN is primarily an
+exploratory and predictive framework, not a method for attribution of
+causal claims. The directed relationships within the network represent
+assumed dependencies derived from existing literature, ecological
+knowledge, and theoretical expectations. Some relationships may reflect
+well-established mechanisms, such as the influence of pH on carbonate
+speciation and the relative abundance of dissolved CO₂ and bicarbonate
+(HCO₃⁻). However, these relationships are specified a priori (front to
+back) rather than inferred as causal relationships from the data (back
+to front). Consequently, neither the direction of an edge nor changes in
+predicted responses should, by themselves, be interpreted as evidence
+that one variable causes another to change.</p>
+<p>Using the term causal (or effect as follows from a cause) requires
+more than specifying the direction of dependencies within a network. It
+depends on whether the assumptions necessary for causal identification
+are satisfied, including positivity, adequate control of confounding,
+and the absence of relevant omitted confounders. Consequently, although
+a network may incorporate relationships supported by established causal
+mechanisms, it does not independently identify or if the term cause (or
+effect) are justified.</p>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>
 </div>

@@ -885,3 +885,11 @@ ggplot(df, aes(x, y))+
             col="dodgerblue3", lwd=1.2)+
   theme_classic()
 ```
+
+## Disclaimer: Statistical and causal interpretation
+
+The updating procedure produces a generalized posterior distribution by combining prior information with a loss function rather than a formally specified likelihood. Consequently, although the resulting distribution provides a probabilistic representation of updated parameter uncertainty, it should not automatically be interpreted as a conventional/orthodox Bayesian posterior. In particular, generalized posterior probabilities and credible intervals do not necessarily possess the calibration properties associated with a correctly specified likelihood-based Bayesian model.
+
+At its current stage of development, the PPMN is primarily an exploratory and predictive framework, not a method for attribution of causal claims. The directed relationships within the network represent assumed dependencies derived from existing literature, ecological knowledge, and theoretical expectations. Some relationships may reflect well-established mechanisms, such as the influence of pH on carbonate speciation and the relative abundance of dissolved CO₂ and bicarbonate (HCO₃⁻). However, these relationships are specified a priori (front to back) rather than inferred as causal relationships from the data (back to front). Consequently, neither the direction of an edge nor changes in predicted responses should, by themselves, be interpreted as evidence that one variable causes another to change. 
+
+Using the term causal (or effect as follows from a cause) requires more than specifying the direction of dependencies within a network. It depends on whether the assumptions necessary for causal identification are satisfied, including positivity, adequate control of confounding, and the absence of relevant omitted confounders. Consequently, although a network may incorporate relationships supported by established causal mechanisms, it does not independently identify or if the term cause (or effect) are justified.
