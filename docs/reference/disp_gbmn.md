@@ -1,0 +1,40 @@
+# Displacement test for GBMN
+
+The displacement (D) quantifies the extent to which the parameters of
+current GBMN must change in order to maximally align with the new data.
+The learning rate is set sufficiently high so the centrality of the
+generalized posterior is shifted fully dominated by the data. In
+comparison, the model predictions prior to the update 'behave' as not
+having learned from the new data. The displacement measures how much
+information the data provides to shift the expected value relative to
+the prediction and spread of the current GBMN. A value close to 0
+indicates the data provides relatively limited information that would
+result in the displacement of the expected value.
+
+## Usage
+
+``` r
+disp_gbmn(object, new_data, nsim = 3000, level = 0.9, seed = 123)
+```
+
+## Arguments
+
+- object:
+
+  A foundational or updated GBMN.
+
+- new_data:
+
+  New dataset with all root nodes and least one child node present.
+
+- nsim:
+
+  Number of simulations used to construct the intervals.
+
+- level:
+
+  Credibility level (default level = 0.9).
+
+- seed:
+
+  Seed value 123.

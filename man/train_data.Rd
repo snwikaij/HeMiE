@@ -3,22 +3,22 @@
 \docType{data}
 \name{train_data}
 \alias{train_data}
-\title{Example training data for updating a PPMN}
+\title{Example training data for updating a GBMN}
 \format{
 A data frame in which rows represent observations and columns
 represent ecological variables corresponding to vertices in the example
-PPMN.
+GBMN.
 }
 \usage{
 train_data
 }
 \description{
 Multivariate ecological data used to demonstrate sequential updating
-of a foundational Posterior Predictive Meta-analytic Network (PPMN).
+of a foundational Generalized Bayesian Meta-analytic Network (GBMN).
 }
 \details{
 The dataset provides observations for multiple vertices of the example
-network and is used by \code{\link[=update_ppmn]{update_ppmn()}} to update the foundational PPMN
+network and is used by \code{\link[=update_gbmn]{update_gbmn()}} to update the foundational GBMN
 using multivariate information.
 }
 \examples{

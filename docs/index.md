@@ -23,12 +23,12 @@ approaches for gathering, re-using, synthesizing, predicting from, and
 generalizing ecological information. Rather than requiring all available
 information to conform to a single statistical framework, the package
 provides methods for combining and evaluating heterogeneous sources of
-information. One central development is the **Posterior Predictive
-Meta-analytic Network (PPMN)** framework, which integrates information
+information. One central development is the **Generalized Bayesian
+Meta-analytic Network (GBMN)** framework, which integrates information
 from multiple studies and statistical models into predictive networks.
 
-An interactive implementation of the PPMN framework is available through
-the [PPMN web application](https://snwikaij.shinyapps.io/ppmn).
+An interactive implementation of the GBMN framework is available through
+the [GBMN web application](https://snwikaij.shinyapps.io/ppmn).
 
 HeMiE provides tools for ecological modelling, information synthesis,
 prediction, and visualization, with a strong emphasis on Bayesian and

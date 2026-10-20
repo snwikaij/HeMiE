@@ -3,18 +3,18 @@
 \docType{data}
 \name{val_data}
 \alias{val_data}
-\title{Example validation data for a PPMN}
+\title{Example validation data for a GBMN}
 \format{
 A data frame in which rows represent observations and columns
 represent ecological variables corresponding to vertices in the example
-PPMN.
+GBMN.
 }
 \usage{
 val_data
 }
 \description{
 Multivariate ecological data used to demonstrate predictive assessment
-of an updated Posterior Predictive Meta-analytic Network (PPMN).
+of an updated Generalized Bayesian Meta-analytic Network (GBMN).
 }
 \details{
 The dataset is intended for evaluating predictions after the example

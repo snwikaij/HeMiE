@@ -17,8 +17,8 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-topics-methods" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Topics &amp; Methods</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-topics-methods"><li><a class="dropdown-item" href="../articles/ppmn.html">Posterior Predictive Meta-analytic Networks (PPMN)</a></li>
-    <li><a class="dropdown-item" href="../articles/play_ppmn.html">Playing around with the PPMN</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-topics-methods"><li><a class="dropdown-item" href="../articles/gbmn.html">Generalized Bayesian Meta-analytic Networks (GBMN)</a></li>
+    <li><a class="dropdown-item" href="../articles/play_gbmn.html">Playing around with the GBMN</a></li>
     <li><a class="dropdown-item" href="../articles/heterodox_bayes.html">Heterodox Bayes and Other Things (scrap book)</a></li>
     <li><a class="dropdown-item" href="../articles/references.html">References</a></li>
   </ul></li>
@@ -38,9 +38,9 @@
     </div>
 
     <div class="section level2">
-      <h2 id="posterior-predictive-meta-analytic-networks">Posterior Predictive Meta-analytic Networks<a class="anchor" aria-label="anchor" href="#posterior-predictive-meta-analytic-networks"></a></h2>
+      <h2 id="generalized-bayesian-meta-analytic-networks">Generalized Bayesian Meta-analytic Networks<a class="anchor" aria-label="anchor" href="#generalized-bayesian-meta-analytic-networks"></a></h2>
 
-      <div class="section-desc"><p>Functions for constructing, updating, predicting from, and evaluating Posterior Predictive Meta-analytic Networks.</p></div>
+      <div class="section-desc"><p>Functions for constructing, updating, predicting from, and evaluating Generalized Bayesian Meta-analytic Networks.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -49,63 +49,63 @@
 
       <dl><dt>
 
-          <code><a href="build_ppmn.html">build_ppmn()</a></code>
+          <code><a href="build_gbmn.html">build_gbmn()</a></code>
 
         </dt>
-        <dd>Build the foundational Posterior Predictive Meta-analytic Network (PPMN)</dd>
+        <dd>Build the foundational Generalized Bayesian Meta-analytic Network (GBMN)</dd>
 
         <dt>
 
-          <code><a href="update_ppmn.html">update_ppmn()</a></code>
+          <code><a href="update_gbmn.html">update_gbmn()</a></code>
 
         </dt>
-        <dd>Update PPMN function</dd>
+        <dd>Update GBMN function</dd>
 
         <dt>
 
-          <code><a href="predict_ppmn.html">predict_ppmn()</a></code>
+          <code><a href="predict_gbmn.html">predict_gbmn()</a></code>
 
         </dt>
-        <dd>Predict function for a PPMN object</dd>
+        <dd>Predict function for a GBMN object</dd>
 
         <dt>
 
-          <code><a href="marginal_ppmn.html">marginal_ppmn()</a></code>
+          <code><a href="marginal_gbmn.html">marginal_gbmn()</a></code>
 
         </dt>
         <dd>Plots the marginal expectations of each edge function with credibility intervals</dd>
 
         <dt>
 
-          <code><a href="pred_fit_ppmn.html">pred_fit_ppmn()</a></code>
+          <code><a href="pred_fit_gbmn.html">pred_fit_gbmn()</a></code>
 
         </dt>
         <dd>Predictive fit function to assess performance</dd>
 
         <dt>
 
-          <code><a href="disp_ppmn.html">disp_ppmn()</a></code>
+          <code><a href="disp_gbmn.html">disp_gbmn()</a></code>
 
         </dt>
-        <dd>Displacement test for PPMN</dd>
+        <dd>Displacement test for GBMN</dd>
 
         <dt>
 
-          <code><a href="extract_covar_ppmn.html">extract_covar_ppmn()</a></code>
+          <code><a href="extract_covar_gbmn.html">extract_covar_gbmn()</a></code>
 
         </dt>
-        <dd>PPMN correlation matrix extraction</dd>
+        <dd>GBMN correlation matrix extraction</dd>
 
         <dt>
 
-          <code><a href="extract_param_ppmn.html">extract_param_ppmn()</a></code>
+          <code><a href="extract_param_gbmn.html">extract_param_gbmn()</a></code>
 
         </dt>
         <dd>Extract parameters from object</dd>
       </dl></div><div class="section level2">
       <h2 id="example-data">Example data<a class="anchor" aria-label="anchor" href="#example-data"></a></h2>
 
-      <div class="section-desc"><p>Example datasets for constructing, updating, and evaluating PPMNs.</p></div>
+      <div class="section-desc"><p>Example datasets for constructing, updating, and evaluating GBMNs.</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -114,38 +114,38 @@
 
       <dl><dt>
 
-          <code><a href="example4.html">example4</a></code>
+          <code><a href="example1.html">example1</a></code>
 
         </dt>
-        <dd>Example meta-analytic data for a single PPMN edge</dd>
+        <dd>Example meta-analytic data for a single GBMN edge</dd>
 
         <dt>
 
-          <code><a href="example5.html">example5</a></code>
+          <code><a href="example2.html">example2</a></code>
 
         </dt>
-        <dd>Example meta-analytic data for a multi-edge PPMN</dd>
+        <dd>Example meta-analytic data for a multi-edge GBMN</dd>
 
         <dt>
 
-          <code><a href="example6.html">example6</a></code>
+          <code><a href="meta_data.html">meta_data</a></code>
 
         </dt>
-        <dd>Example meta-analytic data for a larger PPMN</dd>
+        <dd>Example meta-analytic data for a larger GBMN</dd>
 
         <dt>
 
           <code><a href="train_data.html">train_data</a></code>
 
         </dt>
-        <dd>Example training data for updating a PPMN</dd>
+        <dd>Example training data for updating a GBMN</dd>
 
         <dt>
 
           <code><a href="val_data.html">val_data</a></code>
 
         </dt>
-        <dd>Example validation data for a PPMN</dd>
+        <dd>Example validation data for a GBMN</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

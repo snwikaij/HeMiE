@@ -1,7 +1,7 @@
-# Example validation data for a PPMN
+# Example validation data for a GBMN
 
 Multivariate ecological data used to demonstrate predictive assessment
-of an updated Posterior Predictive Meta-analytic Network (PPMN).
+of an updated Generalized Bayesian Meta-analytic Network (GBMN).
 
 ## Usage
 
@@ -12,7 +12,7 @@ val_data
 ## Format
 
 A data frame in which rows represent observations and columns represent
-ecological variables corresponding to vertices in the example PPMN.
+ecological variables corresponding to vertices in the example GBMN.
 
 ## Details
 

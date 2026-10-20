@@ -1,7 +1,7 @@
-# Example training data for updating a PPMN
+# Example training data for updating a GBMN
 
 Multivariate ecological data used to demonstrate sequential updating of
-a foundational Posterior Predictive Meta-analytic Network (PPMN).
+a foundational Generalized Bayesian Meta-analytic Network (GBMN).
 
 ## Usage
 
@@ -12,14 +12,14 @@ train_data
 ## Format
 
 A data frame in which rows represent observations and columns represent
-ecological variables corresponding to vertices in the example PPMN.
+ecological variables corresponding to vertices in the example GBMN.
 
 ## Details
 
 The dataset provides observations for multiple vertices of the example
 network and is used by
-[`update_ppmn()`](https://snwikaij.github.io/HeMiE/reference/update_ppmn.md)
-to update the foundational PPMN using multivariate information.
+[`update_gbmn()`](https://snwikaij.github.io/HeMiE/reference/update_gbmn.md)
+to update the foundational GBMN using multivariate information.
 
 ## Examples
 

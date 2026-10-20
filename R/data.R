@@ -1,13 +1,13 @@
-#' Example meta-analytic data for a single PPMN edge
+#' Example meta-analytic data for a single GBMN edge
 #'
 #' Example meta-analytic dataset containing parameter estimates and
-#' associated uncertainty for constructing a simple Posterior Predictive
-#' Meta-analytic Network (PPMN).
+#' associated uncertainty for constructing a simple Generalized Bayesian
+#' Meta-analytic Network (GBMN).
 #'
 #' The dataset contains estimates from fitted models describing the
 #' relationship between total phosphorus (`TP`) and chlorophyll-a (`Chl`).
 #' It is used in the HMiE examples to demonstrate the construction of a
-#' foundational PPMN.
+#' foundational GBMN.
 #'
 #' @format A data frame containing meta-analytic information, including:
 #' \describe{
@@ -23,17 +23,17 @@
 #' }
 #'
 #' @examples
-#' data(example4)
-#' head(example4)
+#' data(example1)
+#' head(example1)
 #'
 #' @keywords datasets
-"example4"
+"example1"
 
 
-#' Example meta-analytic data for a multi-edge PPMN
+#' Example meta-analytic data for a multi-edge GBMN
 #'
 #' Example meta-analytic dataset used to demonstrate construction of a
-#' Posterior Predictive Meta-analytic Network (PPMN) containing multiple
+#' Generalized Bayesian Meta-analytic Network (GBMN) containing multiple
 #' ecological relationships.
 #'
 #' The example includes relationships involving total nitrogen (`TN`),
@@ -42,49 +42,49 @@
 #'
 #' @format A data frame containing meta-analytic parameter estimates,
 #' standard errors, edge definitions, functional forms, and associated
-#' information used by [build_ppmn()].
+#' information used by [build_gbmn()].
 #'
 #' @examples
-#' data(example5)
-#' head(example5)
+#' data(example2)
+#' head(example2)
 #'
 #' @keywords datasets
-"example5"
+"example2"
 
 
-#' Example meta-analytic data for a larger PPMN
+#' Example meta-analytic data for a larger GBMN
 #'
 #' Example meta-analytic dataset used to construct a larger ecological
-#' Posterior Predictive Meta-analytic Network (PPMN).
+#' Generalized Bayesian Meta-analytic Network (GBMN).
 #'
 #' The corresponding example network contains several ecological variables
 #' and edge-functions and is used to demonstrate construction and subsequent
-#' updating of a PPMN.
+#' updating of a GBMN.
 #'
 #' @format A data frame containing meta-analytic parameter estimates,
 #' standard errors, edge definitions, functional forms, transformations,
-#' and associated information used by [build_ppmn()].
+#' and associated information used by [build_gbmn()].
 #'
 #' @examples
-#' data(example6)
-#' head(example6)
+#' data(meta_data)
+#' head(meta_data)
 #'
 #' @keywords datasets
-"example6"
+"meta_data"
 
 
-#' Example training data for updating a PPMN
+#' Example training data for updating a GBMN
 #'
 #' Multivariate ecological data used to demonstrate sequential updating
-#' of a foundational Posterior Predictive Meta-analytic Network (PPMN).
+#' of a foundational Generalized Bayesian Meta-analytic Network (GBMN).
 #'
 #' The dataset provides observations for multiple vertices of the example
-#' network and is used by [update_ppmn()] to update the foundational PPMN
+#' network and is used by [update_gbmn()] to update the foundational GBMN
 #' using multivariate information.
 #'
 #' @format A data frame in which rows represent observations and columns
 #' represent ecological variables corresponding to vertices in the example
-#' PPMN.
+#' GBMN.
 #'
 #' @examples
 #' data(train_data)
@@ -94,17 +94,17 @@
 "train_data"
 
 
-#' Example validation data for a PPMN
+#' Example validation data for a GBMN
 #'
 #' Multivariate ecological data used to demonstrate predictive assessment
-#' of an updated Posterior Predictive Meta-analytic Network (PPMN).
+#' of an updated Generalized Bayesian Meta-analytic Network (GBMN).
 #'
 #' The dataset is intended for evaluating predictions after the example
 #' network has been updated using `train_data`.
 #'
 #' @format A data frame in which rows represent observations and columns
 #' represent ecological variables corresponding to vertices in the example
-#' PPMN.
+#' GBMN.
 #'
 #' @examples
 #' data(val_data)

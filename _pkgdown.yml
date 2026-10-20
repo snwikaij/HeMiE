@@ -12,10 +12,10 @@ navbar:
     topics:
       text: "Topics & Methods"
       menu:
-      - text: "Posterior Predictive Meta-analytic Networks (PPMN)"
-        href: articles/ppmn.html
-      - text: "Playing around with the PPMN"
-        href: articles/play_ppmn.html
+      - text: "Generalized Bayesian Meta-analytic Networks (GBMN)"
+        href: articles/gbmn.html
+      - text: "Playing around with the GBMN"
+        href: articles/play_gbmn.html
       - text: "Heterodox Bayes and Other Things (scrap book)"
         href: articles/heterodox_bayes.html
       - text: "References"
@@ -29,26 +29,26 @@ home:
   sidebar: FALSE
 
 reference:
-- title: "Posterior Predictive Meta-analytic Networks"
+- title: "Generalized Bayesian Meta-analytic Networks"
   desc: >
     Functions for constructing, updating, predicting from, and evaluating
-    Posterior Predictive Meta-analytic Networks.
+    Generalized Bayesian Meta-analytic Networks.
   contents:
-  - build_ppmn
-  - update_ppmn
-  - predict_ppmn
-  - marginal_ppmn
-  - pred_fit_ppmn
-  - disp_ppmn
-  - extract_covar_ppmn
-  - extract_param_ppmn
+  - build_gbmn
+  - update_gbmn
+  - predict_gbmn
+  - marginal_gbmn
+  - pred_fit_gbmn
+  - disp_gbmn
+  - extract_covar_gbmn
+  - extract_param_gbmn
 
 - title: "Example data"
   desc: >
-    Example datasets for constructing, updating, and evaluating PPMNs.
+    Example datasets for constructing, updating, and evaluating GBMNs.
   contents:
-  - example4
-  - example5
-  - example6
+  - example1
+  - example2
+  - meta_data
   - train_data
   - val_data

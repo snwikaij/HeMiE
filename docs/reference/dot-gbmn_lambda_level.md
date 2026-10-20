@@ -1,0 +1,23 @@
+# Helper function finding fraction of loss
+
+Helper function finding fraction of loss
+
+## Usage
+
+``` r
+.gbmn_lambda_level(loss, ess_frac, max_lambda)
+```
+
+## Arguments
+
+- loss:
+
+  A vector of losses.
+
+- max_lambda:
+
+  Maximum lambda.
+
+- level:
+
+  The level of loss.
