@@ -28,14 +28,14 @@
   child <- dimnames(preds$FunctionPredictions)[[2]]
 
   #combined arrays [i,j,s]
-  loss1  <- array(NA,dim=c(i,n_vert,nsim),dimnames=list(NULL,obs_nodes,NULL))
-  resid1 <- array(NA,dim=c(i,n_vert,nsim),dimnames=list(NULL,obs_nodes,NULL))
+  loss1  <- array(NA, dim=c(i,n_vert,nsim), dimnames=list(NULL,obs_nodes,NULL))
+  resid1 <- array(NA, dim=c(i,n_vert,nsim), dimnames=list(NULL,obs_nodes,NULL))
   #resid0 <- array(NA,dim=c(i,n_vert,nsim),dimnames=list(NULL,obs_nodes,NULL))
 
   #function arrays [i,j,s,f]
-  #loss1_fun  <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
-  #resid1_fun <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
-  #resid0_fun <- array(NA,dim=c(i,n_vert,nsim,n_func),dimnames=list(NULL,obs_nodes,NULL,NULL))
+  #loss1_fun  <- array(NA, dim=c(i,n_vert,nsim,n_func), dimnames=list(NULL,obs_nodes,NULL,NULL))
+  #resid1_fun <- array(NA, dim=c(i,n_vert,nsim,n_func), dimnames=list(NULL,obs_nodes,NULL,NULL))
+  #resid0_fun <- array(NA, dim=c(i,n_vert,nsim,n_func), dimnames=list(NULL,obs_nodes,NULL,NULL))
 
   for(j in seq_along(obs_nodes)){
 

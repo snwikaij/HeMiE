@@ -59,7 +59,7 @@ To updated the prior these losses each particles is then weighted inversely rela
 <span>  <span class="va">new_data</span>,</span>
 <span>  nsim <span class="op">=</span> <span class="fl">3000</span>,</span>
 <span>  level <span class="op">=</span> <span class="fl">0.9</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"oob"</span>,</span>
+<span>  method <span class="op">=</span> <span class="st">"holdout"</span>,</span>
 <span>  up_character <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  max_lambda <span class="op">=</span> <span class="fl">200</span>,</span>
 <span>  diagnostics <span class="op">=</span> <span class="cn">T</span>,</span>
@@ -90,18 +90,20 @@ To updated the prior these losses each particles is then weighted inversely rela
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>The method being used to set the updating strength of the model. The default
-method is 'oob', The other method 'manual' concentrates by selecting the best x% of the simulations and 'oob' is a version
-that looks similair to SafeBayes.</p></dd>
+method is 'holdout', The method 'manual' concentrates by selecting the best x% of the simulations. The method coverage
+calculates the coverage of the expected value using bootstrapped subset. The method 'holdout' is a version
+that looks similar to SafeBayes.</p></dd>
 
 
 <dt id="arg-up-character">up_character<a class="anchor" aria-label="anchor" href="#arg-up-character"></a></dt>
 <dd><p>A parameter controlling the updating method.
-For method "oob", it specifies the number of repetitions (default = 20).
-For method "manual", it specifies the fraction of best-performing simulations.</p></dd>
+For method "holdout", it specifies the number of repetitions (default = 20).
+For method "manual", it specifies the fraction of best-performing simulations.
+For method "coverage", it specifies the number of bootstraps.</p></dd>
 
 
 <dt id="arg-max-lambda">max_lambda<a class="anchor" aria-label="anchor" href="#arg-max-lambda"></a></dt>
-<dd><p>Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).</p></dd>
+<dd><p>Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 200).</p></dd>
 
 
 <dt id="arg-diagnostics">diagnostics<a class="anchor" aria-label="anchor" href="#arg-diagnostics"></a></dt>

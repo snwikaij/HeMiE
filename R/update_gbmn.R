@@ -5,12 +5,14 @@
 #' @param nsim Number of simulations used for updating.
 #' @param level Generalized credibility level (default level = 0.9).
 #' @param method The method being used to set the updating strength of the model. The default
-#' method is 'oob', The other method 'manual' concentrates by selecting the best x% of the simulations and 'oob' is a version
-#' that looks similair to SafeBayes.
+#' method is 'holdout', The method 'manual' concentrates by selecting the best x% of the simulations. The method coverage
+#' calculates the coverage of the expected value using bootstrapped subset. The method 'holdout' is a version
+#' that looks similar to SafeBayes.
 #' @param up_character A parameter controlling the updating method.
-#' For method "oob", it specifies the number of repetitions (default = 20).
+#' For method "holdout", it specifies the number of repetitions (default = 20).
 #' For method "manual", it specifies the fraction of best-performing simulations.
-#' @param max_lambda Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 1000).
+#' For method "coverage", it specifies the number of bootstraps.
+#' @param max_lambda Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 200).
 #' @param diagnostics If residual diagnostics should be returned (default diagnostics = T).
 #' @param covar Covariance matrix that is calculated between model parameters (default covar = T).
 #' @param seed Seed value 123.
@@ -25,17 +27,21 @@
 #'
 #' @export
 update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
-                        method="oob", up_character=NULL, max_lambda=200,
+                        method="holdout", up_character=NULL, max_lambda=200,
                         diagnostics=T, covar=T, seed=123){
 
   if(nsim<1){stop("number of simulations cannot be smaller than 1.")}
-  if(level>0.99999){stop("level cannot be larger than .99999.")}
-  if(level<0.00001){stop("level cannot be smaller than .00001.")}
+  if(level>0.99999){stop("level cannot be larger than 0.99999.")}
+  if(level<0.00001){stop("level cannot be smaller than 0.00001.")}
 
-  if(method=="oob"){
+  if(method=="holdout"){
     if(is.null(up_character)){up_character <- 20}
     if(up_character<1){
-      stop("The update character for the method 'oob' is the number of repetitions length and cannot be smaller than 1.")}}
+      stop("The update character for the method 'holdout' is the number of hold-out repetitions and cannot be smaller than 1.")}}
+  if(method=="coverage"){
+    if(is.null(up_character)){up_character <- 50}
+    if(up_character<1){
+      stop("The update character for the method 'coverage' is the number of bootstraps and cannot be smaller than 1.")}}
   if(method=="manual"){
     if(is.null(up_character) || up_character>1 || up_character<0){
       stop("The update character for method 'manual' is the best percentage of particles and cannot be smaller than 0 or larger than 1.")}}
@@ -81,25 +87,33 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
     z <- z[is.finite(z)]
     if(length(z)==0){NA}else{mean(z)}})
 
-  resid <- apply(lossandresid$resid1, 3, function(z){
-    z <- z[is.finite(z)]
-    if(length(z)==0){NA}else{median(z)}})
+  #left from previous coding might be useful in the future?
+  #resid <- apply(lossandresid$resid1, 3, function(z){
+  #  z <- z[is.finite(z)]
+  #  if(length(z)==0){NA}else{median(z)}})
 
   if(method=="manual"){
 
     lambda        <- .gbmn_lambda_level(loss, ess_frac=up_character, max_lambda=max_lambda)
 
-  }else if(method=="oob"){
+  }else if(method=="holdout"){
 
     lambda        <- .gbmn_lambda_fast(lossandresid$loss1, n_rep=up_character, max_lambda=max_lambda)
 
-  }else{stop("Method should be 'manual' or 'oob'.")}
+  }else if(method=="coverage"){
+
+    lambda        <- .gbmn_coverage_fast(lossandresid$loss1, preds=preds,
+                                 obs_mat=obs_mat, obs_nodes=obs_nodes,
+                                 max_lambda=max_lambda,
+                                 level=level, nsim=nsim, nboot=up_character)
+
+  }else{stop("Method should be 'holdout' 'coverage' or 'manual'.")}
 
   weights                   <- .gbmn_stable_weights(loss, lambda)
   ESS                       <- 1/sum(weights^2)
   function_particle_weights <- list()
 
-  if(lambda>max_lambda){warning("Lambda exceeds max_lambda, consider increasing max_lambda.")}
+  if(lambda>=max_lambda){warning("Lambda is max_lambda, consider increasing max_lambda.")}
   if(ESS<(nsim*0.05)){warning("The ESS is smaller than 5% of the simulations, indicating the posterior concentration may be too strong.")}
 
 ############################################
@@ -109,6 +123,7 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
   #select graph
   g <- object$Structure$exec_dag$graph
 
+  #select relevant nodes
   relevant_nodes <- unique(unlist(lapply(obs_nodes, function(node){
         igraph::as_ids(igraph::subcomponent(g,node,mode = "in"))})))
 
@@ -192,30 +207,27 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
     draws <- as.matrix(draws)
     colnames(draws) <- names(object$Parameters[[id]])
 
-      #global update:
-      #use only particles in which this function was active
-      w <- function_particle_weights[[id]]
+    #use only particles in which function was active
+    w <- function_particle_weights[[id]]
 
-      #if this function was never selected, there is no
-      #information with which to update its parameters
-      if(is.null(w) || length(w)==0 || sum(w,na.rm=TRUE)<=0){
+    #if this function was never selected, there is no
+    #information with which to update its parameters
+    if(is.null(w) || length(w)==0 || sum(w,na.rm=TRUE)<=0){
 
-        old <- object$Parameters[[id]]
+      old <- object$Parameters[[id]]
 
-        function_summaries[[id]] <- list(
-          mu = vapply(old,function(x) as.numeric(x["mu"]),numeric(1)),
-          se = vapply(old,function(x) as.numeric(x["se"]),numeric(1)),
-          ll = vapply(old,function(x) as.numeric(x["ll"]),numeric(1)),
-          ul = vapply(old,function(x) as.numeric(x["ul"]),numeric(1))
-        )
+      function_summaries[[id]] <- list(
+        mu = vapply(old,function(x) as.numeric(x["mu"]),numeric(1)),
+        se = vapply(old,function(x) as.numeric(x["se"]),numeric(1)),
+        ll = vapply(old,function(x) as.numeric(x["ll"]),numeric(1)),
+        ul = vapply(old,function(x) as.numeric(x["ul"]),numeric(1)))
 
         function_draws[[id]] <- draws
 
-        next
-      }
+        next}
 
     w[!is.finite(w)] <- 0
-    w <- w/sum(w)
+    w      <- w/sum(w)
 
     mu     <- colSums(draws*w)
     diffmu <- sweep(draws,2,mu,"-")
@@ -240,50 +252,14 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
     #all weights
     mu_vec <- colSums(params*weights)
 
-    # Center parameters
+    #center parameters
     diff_mu_par <- sweep(params, 2, mu_vec, "-")
 
     # Weighted covariance
     sigma_weighted <- t(diff_mu_par) %*% diag(weights) %*% diff_mu_par
 
-    #number of k params per function
-    #npars       <- sapply(function_draws, ncol)
-
-    #create function matrix
-    #fun_par     <- rep(names(function_draws), npars)
-
-    #child responses
-    #child_par   <- edge_info$child[match(fun_par, edge_info$id)]
-
-    #parameter active or inactive within each simulation
-    #active_par <- matrix(F, nrow=nsim, ncol=ncol(params))
-
-    #for each k param
-    #for(k in seq_len(ncol(params))){
-
-      #which function is selected per prediction
-      #selected       <- preds$FunctionSelection[,child_par[k]]
-
-      #create activity matrix [S,K]
-      #active_par[,k] <- (!is.na(selected) & selected==fun_par[k])}
-
-      #extract the mean for each function to do simulation-mean(simulation)
-      #mu_par <- unlist(lapply(names(function_summaries), function(id){function_summaries[[id]]$mu}))
-
-      #vector mu
-      #mu_par <- matrix(as.numeric(mu_par), ncol=1, nrow = length(mu_par))
-
-      #deviation only contributes when function was selected
-      #diff_mu_par                            <- sweep(params, 2, mu_par,"-")
-      #diff_mu_par[!active_par]               <- 0
-      #diff_mu_par[!is.finite(diff_mu_par)]   <- 0
-
-      #calc weighted covar mat
-      #sigma_weighted <- t(diff_mu_par) %*% diag(weights) %*% diff_mu_par
-
-      #add small constant to prevent issues
-      sigma_weighted <- sigma_weighted+diag(eps, ncol(sigma_weighted))
-      }
+    #add small constant to prevent issues
+    sigma_weighted <- sigma_weighted+diag(eps, ncol(sigma_weighted))}
 
 ##########################
 #move summaries to object#

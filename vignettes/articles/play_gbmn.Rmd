@@ -378,3 +378,108 @@ cowplot::plot_grid(
 mod_list[[2]]$Residuals$resid_boxplot
 
 ```
+
+## Coverage probability of the expected value from the generalized posterior
+
+In the preceding analyses, the learning rate ($\lambda$) was selected using repeated hold-out validation. In each of 20 repetitions, 80% of the observations were used to calculate generalized posterior particle weights for a sequence of candidate learning rates. The resulting weights were evaluated against the prediction losses of the remaining 20% of observations. The learning rate minimizing the average weighted hold-out loss was selected, subject to a minimum effective sample size (ESS) constraint.
+
+Although this procedure provides a predictive criterion for determining the strength of updating, it does not explicitly calibrate the coverage properties of the resulting generalized posterior credible intervals.
+
+As an alternative, we explored bootstrap-based learning-rate calibration, motivated by generalized posterior calibration methods (Syring & Martin, 2019; Tanaka, 2024). We generated ($b=(1, \cdots, B$) bootstrap samples of the updating data set by re-sampling complete observation rows with replacement. For each bootstrap sample and candidate learning rate, particle-specific losses were used to calculate generalized posterior weights. These weights defined equal-tailed credible intervals for the expected predictions of each observed child vertex.
+
+For every observed observation–vertex combination, we evaluated whether the corresponding full data expected prediction of the generalized posterior fell within the bootstrap credible interval. The learning rate was selected to minimize the absolute difference between the average bootstrap inclusion frequency at a credibility level of 90%.
+
+Under this criterion, a calibrated 90% interval has the following operational interpretation: across bootstrap of the net data set, approximately 90% of the resulting generalized posterior credible intervals contain the corresponding full data expected prediction, averaged over the selected observations.
+
+However, this criterion does not establish that the intervals contain the true expected ecological responses with 90% frequentist coverage, nor does it guarantee simultaneous coverage across the network.
+
+We evaluated this approach using the lake ecosystem GBMN described in the main text. Although the resulting updated relationships remained interpretable and the credible intervals became narrower, the calibration procedure produced severe particle-weight degeneracy. For example, with 15,000 prior particles, the selected $\lambda$ was approximately 47.0, with an ESS of only 2.6. Increasing the number of particles to 25,000 yielded a $\lambda$ of approximately 38.9 and an ESS of 2.3.
+
+These results suggest that the bootstrap inclusion criterion, combined with importance re-weighting of a fixed set of prior particles, does not yet provide a numerically reliable calibration procedure for this GBMN. The informative meta-analysis-derived priors, dependence among network predictions, and concentration of posterior weight on a small number of particles may all contribute to this difficulty.
+
+Moreover, the updated GBMN approximates the re-weighted parameter distribution through estimated means and covariances before generating subsequent predictions. Intervals produced from this approximation are not necessarily identical to the particle-weighted intervals used during bootstrap calibration.
+
+Consequently, we retain hold-out predictive calibration as the primary method in the current application. Improving the numerical representation of the generalized posterior, potentially through a combination between SMC-method with particle rejuvenation or MCMC-methods and evaluating predictive coverage under controlled simulation scenarios remain important directions for future development.
+
+```{r, cover_test_1, fig.width=10, fig.height=12, warning=FALSE}
+
+#upload the meta data
+load("C:/Users/admin/OneDrive/Bureaublad/HeMiE/data/meta_data.rda")
+
+#create formula
+formula=list(c(fun="sigmoidal", edge="Chl~TP", trans="log"),
+
+             c(fun="log10", edge="Chl~TP", trans="log10"),
+
+             c(fun="log", edge="Macrophytes~Chl+Temp+CO2onlyuser", trans="log"),
+
+             c(fun="class", edge="Characeae~Chl"),
+
+             c(fun="sigmoidal", edge="pH~Chl"),
+
+             c(fun="sigmoidal", edge="CO2~pH"),
+
+             c(fun="logit", edge="CO2onlyuser~HCO3", trans="log"),
+
+             c(fun="log", edge="DOC~Chl", trans="log"),
+
+             c(fun="log",  trans="log", edge="DO~DOC+Temp"),
+
+             c(fun="sigmoidal", edge="HCO3~pH"))
+
+#create foundational gbmn
+foundational_gbmn <- build_gbmn(formula, meta_data)
+
+#plot the predictions of the foundational gbmn
+p1 <- marginal_gbmn(foundational_gbmn, child = "Chl", data = train_data, ylim = c(0, 150))
+p3 <- marginal_gbmn(foundational_gbmn, child = "pH", data = train_data,  ylim = c(5, 10))
+p5 <- marginal_gbmn(foundational_gbmn, child = "HCO3", data = train_data,  ylim=c(0, 170))
+p7 <- marginal_gbmn(foundational_gbmn, child = "DO", data = train_data, ylim=c(0,20))
+p9 <- marginal_gbmn(foundational_gbmn, child = "CO2onlyuser", data = train_data)
+p11<- marginal_gbmn(foundational_gbmn, child = "Macrophytes", data = train_data, ylim=c(0,30), n_grid=150)
+
+#update the goundational gbmn using the coverage criteria
+updated_gbmn       <- update_gbmn(foundational_gbmn, new_data = train_data,
+                                  up_character = 150, #150 bootstraps
+                                  nsim=15000, method = "coverage")
+
+#plot the predictions of the foundational gbmn
+p2 <- marginal_gbmn(updated_gbmn, child = "Chl", data = train_data,  ylim = c(0, 150))
+p4 <- marginal_gbmn(updated_gbmn, child = "pH", data = train_data,  ylim = c(5, 10))
+p6 <- marginal_gbmn(updated_gbmn, child = "HCO3", data = train_data, ylim=c(0, 170))
+p8 <- marginal_gbmn(updated_gbmn, child = "DO", data = train_data, ylim=c(0,20))
+p10<- marginal_gbmn(updated_gbmn, child = "CO2onlyuser", data = train_data)
+p12<- marginal_gbmn(updated_gbmn, child = "Macrophytes", data = train_data, ylim=c(0,30), n_grid=150)
+
+#create titles
+plt1 <- ggplot(data.frame(x=c(0,1), y=c(0,1)), aes(x,y))+
+  annotate("text", x=0.5, y=0.5, label="Foundational GBMN", size=6)+
+  theme_classic()+
+  theme(axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank())
+
+plt2 <- ggplot(data.frame(x=c(0,1), y=c(0,1)), aes(x,y))+
+  annotate("text", x=0.5, y=0.5, label="Updated GBMN", size=6)+
+  theme_classic()+
+  theme(axis.line = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(),
+        axis.title = element_blank())
+
+#plot together
+figure <- cowplot::plot_grid(plt1,  plt2,
+                           p1[[3]], p2[[3]]+theme(axis.title.y = element_blank()),
+                           p3[[1]], p4[[1]]+theme(axis.title.y = element_blank()),
+                   p5[[1]], p6[[1]]+theme(axis.title.y = element_blank()),
+                   p7[[1]], p8[[1]]+theme(axis.title.y = element_blank()),
+                   p7[[2]], p8[[2]]+theme(axis.title.y = element_blank()),
+                   p9[[1]], p10[[1]]+theme(axis.title.y = element_blank()),
+                   p11[[1]], p12[[1]]+theme(axis.title.y = element_blank()),
+                   ncol=2, rel_heights = c(2,5,5,5,5,5,5,5),
+                   label_y = 1.15,
+                   labels = c(NA, NA, "A", "H", "B", "I", "C", "J", "D", "K", "E", "L", "F", "M", "G", "N"))
+
+print(figure)
+```

@@ -51,6 +51,15 @@ Cambridge University Press.
 
 Ryle, G. (1949). The concept of mind. Hutchinson’s University Library.
 
+Syring, N., & Martin, R. (2019). Calibrating general posterior credible
+regions. Biometrika, 106(2), 479–486.
+<https://doi.org/10.1093/biomet/asy054>
+
+Tanaka, M. (2024). Generalized posterior calibration via sequential
+Monte Carlo sampler. In Proceedings of the 2024 6th Asia Conference on
+Machine Learning and Computing (pp. 62–68). Association for Computing
+Machinery. <https://doi.org/10.1145/3690771.3690786>
+
 Tukey, J. W. (1969). Analyzing data: Sanctification or detective work?
 American Psychologist, 24(2), 83–91. <https://doi.org/10.1037/h0027108>
 
