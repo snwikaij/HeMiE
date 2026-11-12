@@ -4,14 +4,20 @@
 #' @param new_data New data set with all root vertices and least one child vertex present.
 #' @param nsim Number of simulations used for updating.
 #' @param level Generalized credibility level (default level = 0.9).
-#' @param method The method being used to set the updating strength of the model. The default
-#' method is 'holdout', The method 'manual' concentrates by selecting the best x% of the simulations. The method coverage
-#' calculates the coverage of the expected value using bootstrapped subset. The method 'holdout' is a version
-#' that looks similar to SafeBayes.
+#' @param method The method being used to set the updating strength of the model (default =
+#' = 'hold-amis').
+#' The method 'manual' concentrates by selecting the best x% of the simulations.
+#' The method coverage calculates the coverage of the expected value using bootstrapped subset.
+#' The method 'holdout' is a version that looks similar to SafeBayes.
+#' The method 'amis' uses Adaptive Multiple Importance Sampling.
+#' The method 'hold-amis' uses a fixed 5 repetitions for the 'holdout' method
+#' and uses the derived learning rate as a fixed value for amis.
 #' @param up_character A parameter controlling the updating method.
+#' For method "hold-amis", it specifies the number adaptive iterations (default = 5).
+#' For method "amis", it specifies the number adaptive iterations (default = 5).
 #' For method "holdout", it specifies the number of repetitions (default = 20).
-#' For method "manual", it specifies the fraction of best-performing simulations.
-#' For method "coverage", it specifies the number of bootstraps.
+#' For method "manual", it specifies the fraction of best-performing simulations (default = NULL).
+#' For method "coverage", it specifies the number of bootstraps (default = 50).
 #' @param max_lambda Maximum lambda that can be set for Generalized Bayesian Updating (default max_lambda = 200).
 #' @param diagnostics If residual diagnostics should be returned (default diagnostics = T).
 #' @param covar Covariance matrix that is calculated between model parameters (default covar = T).
@@ -27,13 +33,34 @@
 #'
 #' @export
 update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
-                        method="holdout", up_character=NULL, max_lambda=200,
+                        method="hold-amis", up_character=NULL, max_lambda=200,
                         diagnostics=T, covar=T, seed=123){
 
   if(nsim<1){stop("number of simulations cannot be smaller than 1.")}
   if(level>0.99999){stop("level cannot be larger than 0.99999.")}
   if(level<0.00001){stop("level cannot be smaller than 0.00001.")}
 
+  if(method=="hold-amis"){
+    if(is.null(up_character)){up_character <- 5}
+    if(up_character<1){
+      stop("The update character for the method 'hold-amis' is the number of adaptive repetitions and cannot be smaller than 1.")}
+    niter      <- as.integer(up_character)
+    first_nsim <- 1000
+    split_nsim <- floor(nsim/niter)
+    if(split_nsim<50){
+      stop("At least 50 particles per AMIS iteration are required.")}}
+  if(method=="amis"){
+    if(is.null(up_character)){up_character <- 5}
+    if(max_lambda==200){message("AMIS uses a (heuristic) lambda = 1 by default. Set max_lambda to change the learning rate.")
+      max_lambda <- 1}
+      if(up_character<1){
+        stop("The update character for the method 'amis' is the number of addaptive repetitions and cannot be smaller than 1.")}
+         niter      <- as.integer(up_character)
+         split_nsim <- floor(nsim/(niter+1))
+         first_nsim <- nsim-niter*split_nsim
+   if(split_nsim<50){
+      stop("Heuristic boundary of at least 50 particles per iteration is required.")}}else if(method!="hold-amis"){
+        first_nsim <- nsim}
   if(method=="holdout"){
     if(is.null(up_character)){up_character <- 20}
     if(up_character<1){
@@ -67,7 +94,7 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
 #predictions on new data#
 #########################
 
-  preds          <- predict_gbmn(object, new_data, nsim=nsim)
+  preds          <- predict_gbmn(object, new_data, nsim=first_nsim)
 
   pred_nodes_all <- setdiff(names(preds$Variance), object$Roots)
   obs_mat        <- as.matrix(new_data)
@@ -75,7 +102,7 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
 
   if(length(obs_nodes)==0){stop("No observed child vertices in new_data match the model.")}
 
-  lossandresid   <- .gbmn_loss_resid(obs_mat, preds, obs_nodes, nsim)
+  lossandresid   <- .gbmn_loss_resid(obs_mat, preds, obs_nodes, first_nsim)
 
   edge_info      <- object$EdgeFunctions
 
@@ -86,11 +113,6 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
   loss <- apply(lossandresid$loss1, 3, function(z){
     z <- z[is.finite(z)]
     if(length(z)==0){NA}else{mean(z)}})
-
-  #left from previous coding might be useful in the future?
-  #resid <- apply(lossandresid$resid1, 3, function(z){
-  #  z <- z[is.finite(z)]
-  #  if(length(z)==0){NA}else{median(z)}})
 
   if(method=="manual"){
 
@@ -106,160 +128,51 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
                                  obs_mat=obs_mat, obs_nodes=obs_nodes,
                                  max_lambda=max_lambda,
                                  level=level, nsim=nsim, nboot=up_character)
+  }else if(method=="amis"){
 
-  }else{stop("Method should be 'holdout' 'coverage' or 'manual'.")}
+    lambda        <- max_lambda
 
-  weights                   <- .gbmn_stable_weights(loss, lambda)
-  ESS                       <- 1/sum(weights^2)
-  function_particle_weights <- list()
+  }else if(method=="hold-amis"){
 
-  if(lambda>=max_lambda){warning("Lambda is max_lambda, consider increasing max_lambda.")}
-  if(ESS<(nsim*0.05)){warning("The ESS is smaller than 5% of the simulations, indicating the posterior concentration may be too strong.")}
+    lambda        <- .gbmn_lambda_fast(lossandresid$loss1, n_rep=5, max_lambda=max_lambda)
 
-############################################
-#nodes that contribute to observed vertices#
-############################################
+  }else{stop("Method should be 'hold-amis', 'amis', 'holdout' 'coverage' or 'manual'.")}
 
-  #select graph
-  g <- object$Structure$exec_dag$graph
+  if(method %in% c("amis", "hold-amis")){
 
-  #select relevant nodes
-  relevant_nodes <- unique(unlist(lapply(obs_nodes, function(node){
-        igraph::as_ids(igraph::subcomponent(g,node,mode = "in"))})))
+    amis_result   <- .gbmn_amis_easy(object=object, preds=preds, loss=loss,
+                                 new_data=new_data, obs_nodes=obs_nodes,
+                                 first_mad=lossandresid$MAD_used, obs_mat=obs_mat,
+                                 niter=up_character, lambda=lambda, nsim=split_nsim)
 
-  #retain childs that ahave edge functions
-  relevant_nodes <- intersect(relevant_nodes, unique(edge_info$child))
+    preds_post <- amis_result$preds
+    weights    <- amis_result$weights
 
-  #and that have function selections from predict_gbmn()
-  relevant_nodes <- intersect(relevant_nodes, colnames(preds$FunctionSelection))
+  }else{
 
-###############################
-#update alpha per child vertex#
-###############################
+    preds_post <- preds
+    weights    <- .gbmn_stable_weights(loss, lambda)
+  }
 
-  for(node in relevant_nodes){
+  ESS <- 1/sum(weights^2)
 
-    ids <- edge_info$id[edge_info$child == node]
+  if(method!="amis" && lambda>=max_lambda){warning("Lambda is max_lambda, consider increasing max_lambda.")}
+  if(ESS < length(weights)*0.05){warning("The ESS is smaller than 5% of the simulations.")}
 
-    #function selected in each simulation
-    selected <- preds$FunctionSelection[, node]
+#######################
+#summarize all results#
+#######################
 
-##################################
-#alpha_m(new) = sum_s w(s) z_m(s)#
-##################################
+  particle_summ <- .gbmn_summarize_particles(object=object, preds=preds_post, weights=weights,
+                                             obs_nodes=obs_nodes, level=level, covar=covar)
 
-  alpha_new <- vapply(ids, function(id){
-    active <- !is.na(selected) & selected == id
-    sum(weights[active], na.rm = TRUE)}, numeric(1))
+  #extract posterior res
+  function_summaries        <- particle_summ $function_summaries
+  function_particle_weights <- particle_summ $function_particle_weights
+  sigma_weighted            <- particle_summ $sigma_weighted
 
-    names(alpha_new) <- ids
-
-    #numerical normalization
-    if(sum(alpha_new) > 0){
-
-    alpha_new <- alpha_new/sum(alpha_new)
-
-    }else{
-    #if nothing usable was sampled, #retain previous function weights
-    alpha_new <- object$FunctionWeights[[node]][ids]
-
-    if(length(alpha_new) == 0||any(!is.finite(alpha_new))||sum(alpha_new) <= 0){
-
-    alpha_new <- rep(1/length(ids), length(ids))}
-
-    alpha_new <- alpha_new/sum(alpha_new)
-
-    names(alpha_new) <- ids}
-
-    object$FunctionWeights[[node]] <- alpha_new
-
-############################
-#for all selected functions#
-############################
-
-   for(id in ids){
-    active <- !is.na(selected) & selected == id
-    w_id   <- weights*as.numeric(active)
-
-   if(sum(w_id) > 0){
-    function_particle_weights[[id]] <-w_id/sum(w_id)
-
-   }else{
-    #function not selected in any particle
-    function_particle_weights[[id]] <- NULL}}}
-
-###################################
-#sumarize params per edge function#
-###################################
-
-  function_summaries <- list()
-  function_draws     <- list()
-
-  for(id in names(object$Parameters)){
-
-    node  <- edge_info$child[match(id,edge_info$id)]
-    draws <- preds$ParametersPerFunction[[id]]
-
-    if(is.null(draws)){
-      stop("No parameter draws found for edge function: ",id)}
-
-    draws <- do.call(rbind,draws)
-    draws <- as.matrix(draws)
-    colnames(draws) <- names(object$Parameters[[id]])
-
-    #use only particles in which function was active
-    w <- function_particle_weights[[id]]
-
-    #if this function was never selected, there is no
-    #information with which to update its parameters
-    if(is.null(w) || length(w)==0 || sum(w,na.rm=TRUE)<=0){
-
-      old <- object$Parameters[[id]]
-
-      function_summaries[[id]] <- list(
-        mu = vapply(old,function(x) as.numeric(x["mu"]),numeric(1)),
-        se = vapply(old,function(x) as.numeric(x["se"]),numeric(1)),
-        ll = vapply(old,function(x) as.numeric(x["ll"]),numeric(1)),
-        ul = vapply(old,function(x) as.numeric(x["ul"]),numeric(1)))
-
-        function_draws[[id]] <- draws
-
-        next}
-
-    w[!is.finite(w)] <- 0
-    w      <- w/sum(w)
-
-    mu     <- colSums(draws*w)
-    diffmu <- sweep(draws,2,mu,"-")
-    se     <- sqrt(colSums((diffmu^2)*w))
-    llul   <- apply(draws,2,function(x){.gbmn_wquantile(x, w, c((1-level)/2,1-(1-level)/2))})
-
-    function_summaries[[id]] <- list(mu=mu,se=se,ll=llul[1,],ul=llul[2,])
-    function_draws[[id]]     <- draws}
-
-###################
-#derive covariance#
-###################
-
- sigma_weighted <- NULL
-
- if(covar==T){
-
-    #create param matrix [S,K]
-    params <- do.call(cbind, function_draws)
-    params <- as.matrix(params)
-
-    #all weights
-    mu_vec <- colSums(params*weights)
-
-    #center parameters
-    diff_mu_par <- sweep(params, 2, mu_vec, "-")
-
-    # Weighted covariance
-    sigma_weighted <- t(diff_mu_par) %*% diag(weights) %*% diff_mu_par
-
-    #add small constant to prevent issues
-    sigma_weighted <- sigma_weighted+diag(eps, ncol(sigma_weighted))}
+  #update function alpha weights
+  object$FunctionWeights    <- particle_summ$function_weights
 
 ##########################
 #move summaries to object#
@@ -363,7 +276,7 @@ update_gbmn <- function(object, new_data, nsim=3000, level=0.9,
       parameters=names(sub),
       do.call(rbind,sub))})
 
-  object$ParameterTable <- do.call(rbind.data.frame, par_tab)
+  object$ParameterTable           <- do.call(rbind.data.frame, par_tab)
   rownames(object$ParameterTable) <- NULL
 
 return(object)}

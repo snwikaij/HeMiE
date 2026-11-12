@@ -6,6 +6,8 @@ S3method(print,gbmn.param)
 S3method(print,gbmn_disp)
 S3method(print,gbmn_pred_fit)
 S3method(print,gbmn_prediction)
+S3method(print,party_plot)
+S3method(print,party_point)
 export(build_gbmn)
 export(disp_gbmn)
 export(extract_covar_gbmn)
@@ -14,6 +16,7 @@ export(marginal_gbmn)
 export(pred_fit_gbmn)
 export(predict_gbmn)
 export(update_gbmn)
+importFrom(cowplot,plot_grid)
 importFrom(ggforce,geom_ellipse)
 importFrom(ggplot2,
   aes,
@@ -47,6 +50,7 @@ importFrom(grid,
   unit
 )
 importFrom(igraph,V)
+importFrom(mvtnorm,dmvnorm)
 importFrom(rlang,.data)
 importFrom(stats,
   aggregate,
@@ -67,4 +71,5 @@ importFrom(stats,
   setNames,
   uniroot
 )
+importFrom(tmvtnorm,dtmvnorm)
 importFrom(utils,head)

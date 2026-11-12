@@ -22,7 +22,7 @@
     w <- .gbmn_stable_weights(loss_s, l)
     1/sum(w^2)}
 
-  lower_ess <- 0.05*sum(is.finite(loss_s))
+  lower_ess <- 0.01*sum(is.finite(loss_s))
 
   if(get_ess(max_lambda)<lower_ess){
     max_lambda <- uniroot(function(l){get_ess(l)-lower_ess}, c(0, max_lambda))$root}

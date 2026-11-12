@@ -16,7 +16,7 @@ update_gbmn(
   new_data,
   nsim = 3000,
   level = 0.9,
-  method = "holdout",
+  method = "hold-amis",
   up_character = NULL,
   max_lambda = 200,
   diagnostics = T,
@@ -46,19 +46,25 @@ update_gbmn(
 
 - method:
 
-  The method being used to set the updating strength of the model. The
-  default method is 'holdout', The method 'manual' concentrates by
+  The method being used to set the updating strength of the model
+  (default = = 'hold-amis'). The method 'manual' concentrates by
   selecting the best x% of the simulations. The method coverage
   calculates the coverage of the expected value using bootstrapped
   subset. The method 'holdout' is a version that looks similar to
-  SafeBayes.
+  SafeBayes. The method 'amis' uses Adaptive Multiple Importance
+  Sampling. The method 'hold-amis' uses a fixed 5 repetitions for the
+  'holdout' method and uses the derived learning rate as a fixed value
+  for amis.
 
 - up_character:
 
-  A parameter controlling the updating method. For method "holdout", it
-  specifies the number of repetitions (default = 20). For method
-  "manual", it specifies the fraction of best-performing simulations.
-  For method "coverage", it specifies the number of bootstraps.
+  A parameter controlling the updating method. For method "hold-amis",
+  it specifies the number adaptive iterations (default = 5). For method
+  "amis", it specifies the number adaptive iterations (default = 5). For
+  method "holdout", it specifies the number of repetitions (default =
+  20). For method "manual", it specifies the fraction of best-performing
+  simulations (default = NULL). For method "coverage", it specifies the
+  number of bootstraps (default = 50).
 
 - max_lambda:
 

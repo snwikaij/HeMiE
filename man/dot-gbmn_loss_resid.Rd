@@ -4,7 +4,14 @@
 \alias{.gbmn_loss_resid}
 \title{Helper function to calculate loss and residuals}
 \usage{
-.gbmn_loss_resid(obs_mat, preds, obs_nodes, nsim, mad_constant = 1.4826)
+.gbmn_loss_resid(
+  obs_mat,
+  preds,
+  obs_nodes,
+  nsim,
+  mad_constant = 1.4826,
+  MAD_used = NULL
+)
 }
 \arguments{
 \item{obs_mat}{Observed values matrix.}

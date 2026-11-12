@@ -133,10 +133,10 @@
   #Simple ETI intervals because its is normal ETI is HDI
   ci    <- pooled+se*c(-1, 1)*qnorm(interval+((1-interval)/2))
 
-  if(RE==T){
-    results <- c(mu=as.numeric(pooled), se=as.numeric(se), ll=ci[1], ul=ci[2],  sd=as.numeric(sdpi), tau2=tau2, I2=tau2/(se^2+tau2), a=a, b=b, n=length(estimate))
-  }else{
-    results <- c(mu=as.numeric(pooled), se=as.numeric(se), ll=ci[1], ul=ci[2], sd=as.numeric(se), tau2=0, I2=0, a=a, b=b, n=length(estimate))
+  if(RE==T){# sd=as.numeric(sdpi), tau2=tau2, I2=tau2/(se^2+tau2),
+    results <- c(mu=as.numeric(pooled), se=as.numeric(se), ll=ci[1], ul=ci[2], a=a, b=b, n=length(estimate))
+  }else{#sd=as.numeric(se), tau2=0, I2=0,
+    results <- c(mu=as.numeric(pooled), se=as.numeric(se), ll=ci[1], ul=ci[2], a=a, b=b, n=length(estimate))
   }
 
   return(round(results, 4))}

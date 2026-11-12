@@ -275,11 +275,12 @@ build_gbmn   <- function(formula, data, txt_size=3, vertex_size=15,
     }
 
     cbind(edge = e_name[i],
-      `edge function` = e_fun[i],
-      dependent = dependent_vars[i],
-      independent = indep,
-      parameters = names(param_est[[i]]),
-      do.call(rbind, sub))})
+          `edge function` = e_fun[i],
+          dependent = dependent_vars[i],
+          independent = indep,
+          transform = ifelse(is.na(indep),NA,edge_info$trans[i]),
+          parameters = names(param_est[[i]]),
+          do.call(rbind, sub))})
 
   #Combine small table into one
   full_table           <- do.call(rbind.data.frame, par_tab)
@@ -290,7 +291,8 @@ build_gbmn   <- function(formula, data, txt_size=3, vertex_size=15,
   edge_cols$code <- paste0(edge_cols$from, "~", edge_cols$to)
 
   #extract parameter and create code
-  col_table      <- full_table[!is.na(full_table$independent),c(2:6)]
+  col_table      <- full_table[!is.na(full_table$independent), c("edge function",
+                                          "dependent","independent","parameters","mu")]
   col_table$code <- paste0(col_table$dependent, "~", col_table$independent)
 
   #split the col

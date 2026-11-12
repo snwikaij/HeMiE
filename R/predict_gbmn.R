@@ -22,9 +22,9 @@ predict_gbmn <- function(object, new_data, nsim = 1000, seed = 123){
   input_values <- as.list(new_data)
   input_values <- input_values[intersect(object$Roots, names(input_values))]
 
-  ###################################
-  #edge function and child structure#
-  ###################################
+###################################
+#edge function and child structure#
+###################################
 
   edge_info <- object$EdgeFunctions
   if(is.null(edge_info)||nrow(edge_info)==0){stop("No edge function information present in object.")}
@@ -41,9 +41,9 @@ predict_gbmn <- function(object, new_data, nsim = 1000, seed = 123){
     names(parent_list) <- edge_info$id
   }else{stop("No parent information present in object.")}
 
-  #############################
-  #global parameter extraction#
-  #############################
+#############################
+#global parameter extraction#
+#############################
 
   mu_global    <- unlist(lapply(object$Parameters, function(edge){sapply(edge, function(p) p["mu"])}))
   lower_global <- unlist(lapply(object$Parameters, function(edge){sapply(edge, function(p) p["a"])}))
@@ -55,9 +55,9 @@ predict_gbmn <- function(object, new_data, nsim = 1000, seed = 123){
     names(lower_global) <- rownames(object$Sigma)
     names(upper_global) <- rownames(object$Sigma)}
 
-  ################
-  #MC simulations#
-  ################
+################
+#MC simulations#
+################
 
   if(all(is.infinite(lower_global)) && all(is.infinite(upper_global))){
     theta_draws <- MASS::mvrnorm(n=nsim, mu=mu_global, Sigma=object$Sigma)
@@ -67,9 +67,9 @@ predict_gbmn <- function(object, new_data, nsim = 1000, seed = 123){
 
   theta_draws   <- matrix(theta_draws, nrow = nsim, dimnames = list(seq_len(nsim), names(mu_global)))
 
-  ##################################
-  #store predictions and parameters#
-  ##################################
+##################################
+#store predictions and parameters#
+##################################
 
   predictions <- vector("list", nsim)
   for(s in seq_len(nsim)){predictions[[s]] <- input_values}
@@ -107,24 +107,23 @@ predict_gbmn <- function(object, new_data, nsim = 1000, seed = 123){
     Parsbyfun[[id]] <- lapply(seq_len(nsim), function(s){
       as.numeric(theta_draws[s, sel, drop=F])})}
 
-  ######################################
-  #weighted average over edge functions#
-  ######################################
+######################################
+#weighted average over edge functions#
+######################################
 
   avg_fun <- function(mat, w){
 
-    out <- rep(NA_real_, nrow(mat))
+    out <- rep(NA, nrow(mat))
     for(i in seq_len(nrow(mat))){
 
       ok <- is.finite(mat[i,])
-      if(any(ok)){
-        out[i] <- sum(mat[i,ok]*w[ok])/sum(w[ok])}}
+      if(any(ok)){out[i] <- sum(mat[i,ok]*w[ok])/sum(w[ok])}}
 
     out}
 
-  ##########
-  #DAG loop#
-  ##########
+##########
+#DAG loop#
+##########
 
   topo_order <- object$Structure$exec_dag$order
 
@@ -152,9 +151,9 @@ predict_gbmn <- function(object, new_data, nsim = 1000, seed = 123){
     #stor the vector per node
     FunctionSelection[,node] <- selected_fun
 
-    ############################
-    #expected function response#
-    ############################
+############################
+#expected function response#
+############################
 
     for(f in seq_along(fun_select)){
 
@@ -176,9 +175,9 @@ predict_gbmn <- function(object, new_data, nsim = 1000, seed = 123){
     dim(mat_exp)     <- c(nrow(new_data), length(fun_select))
     Expected[[node]] <- avg_fun(mat_exp, w_fun)
 
-    ##########################
-    #stochastic mc prediction#
-    ##########################
+##########################
+#stochastic mc prediction#
+##########################
 
     Variance[[node]] <- vector("list", nsim)
 
@@ -213,9 +212,9 @@ predict_gbmn <- function(object, new_data, nsim = 1000, seed = 123){
       Variance[[node]][[s]] <- predictions[[s]][[node]]}
   }
 
-  ###########################
-  #old style combined output#
-  ###########################
+###########################
+#old style combined output#
+###########################
 
   Parameters           <- list()
   for(node in child_nodes){

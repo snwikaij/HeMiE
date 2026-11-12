@@ -10,16 +10,22 @@
 #'
 #' @importFrom stats mad median
 #'
-.gbmn_loss_resid <- function(obs_mat, preds, obs_nodes, nsim, mad_constant=1.4826){
+.gbmn_loss_resid <- function(obs_mat, preds, obs_nodes, nsim, mad_constant=1.4826, MAD_used=NULL){
 
   #constant
-  eps     <- .Machine$double.eps
+  eps      <- .Machine$double.eps
 
   #number of rows
-  i       <- nrow(obs_mat)
+  i        <- nrow(obs_mat)
 
   #number of nodes
-  n_vert  <- length(obs_nodes)
+  n_vert   <- length(obs_nodes)
+
+  #store null mad
+  null_mad <- is.null(MAD_used)
+
+  #create named vector
+  if(null_mad){MAD_used <- setNames(rep(NA, n_vert), obs_nodes)}
 
   #number of functions
   n_func  <- dim(preds$FunctionPredictions)[4]
@@ -28,14 +34,8 @@
   child <- dimnames(preds$FunctionPredictions)[[2]]
 
   #combined arrays [i,j,s]
-  loss1  <- array(NA, dim=c(i,n_vert,nsim), dimnames=list(NULL,obs_nodes,NULL))
-  resid1 <- array(NA, dim=c(i,n_vert,nsim), dimnames=list(NULL,obs_nodes,NULL))
-  #resid0 <- array(NA,dim=c(i,n_vert,nsim),dimnames=list(NULL,obs_nodes,NULL))
-
-  #function arrays [i,j,s,f]
-  #loss1_fun  <- array(NA, dim=c(i,n_vert,nsim,n_func), dimnames=list(NULL,obs_nodes,NULL,NULL))
-  #resid1_fun <- array(NA, dim=c(i,n_vert,nsim,n_func), dimnames=list(NULL,obs_nodes,NULL,NULL))
-  #resid0_fun <- array(NA, dim=c(i,n_vert,nsim,n_func), dimnames=list(NULL,obs_nodes,NULL,NULL))
+  loss1  <- array(NA, dim=c(i, n_vert, nsim), dimnames=list(NULL, obs_nodes, NULL))
+  resid1 <- array(NA, dim=c(i, n_vert, nsim), dimnames=list(NULL, obs_nodes, NULL))
 
   for(j in seq_along(obs_nodes)){
 
@@ -46,59 +46,41 @@
     #derive mad directly from prior predictions to scale the residuals
     x_exp <- preds$Expected[[node]]
 
+    #for continuous variables.
     if(type=="continuous"){
+
+      #use mad provided if null
+      if(null_mad){
+
       r0  <- x_raw-x_exp
       MAD <- mad(r0, center=median(r0, na.rm=T), constant=mad_constant, na.rm=T)
-      if(!is.finite(MAD)||MAD==0){MAD <- eps}
+
+    #if mini set 0
+      if(!is.finite(MAD) || MAD==0){MAD <- eps}
+
+    #re-use mad from previous (I hope)
     }else{
-      MAD <- 1}
+
+      MAD <- MAD_used[[node]]}
+
+    }else{
+      MAD <- 1
+    }
+
+    #store mad
+    MAD_used[node] <- MAD
 
     #all predictions
     xhat_mat <- do.call(cbind,lapply(seq_len(nsim), function(s){preds$Variance[[node]][[s]]}))
-
-    #median prior predictions
-    #x0       <- apply(xhat_mat, 1, median, na.rm=T)
 
     for(s in seq_len(nsim)){
 
       #data-model data variance
       a1 <- .gbmn_transform_loss(x_raw, xhat_mat[,s], type, MAD)
 
-      #model-mean(model) model variance
-      #a0 <- .gbmn_transform_loss(x0, xhat_mat[,s], type, MAD)
-
       #loss and resid excluding the function
       loss1[,j,s]  <- a1$loss
-      resid1[,j,s] <- a1$residuals
-      #resid0[,j,s] <- a0$residuals
-      }
-
-    #########################
-    #separate edge functions#
-    #########################
-
-    #old code but not sure if deleting is in my 'best of interest'
-    #I might re-use it when tinkering around again
-    #if vertex is a child select the predictions out of the edge functions
-    #loc_child   <- match(node, child)
-    #fun_rows    <- preds$EdgeFunctions[preds$EdgeFunctions$child==node,,drop=F]
-
-    #for(k in seq_len(nrow(fun_rows))){
-
-    #  f         <- fun_rows$f[k]
-
-    #  xfun      <- preds$FunctionPredictions[,loc_child,,f, drop=F]
-    #  dim(xfun) <- c(i, nsim)
-    #  x0_fun    <- apply(xfun, 1, median,na.rm=T)
-
-    #  for(s in seq_len(nsim)){
-
-    #    a1 <- .gbmn_transform_loss(x_raw, xfun[,s], type, MAD)
-    #    a0 <- .gbmn_transform_loss(x0_fun, xfun[,s], type, MAD)
-
-    #    loss1_fun[,j,s,f]  <- a1$loss
-    #    resid1_fun[,j,s,f] <- a1$residuals
-    #    resid0_fun[,j,s,f] <- a0$residuals}}
+      resid1[,j,s] <- a1$residuals}
   }
 
-  list(loss1=loss1,resid1=resid1)}
+  return(list(loss1=loss1, resid1=resid1, MAD_used=MAD_used))}

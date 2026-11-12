@@ -17,8 +17,7 @@ print.gbmn <- function(x, ...){
   n_estimates <- sum(
     unlist(lapply(x$Parameters, function(edge){
           vapply(edge, function(par) par["n"], numeric(1)
-          )})),
-    na.rm = TRUE)
+          )})), na.rm = T)
 
   cat("\nGeneralized Bayesian Meta-Analytic Network\n")
   cat("-------------------------------------------\n\n")
@@ -43,7 +42,7 @@ print.gbmn <- function(x, ...){
     update_table <- data.frame(
       Lambda = round(as.numeric(x$Info$lambda), 3), ESS = round(as.numeric(x$Info$ESS),1))
 
-    print(update_table,row.names = FALSE)}
+    print(update_table,row.names = F)}
 
 #################
 #parameter table#
@@ -53,11 +52,11 @@ print.gbmn <- function(x, ...){
 
   par_table <- x$ParameterTable
 
-  num_cols <- c("mu","se","ll","ul","Q","I2","a","b")
+  num_cols <- c("mu","se","ll","ul", "a","b")
   num_cols <- intersect(num_cols, names(par_table))
 
   par_table[num_cols] <- lapply(par_table[num_cols], function(z){round(as.numeric(z),3)})
 
-  print(par_table, row.names=FALSE)
+  print(par_table, row.names=F)
 
   invisible(x)}
